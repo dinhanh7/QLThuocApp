@@ -2,6 +2,18 @@ package entities;
 
 import java.util.Date;
 
+/**
+ * PhanHoi.java
+ *
+ * Mô tả cấu trúc bảng PhanHoi:
+ *   idPH     (String)  – khóa chính
+ *   idKH     (String)  – khóa ngoại tới KhachHang.idKH
+ *   idHD     (String)  – khóa ngoại tới HoaDon.idHD
+ *   idThuoc  (String)  – khóa ngoại tới Thuoc.idThuoc
+ *   noiDung  (String)
+ *   thoiGian (Date)
+ *   danhGia  (int)
+ */
 public class PhanHoi {
     private String idPH;
     private String idKH;
@@ -9,10 +21,7 @@ public class PhanHoi {
     private String idThuoc;
     private String noiDung;
     private Date thoiGian;
-    private Integer danhGia;
-
-    public PhanHoi() {
-    }
+    private int danhGia;
 
     public String getIdPH() {
         return idPH;
@@ -62,12 +71,11 @@ public class PhanHoi {
         this.thoiGian = thoiGian;
     }
 
-    public Integer getDanhGia() {
+    public int getDanhGia() {
         return danhGia;
     }
 
-    public void setDanhGia(Integer danhGia) {
+    public void setDanhGia(int danhGia) {
         this.danhGia = danhGia;
     }
 }
-// PhanHoi.java 

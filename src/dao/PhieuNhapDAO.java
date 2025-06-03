@@ -8,19 +8,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * PhieuNhapDAO.java
+ *
+ * CRUD cơ bản cho bảng PhieuNhap,
+ * và bổ sung thêm phương thức search(String idPN, String idNV, String idNCC).
+ */
 public class PhieuNhapDAO {
 
-    // Lấy tất cả Phiếu nhập
+    /**
+     * Lấy toàn bộ danh sách PhieuNhap.
+     */
     public List<PhieuNhap> getAll() {
         List<PhieuNhap> list = new ArrayList<>();
         String sql = "SELECT idPN, thoiGian, idNV, idNCC, tongTien FROM PhieuNhap";
         Connection conn = null;
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         ResultSet rs = null;
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 PhieuNhap pn = new PhieuNhap();
                 pn.setIdPN(rs.getString("idPN"));
@@ -38,35 +46,9 @@ public class PhieuNhapDAO {
         return list;
     }
 
-    // Lấy Phiếu nhập theo ID
-    public PhieuNhap getById(String idPN) {
-        PhieuNhap pn = null;
-        String sql = "SELECT * FROM PhieuNhap WHERE idPN = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, idPN);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                pn = new PhieuNhap();
-                pn.setIdPN(rs.getString("idPN"));
-                pn.setThoiGian(rs.getTimestamp("thoiGian"));
-                pn.setIdNV(rs.getString("idNV"));
-                pn.setIdNCC(rs.getString("idNCC"));
-                pn.setTongTien(rs.getDouble("tongTien"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBCloseHelper.closeAll(rs, stmt, conn);
-        }
-        return pn;
-    }
-
-    // Thêm mới Phiếu nhập
+    /**
+     * Thêm mới PhieuNhap.
+     */
     public boolean insert(PhieuNhap pn) {
         String sql = "INSERT INTO PhieuNhap (idPN, thoiGian, idNV, idNCC, tongTien) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
@@ -75,7 +57,7 @@ public class PhieuNhapDAO {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, pn.getIdPN());
-            stmt.setTimestamp(2, new java.sql.Timestamp(pn.getThoiGian().getTime()));
+            stmt.setTimestamp(2, new Timestamp(pn.getThoiGian().getTime()));
             stmt.setString(3, pn.getIdNV());
             stmt.setString(4, pn.getIdNCC());
             stmt.setDouble(5, pn.getTongTien());
@@ -89,7 +71,9 @@ public class PhieuNhapDAO {
         }
     }
 
-    // Cập nhật Phiếu nhập
+    /**
+     * Cập nhật PhieuNhap.
+     */
     public boolean update(PhieuNhap pn) {
         String sql = "UPDATE PhieuNhap SET thoiGian = ?, idNV = ?, idNCC = ?, tongTien = ? WHERE idPN = ?";
         Connection conn = null;
@@ -97,7 +81,7 @@ public class PhieuNhapDAO {
         try {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setTimestamp(1, new java.sql.Timestamp(pn.getThoiGian().getTime()));
+            stmt.setTimestamp(1, new Timestamp(pn.getThoiGian().getTime()));
             stmt.setString(2, pn.getIdNV());
             stmt.setString(3, pn.getIdNCC());
             stmt.setDouble(4, pn.getTongTien());
@@ -112,7 +96,9 @@ public class PhieuNhapDAO {
         }
     }
 
-    // Xóa Phiếu nhập
+    /**
+     * Xóa PhieuNhap theo idPN.
+     */
     public boolean delete(String idPN) {
         String sql = "DELETE FROM PhieuNhap WHERE idPN = ?";
         Connection conn = null;
@@ -129,5 +115,59 @@ public class PhieuNhapDAO {
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
+    }
+
+    /**
+     * Tìm kiếm PhieuNhap theo idPN hoặc idNV hoặc idNCC.
+     * Nếu cả ba tham số đều rỗng, trả về toàn bộ danh sách.
+     */
+    public List<PhieuNhap> search(String idPN, String idNV, String idNCC) {
+        List<PhieuNhap> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT idPN, thoiGian, idNV, idNCC, tongTien FROM PhieuNhap WHERE 1=1"
+        );
+
+        if (idPN != null && !idPN.trim().isEmpty()) {
+            sql.append(" AND idPN LIKE ?");
+        }
+        if (idNV != null && !idNV.trim().isEmpty()) {
+            sql.append(" AND idNV LIKE ?");
+        }
+        if (idNCC != null && !idNCC.trim().isEmpty()) {
+            sql.append(" AND idNCC LIKE ?");
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql.toString());
+            int idx = 1;
+            if (idPN != null && !idPN.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + idPN.trim() + "%");
+            }
+            if (idNV != null && !idNV.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + idNV.trim() + "%");
+            }
+            if (idNCC != null && !idNCC.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + idNCC.trim() + "%");
+            }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                PhieuNhap pn = new PhieuNhap();
+                pn.setIdPN(rs.getString("idPN"));
+                pn.setThoiGian(rs.getTimestamp("thoiGian"));
+                pn.setIdNV(rs.getString("idNV"));
+                pn.setIdNCC(rs.getString("idNCC"));
+                pn.setTongTien(rs.getDouble("tongTien"));
+                list.add(pn);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return list;
     }
 }

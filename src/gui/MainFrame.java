@@ -4,6 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import gui.ThuocPanel;
+import gui.NhanVienPanel;
+import gui.KhachHangPanel;
+import gui.HoaDonPanel;
+import gui.PhieuNhapPanel;
+import gui.PhieuDatHangPanel;
+import gui.PhanHoiPanel;
+import gui.HopDongPanel;
+import gui.NhaCungCapPanel; // <--- import cho tab Nhà cung cấp
+
 /**
  * MainFrame.java (với nút Đăng xuất cố định ở góc trên bên phải)
  */
@@ -18,9 +28,10 @@ public class MainFrame extends JFrame {
     private PhieuDatHangPanel phieuDatHangPanel;
     private PhanHoiPanel phanHoiPanel;
     private HopDongPanel hopDongPanel;
+    private NhaCungCapPanel nccPanel; // <--- panel Nhà cung cấp
 
     /**
-     * @param roleId Chuỗi idVT (vai trò) của người dùng. 
+     * @param roleId Chuỗi idVT (vai trò) của người dùng.
      *               Ví dụ: "VT01" = Admin, "VT02" = Nhân viên.
      */
     public MainFrame(String roleId) {
@@ -82,22 +93,25 @@ public class MainFrame extends JFrame {
         phieuDatHangPanel = new PhieuDatHangPanel();
         phanHoiPanel      = new PhanHoiPanel();
         hopDongPanel      = new HopDongPanel();
+        nccPanel          = new NhaCungCapPanel(); // <--- khởi tạo panel Nhà cung cấp
 
-        // Nếu roleId = "VT01" (Admin), hiển thị đủ 8 tab:
+        // Nếu roleId = "VT01" (Admin), hiển thị đủ 9 tab (Bao gồm Nhà cung cấp)
         if ("VT01".equals(roleId)) {
             tabbedPane.addTab("Thuốc", thuocPanel);
             tabbedPane.addTab("Nhân viên", nhanVienPanel);
             tabbedPane.addTab("Khách hàng", khachHangPanel);
+            tabbedPane.addTab("Nhà cung cấp", nccPanel);      // <--- thêm tab Nhà cung cấp
             tabbedPane.addTab("Hóa đơn", hoaDonPanel);
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
             tabbedPane.addTab("Phiếu đặt hàng", phieuDatHangPanel);
             tabbedPane.addTab("Phản hồi", phanHoiPanel);
             tabbedPane.addTab("Hợp đồng", hopDongPanel);
         }
-        // Nếu roleId = "VT02" (Nhân viên), chỉ hiển thị 6 tab:
+        // Nếu roleId = "VT02" (Nhân viên), hiển thị 7 tab (Bao gồm Nhà cung cấp)
         else if ("VT02".equals(roleId)) {
             tabbedPane.addTab("Thuốc", thuocPanel);
             tabbedPane.addTab("Khách hàng", khachHangPanel);
+            tabbedPane.addTab("Nhà cung cấp", nccPanel);      // <--- thêm tab Nhà cung cấp
             tabbedPane.addTab("Hóa đơn", hoaDonPanel);
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
             tabbedPane.addTab("Phiếu đặt hàng", phieuDatHangPanel);

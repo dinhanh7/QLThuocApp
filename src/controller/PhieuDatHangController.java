@@ -5,45 +5,41 @@ import entities.PhieuDatHang;
 
 import java.util.List;
 
+/**
+ * PhieuDatHangController.java
+ *
+ * Giữ nguyên các phương thức CRUD cơ bản (getAllPhieuDatHang, addPhieuDatHang, updatePhieuDatHang, deletePhieuDatHang),
+ * và bổ sung thêm searchPhieuDatHang(String idPDH, String idKH).
+ */
 public class PhieuDatHangController {
+
     private PhieuDatHangDAO phieuDatHangDAO;
 
     public PhieuDatHangController() {
         phieuDatHangDAO = new PhieuDatHangDAO();
     }
 
-    // Lấy danh sách tất cả phiếu đặt hàng
     public List<PhieuDatHang> getAllPhieuDatHang() {
         return phieuDatHangDAO.getAll();
     }
 
-    // Lấy phiếu đặt hàng theo id
-    public PhieuDatHang getPhieuDatHangById(String idPDH) {
-        return phieuDatHangDAO.getById(idPDH);
-    }
-
-    // Thêm mới phiếu đặt hàng
     public boolean addPhieuDatHang(PhieuDatHang pdh) {
-        if (pdh.getIdPDH() == null || pdh.getIdPDH().trim().isEmpty()) {
-            return false;
-        }
         return phieuDatHangDAO.insert(pdh);
     }
 
-    // Cập nhật phiếu đặt hàng
     public boolean updatePhieuDatHang(PhieuDatHang pdh) {
-        if (pdh.getIdPDH() == null || pdh.getIdPDH().trim().isEmpty()) {
-            return false;
-        }
         return phieuDatHangDAO.update(pdh);
     }
 
-    // Xóa phiếu đặt hàng
     public boolean deletePhieuDatHang(String idPDH) {
-        if (idPDH == null || idPDH.trim().isEmpty()) {
-            return false;
-        }
         return phieuDatHangDAO.delete(idPDH);
     }
+
+    /**
+     * Tìm kiếm Phiếu Đặt hàng theo idPDH hoặc idKH.
+     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
+     */
+    public List<PhieuDatHang> searchPhieuDatHang(String idPDH, String idKH) {
+        return phieuDatHangDAO.search(idPDH, idKH);
+    }
 }
-// PhieuDatHangController.java 

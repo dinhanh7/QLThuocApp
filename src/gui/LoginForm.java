@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * LoginForm.java (đã gỡ bỏ thông báo “Đăng nhập thành công”)
+ * LoginForm.java (có thêm nút "Chế độ khách" ở góc dưới bên phải)
  */
 public class LoginForm extends JFrame {
 
@@ -17,12 +17,13 @@ public class LoginForm extends JFrame {
     private JTextField txtUsername;
     private JPasswordField txtPassword;
     private JButton btnLogin;
+    private JButton btnGuest;      // nút chế độ khách
     private LoginController loginController;
 
     public LoginForm() {
         setTitle("Đăng nhập hệ thống");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 250);
+        setSize(400, 260);
         setLocationRelativeTo(null);
         initComponents();
         loginController = new LoginController();
@@ -57,34 +58,54 @@ public class LoginForm extends JFrame {
         btnLogin = new JButton("Login");
         btnLogin.setBounds(140, 150, 100, 30);
         contentPane.add(btnLogin);
-
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 performLogin();
             }
         });
+
+        // Nút "Chế độ khách" ở góc dưới bên phải
+        btnGuest = new JButton("Chế độ khách");
+        btnGuest.setBounds(260, 200, 120, 25);
+        contentPane.add(btnGuest);
+        btnGuest.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openGuestMode();
+            }
+        });
     }
 
+    /**
+     * Xử lý đăng nhập bình thường (Admin/ Nhân viên).
+     */
     private void performLogin() {
         String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
 
-        // Gọi LoginController để lấy TaiKhoan (bao gồm idVT)
         TaiKhoan tk = loginController.authenticateAndGetAccount(username, password);
         if (tk != null) {
-            // Nếu login thành công, chuyển luôn sang MainFrame mà không hiện thông báo
             String roleId = tk.getIdVT();  // ví dụ "VT01" (Admin) hoặc "VT02" (Nhân viên)
             MainFrame main = new MainFrame(roleId);
             main.setVisible(true);
             this.dispose();
         } else {
-            // Nếu sai username/password, hiện thông báo lỗi
             JOptionPane.showMessageDialog(this,
                     "Sai username hoặc password",
                     "Lỗi đăng nhập",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * Mở chế độ khách: hiển thị Form phản hồi (GuestFeedbackForm).
+     */
+    private void openGuestMode() {
+        // Không cần thông tin đăng nhập, mở thẳng form
+        GuestFeedbackForm guestForm = new GuestFeedbackForm();
+        guestForm.setVisible(true);
+        this.dispose();  // Đóng cửa sổ LoginForm
     }
 
     public static void main(String[] args) {

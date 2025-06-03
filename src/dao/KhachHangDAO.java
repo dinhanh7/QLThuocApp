@@ -8,19 +8,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * KhachHangDAO.java
+ *
+ * CRUD cơ bản cho bảng KhachHang,
+ * và bổ sung thêm phương thức search(String hoTen, String sdt).
+ */
 public class KhachHangDAO {
 
-    // Lấy tất cả khách hàng
+    /**
+     * Lấy toàn bộ danh sách KhachHang.
+     */
     public List<KhachHang> getAll() {
         List<KhachHang> list = new ArrayList<>();
         String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang";
         Connection conn = null;
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         ResultSet rs = null;
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 KhachHang kh = new KhachHang();
                 kh.setIdKH(rs.getString("idKH"));
@@ -38,37 +46,12 @@ public class KhachHangDAO {
         return list;
     }
 
-    // Lấy khách hàng theo ID
-    public KhachHang getById(String idKH) {
-        KhachHang kh = null;
-        String sql = "SELECT * FROM KhachHang WHERE idKH = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, idKH);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                kh = new KhachHang();
-                kh.setIdKH(rs.getString("idKH"));
-                kh.setHoTen(rs.getString("hoTen"));
-                kh.setSdt(rs.getString("sdt"));
-                kh.setGioiTinh(rs.getString("gioiTinh"));
-                kh.setNgayThamGia(rs.getDate("ngayThamGia"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBCloseHelper.closeAll(rs, stmt, conn);
-        }
-        return kh;
-    }
-
-    // Thêm mới khách hàng
+    /**
+     * Thêm mới KhachHang.
+     */
     public boolean insert(KhachHang kh) {
-        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia) " +
+                     "VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -89,9 +72,12 @@ public class KhachHangDAO {
         }
     }
 
-    // Cập nhật khách hàng
+    /**
+     * Cập nhật KhachHang.
+     */
     public boolean update(KhachHang kh) {
-        String sql = "UPDATE KhachHang SET hoTen = ?, sdt = ?, gioiTinh = ?, ngayThamGia = ? WHERE idKH = ?";
+        String sql = "UPDATE KhachHang SET hoTen = ?, sdt = ?, gioiTinh = ?, ngayThamGia = ? " +
+                     "WHERE idKH = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -112,7 +98,9 @@ public class KhachHangDAO {
         }
     }
 
-    // Xóa khách hàng
+    /**
+     * Xóa KhachHang theo idKH.
+     */
     public boolean delete(String idKH) {
         String sql = "DELETE FROM KhachHang WHERE idKH = ?";
         Connection conn = null;
@@ -129,5 +117,83 @@ public class KhachHangDAO {
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
+    }
+
+    /**
+     * Tìm kiếm Khách hàng theo hoTen hoặc sdt (hoặc cả hai).
+     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
+     */
+    public List<KhachHang> search(String hoTen, String sdt) {
+        List<KhachHang> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE 1=1"
+        );
+
+        if (hoTen != null && !hoTen.trim().isEmpty()) {
+            sql.append(" AND hoTen LIKE ?");
+        }
+        if (sdt != null && !sdt.trim().isEmpty()) {
+            sql.append(" AND sdt LIKE ?");
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql.toString());
+            int idx = 1;
+            if (hoTen != null && !hoTen.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + hoTen.trim() + "%");
+            }
+            if (sdt != null && !sdt.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + sdt.trim() + "%");
+            }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                KhachHang kh = new KhachHang();
+                kh.setIdKH(rs.getString("idKH"));
+                kh.setHoTen(rs.getString("hoTen"));
+                kh.setSdt(rs.getString("sdt"));
+                kh.setGioiTinh(rs.getString("gioiTinh"));
+                kh.setNgayThamGia(rs.getDate("ngayThamGia"));
+                list.add(kh);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return list;
+    }
+
+    /**
+     * Lấy KhachHang theo SĐT (đã có sẵn):
+     */
+    public KhachHang getBySDT(String sdt) {
+        String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE sdt = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, sdt);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                KhachHang kh = new KhachHang();
+                kh.setIdKH(rs.getString("idKH"));
+                kh.setHoTen(rs.getString("hoTen"));
+                kh.setSdt(rs.getString("sdt"));
+                kh.setGioiTinh(rs.getString("gioiTinh"));
+                kh.setNgayThamGia(rs.getDate("ngayThamGia"));
+                return kh;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return null;
     }
 }

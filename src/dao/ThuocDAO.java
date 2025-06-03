@@ -1,4 +1,3 @@
-// ThuocDAO.java 
 package dao;
 
 import connectDB.DBConnection;
@@ -9,24 +8,32 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ThuocDAO.java
+ *
+ * Chứa các phương thức CRUD cơ bản cho bảng Thuoc,
+ * và bổ sung thêm phương thức search() để tìm thuốc theo id hoặc tên.
+ */
 public class ThuocDAO {
 
-    // Lấy tất cả Thuốc
+    /**
+     * Lấy toàn bộ danh sách Thuoc.
+     */
     public List<Thuoc> getAll() {
         List<Thuoc> list = new ArrayList<>();
-        String sql = "SELECT idThuoc, tenThuoc, hinhAnh, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung FROM Thuoc";
+        String sql = "SELECT idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung " +
+                     "FROM Thuoc";
         Connection conn = null;
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         ResultSet rs = null;
         try {
             conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Thuoc t = new Thuoc();
                 t.setIdThuoc(rs.getString("idThuoc"));
                 t.setTenThuoc(rs.getString("tenThuoc"));
-                t.setHinhAnh(rs.getBytes("hinhAnh"));
                 t.setThanhPhan(rs.getString("thanhPhan"));
                 t.setIdDVT(rs.getString("idDVT"));
                 t.setIdDM(rs.getString("idDM"));
@@ -45,60 +52,28 @@ public class ThuocDAO {
         return list;
     }
 
-    // Lấy Thuốc theo ID
-    public Thuoc getById(String idThuoc) {
-        Thuoc t = null;
-        String sql = "SELECT * FROM Thuoc WHERE idThuoc = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, idThuoc);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                t = new Thuoc();
-                t.setIdThuoc(rs.getString("idThuoc"));
-                t.setTenThuoc(rs.getString("tenThuoc"));
-                t.setHinhAnh(rs.getBytes("hinhAnh"));
-                t.setThanhPhan(rs.getString("thanhPhan"));
-                t.setIdDVT(rs.getString("idDVT"));
-                t.setIdDM(rs.getString("idDM"));
-                t.setIdXX(rs.getString("idXX"));
-                t.setSoLuongTon(rs.getInt("soLuongTon"));
-                t.setGiaNhap(rs.getDouble("giaNhap"));
-                t.setDonGia(rs.getDouble("donGia"));
-                t.setHanSuDung(rs.getDate("hanSuDung"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBCloseHelper.closeAll(rs, stmt, conn);
-        }
-        return t;
-    }
-
-    // Thêm mới Thuốc
-    public boolean insert(Thuoc thuoc) {
-        String sql = "INSERT INTO Thuoc (idThuoc, tenThuoc, hinhAnh, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    /**
+     * Thêm mới Thuoc.
+     */
+    public boolean insert(Thuoc t) {
+        String sql = "INSERT INTO Thuoc " +
+                     "(idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, thuoc.getIdThuoc());
-            stmt.setString(2, thuoc.getTenThuoc());
-            stmt.setBytes(3, thuoc.getHinhAnh());
-            stmt.setString(4, thuoc.getThanhPhan());
-            stmt.setString(5, thuoc.getIdDVT());
-            stmt.setString(6, thuoc.getIdDM());
-            stmt.setString(7, thuoc.getIdXX());
-            stmt.setInt(8, thuoc.getSoLuongTon());
-            stmt.setDouble(9, thuoc.getGiaNhap());
-            stmt.setDouble(10, thuoc.getDonGia());
-            stmt.setDate(11, new java.sql.Date(thuoc.getHanSuDung().getTime()));
+            stmt.setString(1, t.getIdThuoc());
+            stmt.setString(2, t.getTenThuoc());
+            stmt.setString(3, t.getThanhPhan());
+            stmt.setString(4, t.getIdDVT());
+            stmt.setString(5, t.getIdDM());
+            stmt.setString(6, t.getIdXX());
+            stmt.setInt(7, t.getSoLuongTon());
+            stmt.setDouble(8, t.getGiaNhap());
+            stmt.setDouble(9, t.getDonGia());
+            stmt.setDate(10, new java.sql.Date(t.getHanSuDung().getTime()));
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -109,26 +84,28 @@ public class ThuocDAO {
         }
     }
 
-    // Cập nhật Thuốc
-    public boolean update(Thuoc thuoc) {
-        String sql = "UPDATE Thuoc SET tenThuoc = ?, hinhAnh = ?, thanhPhan = ?, idDVT = ?, idDM = ?, idXX = ?, soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ? "
-                   + "WHERE idThuoc = ?";
+    /**
+     * Cập nhật Thuoc.
+     */
+    public boolean update(Thuoc t) {
+        String sql = "UPDATE Thuoc SET tenThuoc = ?, thanhPhan = ?, idDVT = ?, idDM = ?, idXX = ?, " +
+                     "soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ? " +
+                     "WHERE idThuoc = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, thuoc.getTenThuoc());
-            stmt.setBytes(2, thuoc.getHinhAnh());
-            stmt.setString(3, thuoc.getThanhPhan());
-            stmt.setString(4, thuoc.getIdDVT());
-            stmt.setString(5, thuoc.getIdDM());
-            stmt.setString(6, thuoc.getIdXX());
-            stmt.setInt(7, thuoc.getSoLuongTon());
-            stmt.setDouble(8, thuoc.getGiaNhap());
-            stmt.setDouble(9, thuoc.getDonGia());
-            stmt.setDate(10, new java.sql.Date(thuoc.getHanSuDung().getTime()));
-            stmt.setString(11, thuoc.getIdThuoc());
+            stmt.setString(1, t.getTenThuoc());
+            stmt.setString(2, t.getThanhPhan());
+            stmt.setString(3, t.getIdDVT());
+            stmt.setString(4, t.getIdDM());
+            stmt.setString(5, t.getIdXX());
+            stmt.setInt(6, t.getSoLuongTon());
+            stmt.setDouble(7, t.getGiaNhap());
+            stmt.setDouble(8, t.getDonGia());
+            stmt.setDate(9, new java.sql.Date(t.getHanSuDung().getTime()));
+            stmt.setString(10, t.getIdThuoc());
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -139,7 +116,9 @@ public class ThuocDAO {
         }
     }
 
-    // Xóa Thuốc
+    /**
+     * Xóa Thuoc theo idThuoc.
+     */
     public boolean delete(String idThuoc) {
         String sql = "DELETE FROM Thuoc WHERE idThuoc = ?";
         Connection conn = null;
@@ -156,5 +135,61 @@ public class ThuocDAO {
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
+    }
+
+    /**
+     * Tìm kiếm Thuoc theo idThuoc hoặc tenThuoc (khi 1 trong 2 trường có giá trị).
+     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách (tương đương getAll()).
+     */
+    public List<Thuoc> search(String idThuoc, String tenThuoc) {
+        List<Thuoc> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung " +
+                "FROM Thuoc WHERE 1=1"
+        );
+
+        if (idThuoc != null && !idThuoc.trim().isEmpty()) {
+            sql.append(" AND idThuoc LIKE ?");
+        }
+        if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
+            sql.append(" AND tenThuoc LIKE ?");
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql.toString());
+
+            int paramIndex = 1;
+            if (idThuoc != null && !idThuoc.trim().isEmpty()) {
+                stmt.setString(paramIndex++, "%" + idThuoc.trim() + "%");
+            }
+            if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
+                stmt.setString(paramIndex++, "%" + tenThuoc.trim() + "%");
+            }
+
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Thuoc t = new Thuoc();
+                t.setIdThuoc(rs.getString("idThuoc"));
+                t.setTenThuoc(rs.getString("tenThuoc"));
+                t.setThanhPhan(rs.getString("thanhPhan"));
+                t.setIdDVT(rs.getString("idDVT"));
+                t.setIdDM(rs.getString("idDM"));
+                t.setIdXX(rs.getString("idXX"));
+                t.setSoLuongTon(rs.getInt("soLuongTon"));
+                t.setGiaNhap(rs.getDouble("giaNhap"));
+                t.setDonGia(rs.getDouble("donGia"));
+                t.setHanSuDung(rs.getDate("hanSuDung"));
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return list;
     }
 }

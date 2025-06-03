@@ -5,46 +5,53 @@ import entities.Thuoc;
 
 import java.util.List;
 
+/**
+ * ThuocController.java
+ *
+ * Giữ nguyên các phương thức CRUD cơ bản (getAllThuoc, addThuoc, updateThuoc, deleteThuoc),
+ * và bổ sung thêm searchThuoc() để tìm theo id hoặc tên.
+ */
 public class ThuocController {
+
     private ThuocDAO thuocDAO;
 
     public ThuocController() {
         thuocDAO = new ThuocDAO();
     }
 
-    // Lấy danh sách tất cả thuốc
+    /**
+     * Lấy toàn bộ danh sách Thuoc.
+     */
     public List<Thuoc> getAllThuoc() {
         return thuocDAO.getAll();
     }
 
-    // Lấy thông tin một thuốc theo id
-    public Thuoc getThuocById(String idThuoc) {
-        return thuocDAO.getById(idThuoc);
-    }
-
-    // Thêm mới thuốc
+    /**
+     * Thêm Thuoc mới.
+     */
     public boolean addThuoc(Thuoc t) {
-        // Ví dụ: kiểm tra id không trống, tên không null...
-        if (t.getIdThuoc() == null || t.getIdThuoc().trim().isEmpty()) {
-            return false;
-        }
         return thuocDAO.insert(t);
     }
 
-    // Cập nhật thuốc
+    /**
+     * Cập nhật Thuoc.
+     */
     public boolean updateThuoc(Thuoc t) {
-        if (t.getIdThuoc() == null || t.getIdThuoc().trim().isEmpty()) {
-            return false;
-        }
         return thuocDAO.update(t);
     }
 
-    // Xóa thuốc
+    /**
+     * Xóa Thuoc theo idThuoc.
+     */
     public boolean deleteThuoc(String idThuoc) {
-        if (idThuoc == null || idThuoc.trim().isEmpty()) {
-            return false;
-        }
         return thuocDAO.delete(idThuoc);
     }
+
+    /**
+     * Tìm kiếm Thuoc theo idThuoc hoặc tenThuoc.
+     * Nếu cả hai tham số đều rỗng, sẽ trả về toàn bộ danh sách.
+     */
+    public List<Thuoc> searchThuoc(String idThuoc, String tenThuoc) {
+        return thuocDAO.search(idThuoc, tenThuoc);
+    }
 }
-// ThuocController.java 

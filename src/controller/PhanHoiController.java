@@ -5,45 +5,41 @@ import entities.PhanHoi;
 
 import java.util.List;
 
+/**
+ * PhanHoiController.java
+ *
+ * Giữ nguyên các phương thức CRUD cơ bản (getAllPhanHoi, addPhanHoi, updatePhanHoi, deletePhanHoi),
+ * và bổ sung thêm searchPhanHoi(String idPH, String idKH).
+ */
 public class PhanHoiController {
+
     private PhanHoiDAO phanHoiDAO;
 
     public PhanHoiController() {
         phanHoiDAO = new PhanHoiDAO();
     }
 
-    // Lấy danh sách tất cả phản hồi
     public List<PhanHoi> getAllPhanHoi() {
         return phanHoiDAO.getAll();
     }
 
-    // Lấy phản hồi theo id
-    public PhanHoi getPhanHoiById(String idPH) {
-        return phanHoiDAO.getById(idPH);
-    }
-
-    // Thêm mới phản hồi
     public boolean addPhanHoi(PhanHoi ph) {
-        if (ph.getIdPH() == null || ph.getIdPH().trim().isEmpty()) {
-            return false;
-        }
         return phanHoiDAO.insert(ph);
     }
 
-    // Cập nhật phản hồi
     public boolean updatePhanHoi(PhanHoi ph) {
-        if (ph.getIdPH() == null || ph.getIdPH().trim().isEmpty()) {
-            return false;
-        }
         return phanHoiDAO.update(ph);
     }
 
-    // Xóa phản hồi
     public boolean deletePhanHoi(String idPH) {
-        if (idPH == null || idPH.trim().isEmpty()) {
-            return false;
-        }
         return phanHoiDAO.delete(idPH);
     }
+
+    /**
+     * Tìm kiếm Phản hồi theo idPH hoặc idKH.
+     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
+     */
+    public List<PhanHoi> searchPhanHoi(String idPH, String idKH) {
+        return phanHoiDAO.search(idPH, idKH);
+    }
 }
-// PhanHoiController.java 
