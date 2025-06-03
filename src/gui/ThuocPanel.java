@@ -5,21 +5,24 @@ import entities.Thuoc;
 import utils.DateHelper;
 import utils.MessageDialog;
 import utils.Validator;
+import connectDB.DBConnection;
+import connectDB.DBCloseHelper;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.*;
 import java.util.List;
 
 /**
- * ThuocPanel.java (đã bổ sung chức năng Tìm kiếm)
+ * ThuocPanel.java (đã sửa để hiển thị tên DonViTinh, DanhMuc, XuatXu cạnh ID)
  *
- * Bố cục chính:
- *  - Dòng 1 (y = 10): Các nút chức năng (Thêm, Sửa, Xóa, Làm mới)
- *  - Dòng 2 (y = 50): Panel Tìm kiếm (IDThuoc, Tên thuốc, Nút Tìm kiếm)
- *  - Dòng 3 (y = 90): inputPanel (ẩn/chỉ hiển thị khi Thêm/Sửa)
- *  - Dòng 4 (y = 200): JTable chứa dữ liệu, chiều cao 310 (đủ để hiển thị nhiều dòng)
+ * Bố cục:
+ *  - Dòng 1 (y = 10): Nút Thêm, Sửa, Xóa, Làm mới
+ *  - Dòng 2 (y = 50): Panel Search (IDThuoc, TenThuoc, Nút Tìm kiếm)
+ *  - Dòng 3 (y = 90): inputPanel ẩn/chỉ hiển thị khi Add/Edit
+ *  - Dòng 4 (y = 200): JTable (cao = 310)
  */
 public class ThuocPanel extends JPanel {
 
@@ -28,9 +31,7 @@ public class ThuocPanel extends JPanel {
 
     // inputPanel (ẩn khi currentMode == NONE)
     private JPanel inputPanel;
-    private JTextField txtId, txtTen, txtThanhPhan, txtIdDVT, txtIdDM,
-                       txtIdXX, txtSoLuongTon, txtGiaNhap, txtDonGia;
-    private JFormattedTextField txtHanSuDung;
+    private JTextField txtIdThuoc, txtTenThuoc, txtThanhPhan, txtIdDVT, txtIdDM, txtIdXX, txtSoLuongTon, txtGiaNhap, txtDonGia, txtHanSuDung;
     private JButton btnSave, btnCancel;
 
     // panel tìm kiếm
@@ -83,8 +84,9 @@ public class ThuocPanel extends JPanel {
         // --- Bảng dữ liệu (y = 200, cao = 310) --- //
         tblModel = new DefaultTableModel();
         tblModel.setColumnIdentifiers(new String[]{
-                "IDThuoc", "Tên thuốc", "Thành phần", "IDDVT", "IDDM", "IDXX",
-                "SL tồn", "Giá nhập", "Đơn giá", "Hạn sử dụng"
+            "IDThuoc", "Tên thuốc", "Thành phần",
+            "IDDVT - Tên DVT", "IDDM - Tên DM", "IDXX - Tên XX",
+            "SL tồn", "Giá nhập", "Đơn giá", "Hạn sử dụng"
         });
         tblThuoc = new JTable(tblModel);
         JScrollPane scrollPane = new JScrollPane(tblThuoc);
@@ -104,33 +106,31 @@ public class ThuocPanel extends JPanel {
 
     /**
      * Khởi tạo panel tìm kiếm (y = 50, cao = 30):
-     *  - nhãn + txtSearchIdThuoc
-     *  - nhãn + txtSearchTenThuoc
-     *  - nút Tìm kiếm
+     *  - txtSearchIdThuoc, txtSearchTenThuoc, btnSearch
      */
     private void initSearchPanel() {
         JPanel searchPanel = new JPanel(null);
         searchPanel.setBounds(10, 50, 860, 30);
         add(searchPanel);
 
-        JLabel lblSearchId = new JLabel("IDThuoc:");
-        lblSearchId.setBounds(0, 5, 60, 20);
-        searchPanel.add(lblSearchId);
+        JLabel lblSearchIdThuoc = new JLabel("IDThuoc:");
+        lblSearchIdThuoc.setBounds(0, 5, 60, 20);
+        searchPanel.add(lblSearchIdThuoc);
 
         txtSearchIdThuoc = new JTextField();
         txtSearchIdThuoc.setBounds(65, 3, 120, 25);
         searchPanel.add(txtSearchIdThuoc);
 
-        JLabel lblSearchTen = new JLabel("Tên thuốc:");
-        lblSearchTen.setBounds(200, 5, 80, 20);
-        searchPanel.add(lblSearchTen);
+        JLabel lblSearchTenThuoc = new JLabel("Tên thuốc:");
+        lblSearchTenThuoc.setBounds(200, 5, 70, 20);
+        searchPanel.add(lblSearchTenThuoc);
 
         txtSearchTenThuoc = new JTextField();
-        txtSearchTenThuoc.setBounds(270, 3, 150, 25);
+        txtSearchTenThuoc.setBounds(275, 3, 150, 25);
         searchPanel.add(txtSearchTenThuoc);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(440, 3, 100, 25);
+        btnSearch.setBounds(450, 3, 100, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -139,89 +139,88 @@ public class ThuocPanel extends JPanel {
      * Khởi tạo inputPanel (y = 90, cao = 100), ẩn khi visible = false.
      */
     private void initInputPanel(boolean visible) {
-        inputPanel = new JPanel();
-        inputPanel.setLayout(null);
+        inputPanel = new JPanel(null);
         inputPanel.setBounds(10, 90, 860, 100);
         add(inputPanel);
 
         // IDThuoc
-        JLabel lblId = new JLabel("IDThuoc:");
-        lblId.setBounds(10, 10, 60, 25);
-        inputPanel.add(lblId);
-        txtId = new JTextField();
-        txtId.setBounds(80, 10, 120, 25);
-        inputPanel.add(txtId);
+        JLabel lblIdThuoc = new JLabel("IDThuoc:");
+        lblIdThuoc.setBounds(10, 10, 60, 25);
+        inputPanel.add(lblIdThuoc);
+        txtIdThuoc = new JTextField();
+        txtIdThuoc.setBounds(80, 10, 120, 25);
+        inputPanel.add(txtIdThuoc);
 
-        // Tên thuốc
-        JLabel lblTen = new JLabel("Tên thuốc:");
-        lblTen.setBounds(220, 10, 80, 25);
-        inputPanel.add(lblTen);
-        txtTen = new JTextField();
-        txtTen.setBounds(300, 10, 150, 25);
-        inputPanel.add(txtTen);
+        // Tên Thuốc
+        JLabel lblTenThuoc = new JLabel("Tên thuốc:");
+        lblTenThuoc.setBounds(220, 10, 70, 25);
+        inputPanel.add(lblTenThuoc);
+        txtTenThuoc = new JTextField();
+        txtTenThuoc.setBounds(300, 10, 200, 25);
+        inputPanel.add(txtTenThuoc);
 
         // Thành phần
         JLabel lblThanhPhan = new JLabel("Thành phần:");
-        lblThanhPhan.setBounds(470, 10, 80, 25);
+        lblThanhPhan.setBounds(520, 10, 80, 25);
         inputPanel.add(lblThanhPhan);
         txtThanhPhan = new JTextField();
-        txtThanhPhan.setBounds(550, 10, 150, 25);
+        txtThanhPhan.setBounds(600, 10, 250, 25);
         inputPanel.add(txtThanhPhan);
 
         // IDDVT
-        JLabel lblIdDVT = new JLabel("ID DVT:");
-        lblIdDVT.setBounds(10, 45, 60, 25);
+        JLabel lblIdDVT = new JLabel("IDDVT:");
+        lblIdDVT.setBounds(10, 45, 50, 25);
         inputPanel.add(lblIdDVT);
         txtIdDVT = new JTextField();
-        txtIdDVT.setBounds(80, 45, 120, 25);
+        txtIdDVT.setBounds(70, 45, 100, 25);
         inputPanel.add(txtIdDVT);
 
         // IDDM
-        JLabel lblIdDM = new JLabel("ID DM:");
-        lblIdDM.setBounds(220, 45, 60, 25);
+        JLabel lblIdDM = new JLabel("IDDM:");
+        lblIdDM.setBounds(190, 45, 50, 25);
         inputPanel.add(lblIdDM);
         txtIdDM = new JTextField();
-        txtIdDM.setBounds(300, 45, 150, 25);
+        txtIdDM.setBounds(250, 45, 100, 25);
         inputPanel.add(txtIdDM);
 
         // IDXX
-        JLabel lblIdXX = new JLabel("ID XX:");
-        lblIdXX.setBounds(470, 45, 60, 25);
+        JLabel lblIdXX = new JLabel("IDXX:");
+        lblIdXX.setBounds(370, 45, 50, 25);
         inputPanel.add(lblIdXX);
         txtIdXX = new JTextField();
-        txtIdXX.setBounds(550, 45, 150, 25);
+        txtIdXX.setBounds(430, 45, 100, 25);
         inputPanel.add(txtIdXX);
 
         // Số lượng tồn
         JLabel lblSoLuongTon = new JLabel("SL tồn:");
-        lblSoLuongTon.setBounds(720, 10, 50, 25);
+        lblSoLuongTon.setBounds(550, 45, 50, 25);
         inputPanel.add(lblSoLuongTon);
         txtSoLuongTon = new JTextField();
-        txtSoLuongTon.setBounds(770, 10, 70, 25);
+        txtSoLuongTon.setBounds(610, 45, 80, 25);
         inputPanel.add(txtSoLuongTon);
 
         // Giá nhập
         JLabel lblGiaNhap = new JLabel("Giá nhập:");
-        lblGiaNhap.setBounds(720, 45, 60, 25);
+        lblGiaNhap.setBounds(700, 45, 60, 25);
         inputPanel.add(lblGiaNhap);
         txtGiaNhap = new JTextField();
-        txtGiaNhap.setBounds(780, 45, 60, 25);
+        txtGiaNhap.setBounds(760, 45, 90, 25);
         inputPanel.add(txtGiaNhap);
 
         // Đơn giá
         JLabel lblDonGia = new JLabel("Đơn giá:");
-        lblDonGia.setBounds(10, 75, 60, 25);
+        lblDonGia.setBounds(10, 70, 60, 25);
         inputPanel.add(lblDonGia);
         txtDonGia = new JTextField();
-        txtDonGia.setBounds(80, 75, 100, 25);
+        txtDonGia.setBounds(80, 70, 100, 25);
         inputPanel.add(txtDonGia);
 
         // Hạn sử dụng
-        JLabel lblHan = new JLabel("Hạn SD:");
-        lblHan.setBounds(200, 75, 60, 25);
-        inputPanel.add(lblHan);
-        txtHanSuDung = new JFormattedTextField();
-        txtHanSuDung.setBounds(260, 75, 120, 25);
+        JLabel lblHanSuDung = new JLabel("Hạn sử dụng:");
+        lblHanSuDung.setBounds(200, 70, 80, 25);
+        inputPanel.add(lblHanSuDung);
+        txtHanSuDung = new JTextField();
+        txtHanSuDung.setBounds(290, 70, 100, 25);
         inputPanel.add(txtHanSuDung);
 
         // Nút Lưu
@@ -240,53 +239,58 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Tải toàn bộ dữ liệu vào JTable (khi khởi động hoặc khi làm mới).
+     * Load toàn bộ dữ liệu Thuốc vào JTable, lần lượt lấy tên DVT, DM, XX để hiển thị cùng ID.
      */
     private void loadDataToTable() {
         tblModel.setRowCount(0);
         List<Thuoc> list = controller.getAllThuoc();
         for (Thuoc t : list) {
+            String tenDVT = fetchTenDVT(t.getIdDVT());
+            String tenDM  = fetchTenDM(t.getIdDM());
+            String tenXX  = fetchTenXX(t.getIdXX());
+
             tblModel.addRow(new Object[]{
-                    t.getIdThuoc(),
-                    t.getTenThuoc(),
-                    t.getThanhPhan(),
-                    t.getIdDVT(),
-                    t.getIdDM(),
-                    t.getIdXX(),
-                    t.getSoLuongTon(),
-                    t.getGiaNhap(),
-                    t.getDonGia(),
-                    DateHelper.toString(t.getHanSuDung(), "dd/MM/yyyy")
+                t.getIdThuoc(),
+                t.getTenThuoc(),
+                t.getThanhPhan(),
+                t.getIdDVT() + " - " + tenDVT,
+                t.getIdDM()  + " - " + tenDM,
+                t.getIdXX()  + " - " + tenXX,
+                t.getSoLuongTon(),
+                t.getGiaNhap(),
+                t.getDonGia(),
+                DateHelper.toString(t.getHanSuDung(), "dd/MM/yyyy")
             });
         }
     }
 
     /**
-     * Khi người dùng bấm "Tìm kiếm".
-     * Lấy giá trị trong txtSearchIdThuoc và txtSearchTenThuoc,
-     * gọi controller.searchThuoc(...) để lấy kết quả,
-     * rồi hiển thị lên JTable.
-     * Nếu có kết quả, tự động chọn dòng đầu tiên.
+     * Khi nhấn “Tìm kiếm”: lấy idThuoc, tenThuoc, gọi controller.searchThuoc(...),
+     * hiển thị kết quả, nếu có ít nhất 1 dòng, tự động chọn dòng đầu tiên.
      */
     private void onSearch() {
-        String idThuoc = txtSearchIdThuoc.getText().trim();
+        String idThuoc  = txtSearchIdThuoc.getText().trim();
         String tenThuoc = txtSearchTenThuoc.getText().trim();
 
         List<Thuoc> results = controller.searchThuoc(idThuoc, tenThuoc);
 
         tblModel.setRowCount(0);
         for (Thuoc t : results) {
+            String tenDVT = fetchTenDVT(t.getIdDVT());
+            String tenDM  = fetchTenDM(t.getIdDM());
+            String tenXX  = fetchTenXX(t.getIdXX());
+
             tblModel.addRow(new Object[]{
-                    t.getIdThuoc(),
-                    t.getTenThuoc(),
-                    t.getThanhPhan(),
-                    t.getIdDVT(),
-                    t.getIdDM(),
-                    t.getIdXX(),
-                    t.getSoLuongTon(),
-                    t.getGiaNhap(),
-                    t.getDonGia(),
-                    DateHelper.toString(t.getHanSuDung(), "dd/MM/yyyy")
+                t.getIdThuoc(),
+                t.getTenThuoc(),
+                t.getThanhPhan(),
+                t.getIdDVT() + " - " + tenDVT,
+                t.getIdDM()  + " - " + tenDM,
+                t.getIdXX()  + " - " + tenXX,
+                t.getSoLuongTon(),
+                t.getGiaNhap(),
+                t.getDonGia(),
+                DateHelper.toString(t.getHanSuDung(), "dd/MM/yyyy")
             });
         }
 
@@ -299,15 +303,29 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Điền dữ liệu từ JTable lên inputPanel (nếu currentMode == NONE).
+     * Điền dữ liệu từ bảng lên inputPanel (nếu currentMode == NONE).
+     * Khi click vào hàng bảng, phân tách chuỗi "ID - Tên" để lấy ID cho việc sửa.
      */
     private void populateInputFromTable(int row) {
-        txtId.setText((String) tblModel.getValueAt(row, 0));
-        txtTen.setText((String) tblModel.getValueAt(row, 1));
+        txtIdThuoc.setText((String) tblModel.getValueAt(row, 0));
+        txtTenThuoc.setText((String) tblModel.getValueAt(row, 1));
         txtThanhPhan.setText((String) tblModel.getValueAt(row, 2));
-        txtIdDVT.setText((String) tblModel.getValueAt(row, 3));
-        txtIdDM.setText((String) tblModel.getValueAt(row, 4));
-        txtIdXX.setText((String) tblModel.getValueAt(row, 5));
+
+        // Cột DVT: giá trị dạng "IDDVT - TênDVT"
+        String dvtCell = (String) tblModel.getValueAt(row, 3);
+        String idDVT = dvtCell.split(" - ")[0];
+        txtIdDVT.setText(idDVT);
+
+        // Cột DM: "IDDM - TênDM"
+        String dmCell = (String) tblModel.getValueAt(row, 4);
+        String idDM = dmCell.split(" - ")[0];
+        txtIdDM.setText(idDM);
+
+        // Cột XX: "IDXX - TênXX"
+        String xxCell = (String) tblModel.getValueAt(row, 5);
+        String idXX = xxCell.split(" - ")[0];
+        txtIdXX.setText(idXX);
+
         txtSoLuongTon.setText(tblModel.getValueAt(row, 6).toString());
         txtGiaNhap.setText(tblModel.getValueAt(row, 7).toString());
         txtDonGia.setText(tblModel.getValueAt(row, 8).toString());
@@ -315,12 +333,11 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Ẩn inputPanel và reset tất cả các trường, đồng thời enable lại
-     * các nút chức năng, phần tìm kiếm và JTable.
+     * Ẩn inputPanel và reset fields, enable lại phần tìm kiếm, bảng và các nút.
      */
     private void hideInputPanel() {
-        txtId.setText("");
-        txtTen.setText("");
+        txtIdThuoc.setText("");
+        txtTenThuoc.setText("");
         txtThanhPhan.setText("");
         txtIdDVT.setText("");
         txtIdDM.setText("");
@@ -344,17 +361,14 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Thêm":
-     *  - Hiển thị inputPanel
-     *  - Reset trường
-     *  - Disable các nút tìm kiếm, nút chức năng, JTable
+     * Khi bấm “Thêm”: hiện inputPanel, reset ô, disable các thành phần còn lại.
      */
     private void onAdd() {
         currentMode = "ADDING";
         inputPanel.setVisible(true);
 
-        txtId.setText("");
-        txtTen.setText("");
+        txtIdThuoc.setText("");
+        txtTenThuoc.setText("");
         txtThanhPhan.setText("");
         txtIdDVT.setText("");
         txtIdDM.setText("");
@@ -364,7 +378,7 @@ public class ThuocPanel extends JPanel {
         txtDonGia.setText("");
         txtHanSuDung.setText("");
 
-        txtId.setEditable(true);
+        txtIdThuoc.setEditable(true);
 
         btnAdd.setEnabled(false);
         btnEdit.setEnabled(false);
@@ -377,9 +391,7 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Sửa":
-     *  - Nếu chưa chọn dòng, hiện cảnh báo
-     *  - Ngược lại, hiển thị inputPanel, điền dữ liệu vào, disable các thành phần khác
+     * Khi bấm “Sửa”: phải có dòng được chọn, điền dữ liệu vào inputPanel, disable các thành phần khác.
      */
     private void onEdit() {
         int row = tblThuoc.getSelectedRow();
@@ -392,7 +404,7 @@ public class ThuocPanel extends JPanel {
 
         populateInputFromTable(row);
 
-        txtId.setEditable(false);
+        txtIdThuoc.setEditable(false);
 
         btnAdd.setEnabled(false);
         btnEdit.setEnabled(false);
@@ -405,9 +417,7 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Xóa":
-     *  - Nếu chưa chọn dòng, hiện cảnh báo
-     *  - Ngược lại, hỏi confirm rồi xóa qua controller
+     * Khi bấm “Xóa”: phải có dòng được chọn, xác nhận, gọi controller.deleteThuoc(idThuoc).
      */
     private void onDelete() {
         int row = tblThuoc.getSelectedRow();
@@ -428,9 +438,7 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Làm mới":
-     *  - Ẩn inputPanel (nếu đang hiển thị)
-     *  - Load lại toàn bộ dữ liệu
+     * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
      */
     private void onRefresh() {
         hideInputPanel();
@@ -438,20 +446,34 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Lưu" trong inputPanel:
-     *  - Kiểm tra dữ liệu hợp lệ
-     *  - Nếu currentMode == ADDING, gọi addThuoc
-     *  - Nếu currentMode == EDITING, gọi updateThuoc
-     *  - Ẩn inputPanel và load lại dữ liệu
+     * Khi bấm “Lưu” trong inputPanel:
+     *  - validate dữ liệu,
+     *  - nếu ADDING, gọi controller.addThuoc,
+     *    nếu EDITING, gọi controller.updateThuoc,
+     *  - ẩn inputPanel, load lại dữ liệu.
      */
     private void onSave() {
-        if (!validateInput()) {
+        // Kiểm tra dữ liệu
+        if (txtIdThuoc.getText().trim().isEmpty() || txtTenThuoc.getText().trim().isEmpty()) {
+            MessageDialog.showWarning(this, "ID thuốc và Tên thuốc không được để trống!", "Cảnh báo");
+            return;
+        }
+        if (!Validator.isInteger(txtSoLuongTon.getText())) {
+            MessageDialog.showWarning(this, "Số lượng tồn phải là số nguyên!", "Cảnh báo");
+            return;
+        }
+        if (!Validator.isDouble(txtGiaNhap.getText()) || !Validator.isDouble(txtDonGia.getText())) {
+            MessageDialog.showWarning(this, "Giá nhập và Đơn giá phải là số!", "Cảnh báo");
+            return;
+        }
+        if (!Validator.isDate(txtHanSuDung.getText(), "dd/MM/yyyy")) {
+            MessageDialog.showWarning(this, "Hạn sử dụng phải đúng định dạng dd/MM/yyyy!", "Cảnh báo");
             return;
         }
 
         Thuoc t = new Thuoc();
-        t.setIdThuoc(txtId.getText().trim());
-        t.setTenThuoc(txtTen.getText().trim());
+        t.setIdThuoc(txtIdThuoc.getText().trim());
+        t.setTenThuoc(txtTenThuoc.getText().trim());
         t.setThanhPhan(txtThanhPhan.getText().trim());
         t.setIdDVT(txtIdDVT.getText().trim());
         t.setIdDM(txtIdDM.getText().trim());
@@ -485,41 +507,97 @@ public class ThuocPanel extends JPanel {
     }
 
     /**
-     * Khi bấm "Hủy" trong inputPanel:
-     *  - Chỉ cần ẩn inputPanel, không làm thay đổi dữ liệu
+     * Khi bấm “Hủy” trong inputPanel: chỉ cần ẩn inputPanel.
      */
     private void onCancel() {
         hideInputPanel();
     }
 
+    // ----------------------------------------------------------------------------------
+    // Các phương thức tiện ích để truy vấn tên từ bảng DonViTinh, DanhMuc, XuatXu
+    // ----------------------------------------------------------------------------------
+
     /**
-     * Kiểm tra dữ liệu trong các ô inputPanel trước khi Lưu.
+     * Lấy tên DonViTinh dựa trên idDVT.
      */
-    private boolean validateInput() {
-        if (Validator.isNullOrEmpty(txtId.getText())) {
-            MessageDialog.showWarning(this, "IDThuoc không được để trống", "Cảnh báo");
-            return false;
+    private String fetchTenDVT(String idDVT) {
+        if (idDVT == null || idDVT.trim().isEmpty()) {
+            return "";
         }
-        if (Validator.isNullOrEmpty(txtTen.getText())) {
-            MessageDialog.showWarning(this, "Tên thuốc không được để trống", "Cảnh báo");
-            return false;
+        String result = "";
+        String sql = "SELECT ten FROM DonViTinh WHERE idDVT = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idDVT);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                result = rs.getString("ten");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
         }
-        if (!Validator.isInteger(txtSoLuongTon.getText())) {
-            MessageDialog.showWarning(this, "SL tồn phải là số nguyên", "Cảnh báo");
-            return false;
+        return result != null ? result : "";
+    }
+
+    /**
+     * Lấy tên DanhMuc dựa trên idDM.
+     */
+    private String fetchTenDM(String idDM) {
+        if (idDM == null || idDM.trim().isEmpty()) {
+            return "";
         }
-        if (!Validator.isDouble(txtGiaNhap.getText())) {
-            MessageDialog.showWarning(this, "Giá nhập phải là số", "Cảnh báo");
-            return false;
+        String result = "";
+        String sql = "SELECT ten FROM DanhMuc WHERE idDM = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idDM);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                result = rs.getString("ten");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
         }
-        if (!Validator.isDouble(txtDonGia.getText())) {
-            MessageDialog.showWarning(this, "Đơn giá phải là số", "Cảnh báo");
-            return false;
+        return result != null ? result : "";
+    }
+
+    /**
+     * Lấy tên XuatXu dựa trên idXX.
+     */
+    private String fetchTenXX(String idXX) {
+        if (idXX == null || idXX.trim().isEmpty()) {
+            return "";
         }
-        if (!Validator.isDate(txtHanSuDung.getText(), "dd/MM/yyyy")) {
-            MessageDialog.showWarning(this, "Hạn sử dụng phải đúng định dạng dd/MM/yyyy", "Cảnh báo");
-            return false;
+        String result = "";
+        String sql = "SELECT ten FROM XuatXu WHERE idXX = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idXX);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                result = rs.getString("ten");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
         }
-        return true;
+        return result != null ? result : "";
     }
 }
