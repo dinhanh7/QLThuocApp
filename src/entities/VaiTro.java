@@ -1,10 +1,19 @@
 package entities;
 
+/**
+ * VaiTro.java
+ * Lớp entity ánh xạ bảng VaiTro trong CSDL.
+ */
 public class VaiTro {
-    private String idVT;
-    private String ten;
+    private String idVT;  // khóa chính
+    private String ten;   // tên vai trò (ví dụ: "Admin", "Nhân viên", ...)
 
     public VaiTro() {
+    }
+
+    public VaiTro(String idVT, String ten) {
+        this.idVT = idVT;
+        this.ten = ten;
     }
 
     public String getIdVT() {
@@ -23,4 +32,3 @@ public class VaiTro {
         this.ten = ten;
     }
 }
-// VaiTro.java 

@@ -1,13 +1,16 @@
 package gui;
 
 import controller.LoginController;
-import utils.MessageDialog;
+import entities.TaiKhoan;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * LoginForm.java (đã gỡ bỏ thông báo “Đăng nhập thành công”)
+ */
 public class LoginForm extends JFrame {
 
     private JPanel contentPane;
@@ -67,14 +70,20 @@ public class LoginForm extends JFrame {
         String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
 
-        if (loginController.authenticate(username, password)) {
-            // Nếu đăng nhập thành công, mở MainFrame
-            MessageDialog.showInfo(this, "Đăng nhập thành công!", "Thông báo");
-            MainFrame main = new MainFrame();
+        // Gọi LoginController để lấy TaiKhoan (bao gồm idVT)
+        TaiKhoan tk = loginController.authenticateAndGetAccount(username, password);
+        if (tk != null) {
+            // Nếu login thành công, chuyển luôn sang MainFrame mà không hiện thông báo
+            String roleId = tk.getIdVT();  // ví dụ "VT01" (Admin) hoặc "VT02" (Nhân viên)
+            MainFrame main = new MainFrame(roleId);
             main.setVisible(true);
             this.dispose();
         } else {
-            MessageDialog.showError(this, "Sai username hoặc password", "Lỗi");
+            // Nếu sai username/password, hiện thông báo lỗi
+            JOptionPane.showMessageDialog(this,
+                    "Sai username hoặc password",
+                    "Lỗi đăng nhập",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -85,4 +94,3 @@ public class LoginForm extends JFrame {
         });
     }
 }
-// LoginForm.java 

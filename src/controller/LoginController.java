@@ -1,8 +1,14 @@
 package controller;
 
 import dao.TaiKhoanDAO;
+import entities.TaiKhoan;
 
+/**
+ * LoginController.java
+ * Xử lý nghiệp vụ liên quan đến đăng nhập.
+ */
 public class LoginController {
+
     private TaiKhoanDAO taiKhoanDAO;
 
     public LoginController() {
@@ -10,17 +16,21 @@ public class LoginController {
     }
 
     /**
-     * Kiểm tra đăng nhập với username và password.
-     * @param username tên đăng nhập
-     * @param password mật khẩu
-     * @return true nếu đúng, false nếu sai
+     * Kiểm tra username/password. Nếu hợp lệ, trả về đối tượng TaiKhoan (chứa cả idVT).
+     * Nếu không, trả về null.
      */
-    public boolean authenticate(String username, String password) {
+    public TaiKhoan authenticateAndGetAccount(String username, String password) {
         if (username == null || username.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
-            return false;
+            return null;
         }
-        return taiKhoanDAO.checkLogin(username, password);
+
+        // Lấy TaiKhoan theo username
+        TaiKhoan tk = taiKhoanDAO.getByUsername(username);
+        // Nếu tồn tại và password khớp
+        if (tk != null && tk.getPassword().equals(password)) {
+            return tk;
+        }
+        return null;
     }
 }
-// LoginController.java 
