@@ -2,14 +2,30 @@ package entities;
 
 import java.util.Date;
 
+/**
+ * Thuoc.java
+ *
+ *  Bảng dbo.Thuoc mới:
+ *   - idThuoc      NVARCHAR(10)    NOT NULL
+ *   - tenThuoc     NVARCHAR(255)   NOT NULL
+ *   - hinhAnh      VARBINARY(MAX)  NULL
+ *   - thanhPhan    NVARCHAR(255)   NULL
+ *   - donViTinh    NVARCHAR(255)   NOT NULL
+ *   - danhMuc      NVARCHAR(255)   NOT NULL
+ *   - xuatXu       NCHAR(10)       NOT NULL
+ *   - soLuongTon   INT             NOT NULL
+ *   - giaNhap      FLOAT           NOT NULL
+ *   - donGia       FLOAT           NOT NULL
+ *   - hanSuDung    DATE            NOT NULL
+ */
 public class Thuoc {
     private String idThuoc;
     private String tenThuoc;
     private byte[] hinhAnh;
     private String thanhPhan;
-    private String idDVT;
-    private String idDM;
-    private String idXX;
+    private String donViTinh;  // mới
+    private String danhMuc;    // mới
+    private String xuatXu;     // mới
     private int soLuongTon;
     private double giaNhap;
     private double donGia;
@@ -50,28 +66,28 @@ public class Thuoc {
         this.thanhPhan = thanhPhan;
     }
 
-    public String getIdDVT() {
-        return idDVT;
+    public String getDonViTinh() {
+        return donViTinh;
     }
 
-    public void setIdDVT(String idDVT) {
-        this.idDVT = idDVT;
+    public void setDonViTinh(String donViTinh) {
+        this.donViTinh = donViTinh;
     }
 
-    public String getIdDM() {
-        return idDM;
+    public String getDanhMuc() {
+        return danhMuc;
     }
 
-    public void setIdDM(String idDM) {
-        this.idDM = idDM;
+    public void setDanhMuc(String danhMuc) {
+        this.danhMuc = danhMuc;
     }
 
-    public String getIdXX() {
-        return idXX;
+    public String getXuatXu() {
+        return xuatXu;
     }
 
-    public void setIdXX(String idXX) {
-        this.idXX = idXX;
+    public void setXuatXu(String xuatXu) {
+        this.xuatXu = xuatXu;
     }
 
     public int getSoLuongTon() {

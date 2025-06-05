@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-
+import java.awt.Dimension;
 /**
  * NhaCungCapPanel.java
  *
@@ -52,6 +52,7 @@ public class NhaCungCapPanel extends JPanel {
      */
     private void initComponents() {
         setLayout(null);
+        //setPreferredSize(new Dimension(1600, 800));
 
         // --- Nút Thêm ---
         btnAdd = new JButton("Thêm");
@@ -150,15 +151,15 @@ public class NhaCungCapPanel extends JPanel {
         lblTenNCC.setBounds(220, 10, 70, 25);
         inputPanel.add(lblTenNCC);
         txtTenNCC = new JTextField();
-        txtTenNCC.setBounds(300, 10, 200, 25);
+        txtTenNCC.setBounds(300, 10, 382, 25);
         inputPanel.add(txtTenNCC);
 
         // SĐT
         JLabel lblSdt = new JLabel("SĐT:");
-        lblSdt.setBounds(520, 10, 40, 25);
+        lblSdt.setBounds(508, 45, 40, 25);
         inputPanel.add(lblSdt);
         txtSdt = new JTextField();
-        txtSdt.setBounds(570, 10, 120, 25);
+        txtSdt.setBounds(562, 45, 120, 25);
         inputPanel.add(txtSdt);
 
         // Địa chỉ

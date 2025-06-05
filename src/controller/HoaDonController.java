@@ -8,8 +8,7 @@ import java.util.List;
 /**
  * HoaDonController.java
  *
- * Giữ nguyên các phương thức CRUD cơ bản (getAllHoaDon, addHoaDon, updateHoaDon, deleteHoaDon),
- * và bổ sung thêm searchHoaDon(String idHD, String idNV, String idKH).
+ * Kết nối giữa GUI và DAO cho Hóa đơn.
  */
 public class HoaDonController {
 
@@ -20,26 +19,25 @@ public class HoaDonController {
     }
 
     public List<HoaDon> getAllHoaDon() {
-        return hoaDonDAO.getAll();
+        return hoaDonDAO.getAllHoaDon();
     }
 
     public boolean addHoaDon(HoaDon hd) {
-        return hoaDonDAO.insert(hd);
+        return hoaDonDAO.insertHoaDon(hd);
     }
 
     public boolean updateHoaDon(HoaDon hd) {
-        return hoaDonDAO.update(hd);
+        return hoaDonDAO.updateHoaDon(hd);
     }
 
     public boolean deleteHoaDon(String idHD) {
-        return hoaDonDAO.delete(idHD);
+        return hoaDonDAO.deleteHoaDon(idHD);
     }
 
     /**
-     * Tìm kiếm HoaDon theo idHD hoặc idNV hoặc idKH.
-     * Nếu cả ba tham số đều rỗng, trả về toàn bộ danh sách.
+     * Tìm kiếm Hóa đơn theo idHD, idNV hoặc idKH.
      */
     public List<HoaDon> searchHoaDon(String idHD, String idNV, String idKH) {
-        return hoaDonDAO.search(idHD, idNV, idKH);
+        return hoaDonDAO.searchHoaDon(idHD, idNV, idKH);
     }
 }

@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import java.awt.Dimension;
 
 /**
  * KhachHangPanel.java (đã bổ sung chức năng Tìm kiếm)
@@ -56,6 +57,7 @@ public class KhachHangPanel extends JPanel {
      *  - JTable (y = 200, cao = 310)
      */
     private void initComponents() {
+    	setPreferredSize(new Dimension(1600, 800));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
@@ -145,23 +147,23 @@ public class KhachHangPanel extends JPanel {
         lblIdKH.setBounds(10, 10, 50, 25);
         inputPanel.add(lblIdKH);
         txtIdKH = new JTextField();
-        txtIdKH.setBounds(70, 10, 120, 25);
+        txtIdKH.setBounds(70, 10, 100, 25);
         inputPanel.add(txtIdKH);
 
         // Họ tên
         JLabel lblHoTen = new JLabel("Họ tên:");
-        lblHoTen.setBounds(220, 10, 60, 25);
+        lblHoTen.setBounds(200, 10, 50, 25);
         inputPanel.add(lblHoTen);
         txtHoTen = new JTextField();
-        txtHoTen.setBounds(280, 10, 200, 25);
+        txtHoTen.setBounds(292, 10, 200, 25);
         inputPanel.add(txtHoTen);
 
         // SĐT
         JLabel lblSDT = new JLabel("SĐT:");
-        lblSDT.setBounds(500, 10, 40, 25);
+        lblSDT.setBounds(519, 10, 40, 25);
         inputPanel.add(lblSDT);
         txtSDT = new JTextField();
-        txtSDT.setBounds(550, 10, 120, 25);
+        txtSDT.setBounds(567, 10, 120, 25);
         inputPanel.add(txtSDT);
 
         // Giới tính
@@ -177,7 +179,7 @@ public class KhachHangPanel extends JPanel {
         lblNgay.setBounds(200, 45, 90, 25);
         inputPanel.add(lblNgay);
         txtNgayThamGia = new JFormattedTextField();
-        txtNgayThamGia.setBounds(300, 45, 120, 25);
+        txtNgayThamGia.setBounds(290, 45, 200, 25);
         inputPanel.add(txtNgayThamGia);
 
         // Nút Lưu

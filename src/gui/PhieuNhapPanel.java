@@ -11,33 +11,30 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-
+import java.awt.Dimension;
 /**
- * PhieuNhapPanel.java (đã bổ sung chức năng Tìm kiếm)
+ * PhieuNhapPanel.java
  *
- * Bố cục:
- *  - Dòng 1 (y = 10): Nút Thêm, Sửa, Xóa, Làm mới
- *  - Dòng 2 (y = 50): Panel Search (IDPN, IDNV, IDNCC, Nút Tìm kiếm)
- *  - Dòng 3 (y = 90): inputPanel ẩn/chỉ hiển thị khi Add/Edit
- *  - Dòng 4 (y = 200): JTable (cao = 310)
+ * Đã chỉnh:
+ * 1. Cột "Tổng tiền" hiển thị dưới dạng String.format("%.1f", value) để không bị chuyển thành dạng khoa học (E).
+ * 2. Thêm nút "Xem chi tiết" cạnh nút "Xóa". Khi bấm, sẽ mở dialog chi tiết (ViewChiTietPNDialog).
  */
 public class PhieuNhapPanel extends JPanel {
 
     private JTable tblPhieuNhap;
     private DefaultTableModel tblModel;
 
-    // inputPanel (ẩn khi currentMode == NONE)
+    // Panel nhập liệu ẩn/hiện khi ADD/EDIT
     private JPanel inputPanel;
-    private JTextField txtIdPN, txtIdNV, txtIdNCC, txtTongTien;
-    private JFormattedTextField txtThoiGian;
+    private JTextField txtIdPN, txtThoiGian, txtIdNV, txtIdNCC, txtTongTien;
     private JButton btnSave, btnCancel;
 
-    // panel tìm kiếm
+    // Panel tìm kiếm
     private JTextField txtSearchIdPN, txtSearchIdNV, txtSearchIdNCC;
-    private JButton   btnSearch;
+    private JButton btnSearch;
 
-    // nút chức năng
-    private JButton btnAdd, btnEdit, btnDelete, btnRefresh;
+    // 5 nút chức năng: Thêm, Sửa, Xóa, Xem chi tiết, Làm mới
+    private JButton btnAdd, btnEdit, btnDelete, btnViewDetail, btnRefresh;
 
     private PhieuNhapController controller;
     private String currentMode = "NONE"; // "NONE" | "ADDING" | "EDITING"
@@ -52,10 +49,11 @@ public class PhieuNhapPanel extends JPanel {
 
     /**
      * Khởi tạo các thành phần chính:
-     *  - Nút Thêm, Sửa, Xóa, Làm mới (y = 10)
-     *  - JTable (y = 200, cao = 310)
+     *  - Nút Thêm, Sửa, Xóa, Xem chi tiết, Làm mới (y = 10)
+     *  - JTable (y = 200, cao = 310) hiển thị 5 cột: IDPN, Thời gian, IDNV, IDNCC, Tổng tiền (định dạng chuẩn)
      */
     private void initComponents() {
+    	setPreferredSize(new Dimension(1600, 1200));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
@@ -74,8 +72,14 @@ public class PhieuNhapPanel extends JPanel {
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
+        // **Nút "Xem chi tiết" (mới)**
+        btnViewDetail = new JButton("Xem chi tiết");
+        btnViewDetail.setBounds(280, 10, 110, 30);
+        add(btnViewDetail);
+        btnViewDetail.addActionListener(e -> onViewDetail());
+
         btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh.setBounds(400, 10, 100, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -114,37 +118,38 @@ public class PhieuNhapPanel extends JPanel {
         searchPanel.add(lblSearchIdPN);
 
         txtSearchIdPN = new JTextField();
-        txtSearchIdPN.setBounds(55, 3, 100, 25);
+        txtSearchIdPN.setBounds(55, 3, 120, 25);
         searchPanel.add(txtSearchIdPN);
 
         JLabel lblSearchIdNV = new JLabel("IDNV:");
-        lblSearchIdNV.setBounds(170, 5, 50, 20);
+        lblSearchIdNV.setBounds(200, 5, 50, 20);
         searchPanel.add(lblSearchIdNV);
 
         txtSearchIdNV = new JTextField();
-        txtSearchIdNV.setBounds(225, 3, 100, 25);
+        txtSearchIdNV.setBounds(255, 3, 120, 25);
         searchPanel.add(txtSearchIdNV);
 
         JLabel lblSearchIdNCC = new JLabel("IDNCC:");
-        lblSearchIdNCC.setBounds(340, 5, 60, 20);
+        lblSearchIdNCC.setBounds(400, 5, 50, 20);
         searchPanel.add(lblSearchIdNCC);
 
         txtSearchIdNCC = new JTextField();
-        txtSearchIdNCC.setBounds(405, 3, 100, 25);
+        txtSearchIdNCC.setBounds(455, 3, 120, 25);
         searchPanel.add(txtSearchIdNCC);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(540, 3, 100, 25);
+        btnSearch.setBounds(600, 3, 100, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
 
     /**
      * Khởi tạo inputPanel (y = 90, cao = 100), ẩn khi visible = false.
+     * Gồm các ô: IDPN, ThoiGian, IDNV, IDNCC, TongTien
+     * và 2 nút Lưu, Hủy.
      */
     private void initInputPanel(boolean visible) {
-        inputPanel = new JPanel();
-        inputPanel.setLayout(null);
+        inputPanel = new JPanel(null);
         inputPanel.setBounds(10, 90, 860, 100);
         add(inputPanel);
 
@@ -153,39 +158,39 @@ public class PhieuNhapPanel extends JPanel {
         lblIdPN.setBounds(10, 10, 50, 25);
         inputPanel.add(lblIdPN);
         txtIdPN = new JTextField();
-        txtIdPN.setBounds(70, 10, 120, 25);
+        txtIdPN.setBounds(70, 10, 100, 25);
         inputPanel.add(txtIdPN);
 
         // Thời gian
         JLabel lblThoiGian = new JLabel("Thời gian:");
-        lblThoiGian.setBounds(220, 10, 70, 25);
+        lblThoiGian.setBounds(200, 10, 70, 25);
         inputPanel.add(lblThoiGian);
-        txtThoiGian = new JFormattedTextField();
-        txtThoiGian.setBounds(300, 10, 150, 25);
+        txtThoiGian = new JTextField();
+        txtThoiGian.setBounds(280, 10, 100, 25);
         inputPanel.add(txtThoiGian);
 
         // IDNV
         JLabel lblIdNV = new JLabel("IDNV:");
-        lblIdNV.setBounds(470, 10, 50, 25);
+        lblIdNV.setBounds(210, 40, 40, 25);
         inputPanel.add(lblIdNV);
         txtIdNV = new JTextField();
-        txtIdNV.setBounds(530, 10, 100, 25);
+        txtIdNV.setBounds(280, 40, 100, 25);
         inputPanel.add(txtIdNV);
 
         // IDNCC
         JLabel lblIdNCC = new JLabel("IDNCC:");
-        lblIdNCC.setBounds(650, 10, 60, 25);
+        lblIdNCC.setBounds(444, 10, 50, 25);
         inputPanel.add(lblIdNCC);
         txtIdNCC = new JTextField();
-        txtIdNCC.setBounds(710, 10, 100, 25);
+        txtIdNCC.setBounds(487, 10, 100, 25);
         inputPanel.add(txtIdNCC);
 
         // Tổng tiền
         JLabel lblTongTien = new JLabel("Tổng tiền:");
-        lblTongTien.setBounds(10, 45, 70, 25);
+        lblTongTien.setBounds(10, 40, 70, 25);
         inputPanel.add(lblTongTien);
         txtTongTien = new JTextField();
-        txtTongTien.setBounds(90, 45, 120, 25);
+        txtTongTien.setBounds(70, 40, 100, 25);
         inputPanel.add(txtTongTien);
 
         // Nút Lưu
@@ -204,7 +209,8 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Tải toàn bộ dữ liệu vào JTable (khi khởi động hoặc khi làm mới).
+     * Load dữ liệu PhieuNhap vào JTable, gồm 5 cột:
+     *  IDPN, Thời gian, IDNV, IDNCC, Tổng tiền (đã formatted).
      */
     private void loadDataToTable() {
         tblModel.setRowCount(0);
@@ -215,14 +221,15 @@ public class PhieuNhapPanel extends JPanel {
                 DateHelper.toString(pn.getThoiGian(), "dd/MM/yyyy HH:mm"),
                 pn.getIdNV(),
                 pn.getIdNCC(),
-                pn.getTongTien()
+                // Hiển thị Tổng tiền ở dạng 123000.0, không để E
+                String.format("%.1f", pn.getTongTien())
             });
         }
     }
 
     /**
      * Khi nhấn “Tìm kiếm”: lấy idPN, idNV, idNCC, gọi controller.searchPhieuNhap(...),
-     * hiển thị kết quả, nếu có ít nhất 1 dòng, tự động chọn dòng đầu tiên.
+     * hiển thị kết quả lên table, chọn tự động dòng đầu tiên nếu có.
      */
     private void onSearch() {
         String idPN = txtSearchIdPN.getText().trim();
@@ -238,7 +245,7 @@ public class PhieuNhapPanel extends JPanel {
                 DateHelper.toString(pn.getThoiGian(), "dd/MM/yyyy HH:mm"),
                 pn.getIdNV(),
                 pn.getIdNCC(),
-                pn.getTongTien()
+                String.format("%.1f", pn.getTongTien())
             });
         }
 
@@ -251,18 +258,18 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Điền dữ liệu từ bảng lên inputPanel (nếu currentMode == NONE).
+     * Điền dữ liệu từ hàng bảng lên inputPanel (nếu currentMode == "NONE").
      */
     private void populateInputFromTable(int row) {
         txtIdPN.setText((String) tblModel.getValueAt(row, 0));
         txtThoiGian.setText((String) tblModel.getValueAt(row, 1));
         txtIdNV.setText((String) tblModel.getValueAt(row, 2));
         txtIdNCC.setText((String) tblModel.getValueAt(row, 3));
-        txtTongTien.setText(tblModel.getValueAt(row, 4).toString());
+        txtTongTien.setText((String) tblModel.getValueAt(row, 4));
     }
 
     /**
-     * Ẩn inputPanel và reset fields, enable lại phần tìm kiếm, bảng và các nút.
+     * Ẩn inputPanel và reset các ô, đồng thời enable lại các thành phần khác.
      */
     private void hideInputPanel() {
         txtIdPN.setText("");
@@ -277,6 +284,7 @@ public class PhieuNhapPanel extends JPanel {
         btnAdd.setEnabled(true);
         btnEdit.setEnabled(true);
         btnDelete.setEnabled(true);
+        btnViewDetail.setEnabled(true);
         btnRefresh.setEnabled(true);
         tblPhieuNhap.setEnabled(true);
         btnSearch.setEnabled(true);
@@ -285,8 +293,15 @@ public class PhieuNhapPanel extends JPanel {
         txtSearchIdNCC.setEnabled(true);
     }
 
+    // ========================================
+    // ========== Các phương thức xử lý ========
+    // ========================================
+
     /**
-     * Khi bấm “Thêm”: hiện inputPanel, reset ô, disable các thành phần còn lại.
+     * Khi bấm “Thêm”:
+     *  - Hiện inputPanel (rỗng),
+     *  - Disable các thành phần khác,
+     *  - currentMode = "ADDING".
      */
     private void onAdd() {
         currentMode = "ADDING";
@@ -303,6 +318,7 @@ public class PhieuNhapPanel extends JPanel {
         btnAdd.setEnabled(false);
         btnEdit.setEnabled(false);
         btnDelete.setEnabled(false);
+        btnViewDetail.setEnabled(false);
         btnRefresh.setEnabled(false);
         tblPhieuNhap.setEnabled(false);
         btnSearch.setEnabled(false);
@@ -312,7 +328,11 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Sửa”: phải có dòng được chọn, điền dữ liệu vào inputPanel, disable các thành phần khác.
+     * Khi bấm “Sửa”:
+     *  - Phải có dòng được chọn,
+     *  - Điền dữ liệu lên inputPanel,
+     *  - Disable các thành phần khác,
+     *  - currentMode = "EDITING".
      */
     private void onEdit() {
         int row = tblPhieuNhap.getSelectedRow();
@@ -330,6 +350,7 @@ public class PhieuNhapPanel extends JPanel {
         btnAdd.setEnabled(false);
         btnEdit.setEnabled(false);
         btnDelete.setEnabled(false);
+        btnViewDetail.setEnabled(false);
         btnRefresh.setEnabled(false);
         tblPhieuNhap.setEnabled(false);
         btnSearch.setEnabled(false);
@@ -339,7 +360,10 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Xóa”: phải có dòng được chọn, xác nhận, gọi controller.deletePhieuNhap(idPN).
+     * Khi bấm “Xóa”:
+     *  - Phải có dòng được chọn,
+     *  - Xác nhận trước khi xóa,
+     *  - Gọi controller.deletePhieuNhap(idPN), nếu thành công reload bảng.
      */
     private void onDelete() {
         int row = tblPhieuNhap.getSelectedRow();
@@ -347,10 +371,11 @@ public class PhieuNhapPanel extends JPanel {
             MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập cần xóa!", "Cảnh báo");
             return;
         }
-        String id = (String) tblModel.getValueAt(row, 0);
-        boolean confirm = MessageDialog.showConfirm(this, "Bạn có chắc muốn xóa phiếu nhập " + id + "?", "Xác nhận");
+        String idPN = (String) tblModel.getValueAt(row, 0);
+        boolean confirm = MessageDialog.showConfirm(this,
+                "Bạn có chắc muốn xóa Phiếu nhập " + idPN + "?", "Xác nhận");
         if (confirm) {
-            if (controller.deletePhieuNhap(id)) {
+            if (controller.deletePhieuNhap(idPN)) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
                 loadDataToTable();
             } else {
@@ -360,7 +385,26 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
+     * Khi bấm “Xem chi tiết”:
+     *  - Phải có dòng được chọn,
+     *  - Lấy idPN, mở dialog ViewChiTietPNDialog để hiển thị chi tiết.
+     */
+    private void onViewDetail() {
+        int row = tblPhieuNhap.getSelectedRow();
+        if (row < 0) {
+            MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập để xem chi tiết!", "Cảnh báo");
+            return;
+        }
+        String idPN = (String) tblModel.getValueAt(row, 0);
+        // Mở dialog chi tiết
+        ViewChiTietPNDialog dialog = new ViewChiTietPNDialog(SwingUtilities.getWindowAncestor(this), idPN);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Khi bấm “Làm mới”:
+     *  - Ẩn inputPanel nếu đang hiển thị,
+     *  - Reload lại dữ liệu bảng.
      */
     private void onRefresh() {
         hideInputPanel();
@@ -369,26 +413,45 @@ public class PhieuNhapPanel extends JPanel {
 
     /**
      * Khi bấm “Lưu” trong inputPanel:
-     *  - validate dữ liệu,
-     *  - nếu ADDING, gọi addPhieuNhap,
-     *    nếu EDITING, gọi updatePhieuNhap,
-     *  - ẩn inputPanel, load lại dữ liệu.
+     *  - Validate: IDPN, Thời gian, IDNV, IDNCC, Tổng tiền (phải đúng kiểu).
+     *  - Nếu currentMode == "ADDING": gọi controller.addPhieuNhap(pn)
+     *    Nếu currentMode == "EDITING": gọi controller.updatePhieuNhap(pn)
+     *  - Ẩn inputPanel và reload bảng nếu thành công.
      */
     private void onSave() {
-        if (!Validator.isDate(txtThoiGian.getText(), "dd/MM/yyyy HH:mm")) {
-            MessageDialog.showWarning(this, "Thời gian phải đúng định dạng dd/MM/yyyy HH:mm", "Cảnh báo");
+        String idPN = txtIdPN.getText().trim();
+        String thoiGianStr = txtThoiGian.getText().trim();
+        String idNV = txtIdNV.getText().trim();
+        String idNCC = txtIdNCC.getText().trim();
+        String tongTienStr = txtTongTien.getText().trim();
+
+        if (idPN.isEmpty()) {
+            MessageDialog.showWarning(this, "IDPN không được để trống!", "Cảnh báo");
             return;
         }
-        if (!Validator.isDouble(txtTongTien.getText())) {
-            MessageDialog.showWarning(this, "Tổng tiền phải là số", "Cảnh báo");
+        if (!Validator.isDateTime(thoiGianStr, "dd/MM/yyyy HH:mm")) {
+            MessageDialog.showWarning(this, "Thời gian phải đúng định dạng dd/MM/yyyy HH:mm!", "Cảnh báo");
             return;
         }
+        if (idNV.isEmpty()) {
+            MessageDialog.showWarning(this, "IDNV không được để trống!", "Cảnh báo");
+            return;
+        }
+        if (idNCC.isEmpty()) {
+            MessageDialog.showWarning(this, "IDNCC không được để trống!", "Cảnh báo");
+            return;
+        }
+        if (!Validator.isDouble(tongTienStr)) {
+            MessageDialog.showWarning(this, "Tổng tiền phải là số!", "Cảnh báo");
+            return;
+        }
+
         PhieuNhap pn = new PhieuNhap();
-        pn.setIdPN(txtIdPN.getText().trim());
-        pn.setThoiGian(DateHelper.toDate(txtThoiGian.getText().trim(), "dd/MM/yyyy HH:mm"));
-        pn.setIdNV(txtIdNV.getText().trim());
-        pn.setIdNCC(txtIdNCC.getText().trim());
-        pn.setTongTien(Double.parseDouble(txtTongTien.getText().trim()));
+        pn.setIdPN(idPN);
+        pn.setThoiGian(DateHelper.toDateTime(thoiGianStr, "dd/MM/yyyy HH:mm"));
+        pn.setIdNV(idNV);
+        pn.setIdNCC(idNCC);
+        pn.setTongTien(Double.parseDouble(tongTienStr));
 
         boolean success;
         if (currentMode.equals("ADDING")) {
@@ -396,7 +459,7 @@ public class PhieuNhapPanel extends JPanel {
             if (success) {
                 MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
             } else {
-                MessageDialog.showError(this, "Thêm thất bại!", "Lỗi");
+                MessageDialog.showError(this, "Thêm thất bại! Kiểm tra IDPN hoặc kết nối DB.", "Lỗi");
                 return;
             }
         } else { // EDITING
@@ -404,7 +467,7 @@ public class PhieuNhapPanel extends JPanel {
             if (success) {
                 MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
             } else {
-                MessageDialog.showError(this, "Cập nhật thất bại!", "Lỗi");
+                MessageDialog.showError(this, "Cập nhật thất bại! Kiểm tra lại dữ liệu.", "Lỗi");
                 return;
             }
         }
@@ -414,7 +477,8 @@ public class PhieuNhapPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Hủy” trong inputPanel: chỉ cần ẩn inputPanel.
+     * Khi bấm “Hủy” trong inputPanel:
+     *  - Chỉ cần ẩn inputPanel, không lưu.
      */
     private void onCancel() {
         hideInputPanel();

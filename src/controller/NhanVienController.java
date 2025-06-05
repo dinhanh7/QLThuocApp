@@ -8,8 +8,7 @@ import java.util.List;
 /**
  * NhanVienController.java
  *
- * Giữ nguyên các phương thức CRUD cơ bản (getAllNhanVien, addNhanVien, updateNhanVien, deleteNhanVien),
- * và bổ sung thêm searchNhanVien(String idNV, String hoTen).
+ * Kết nối giữa GUI và DAO cho NhanVien.
  */
 public class NhanVienController {
 
@@ -36,8 +35,7 @@ public class NhanVienController {
     }
 
     /**
-     * Tìm kiếm Nhân viên theo idNV hoặc hoTen.
-     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
+     * Tìm kiếm NhanVien theo idNV hoặc hoTen.
      */
     public List<NhanVien> searchNhanVien(String idNV, String hoTen) {
         return nhanVienDAO.search(idNV, hoTen);

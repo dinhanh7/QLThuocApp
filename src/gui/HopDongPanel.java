@@ -11,32 +11,32 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.awt.Dimension;
 
 /**
- * HopDongPanel.java (đã bổ sung chức năng Tìm kiếm)
+ * HopDongPanel.java (đã sửa để hiển thị cột trangThai, và form Add/Edit có thêm ô nhập Trạng thái)
  *
  * Bố cục:
- *  - Dòng 1 (y = 10): Nút Thêm, Sửa, Xóa, Làm mới
- *  - Dòng 2 (y = 50): Panel Search (IDHDong, IDNV, IDNCC, Nút Tìm kiếm)
- *  - Dòng 3 (y = 90): inputPanel ẩn/chỉ hiển thị khi Add/Edit
- *  - Dòng 4 (y = 200): JTable (cao = 310)
+ *  - Dòng 1 (y = 10): 4 nút Thêm, Sửa, Xóa, Làm mới
+ *  - Dòng 2 (y = 50): Panel tìm kiếm (IDHDong, IDNV, IDNCC, nút Tìm kiếm)
+ *  - Dòng 3 (y = 90): inputPanel ẩn/hiện khi Add/Edit (có thêm ô txtTrangThai)
+ *  - Dòng 4 (y = 200): JTable (cao = 310) hiển thị các cột: IDHDong, Ngày bắt đầu, Ngày kết thúc, Nội dung, IDNV, IDNCC, Trạng thái
  */
 public class HopDongPanel extends JPanel {
 
     private JTable tblHopDong;
     private DefaultTableModel tblModel;
 
-    // inputPanel (ẩn khi currentMode == NONE)
+    // inputPanel (ẩn khi currentMode == "NONE")
     private JPanel inputPanel;
-    private JTextField txtIdHDong, txtNoiDung, txtIdNV, txtIdNCC;
-    private JFormattedTextField txtNgayBatDau, txtNgayKetThuc;
+    private JTextField txtIdHDong, txtNgayBatDau, txtNgayKetThuc, txtNoiDung, txtIdNV, txtIdNCC, txtTrangThai;
     private JButton btnSave, btnCancel;
 
     // panel tìm kiếm
     private JTextField txtSearchIdHDong, txtSearchIdNV, txtSearchIdNCC;
-    private JButton   btnSearch;
+    private JButton btnSearch;
 
-    // nút chức năng
+    // 4 nút chức năng
     private JButton btnAdd, btnEdit, btnDelete, btnRefresh;
 
     private HopDongController controller;
@@ -53,9 +53,10 @@ public class HopDongPanel extends JPanel {
     /**
      * Khởi tạo các thành phần chính:
      *  - Nút Thêm, Sửa, Xóa, Làm mới (y = 10)
-     *  - JTable (y = 200, cao = 310)
+     *  - JTable (y = 200, cao = 310) hiển thị 7 cột: IDHDong, Ngày bắt đầu, Ngày kết thúc, Nội dung, IDNV, IDNCC, Trạng thái
      */
     private void initComponents() {
+    	setPreferredSize(new Dimension(1600, 1200));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
@@ -82,7 +83,7 @@ public class HopDongPanel extends JPanel {
         // --- Bảng dữ liệu (y = 200, cao = 310) --- //
         tblModel = new DefaultTableModel();
         tblModel.setColumnIdentifiers(new String[]{
-            "IDHDong", "Ngày bắt đầu", "Ngày kết thúc", "Nội dung", "IDNV", "IDNCC"
+            "IDHDong", "Ngày bắt đầu", "Ngày kết thúc", "Nội dung", "IDNV", "IDNCC", "Trạng thái"
         });
         tblHopDong = new JTable(tblModel);
         JScrollPane scrollPane = new JScrollPane(tblHopDong);
@@ -114,37 +115,38 @@ public class HopDongPanel extends JPanel {
         searchPanel.add(lblSearchIdHDong);
 
         txtSearchIdHDong = new JTextField();
-        txtSearchIdHDong.setBounds(75, 3, 100, 25);
+        txtSearchIdHDong.setBounds(75, 3, 120, 25);
         searchPanel.add(txtSearchIdHDong);
 
         JLabel lblSearchIdNV = new JLabel("IDNV:");
-        lblSearchIdNV.setBounds(190, 5, 50, 20);
+        lblSearchIdNV.setBounds(220, 5, 50, 20);
         searchPanel.add(lblSearchIdNV);
 
         txtSearchIdNV = new JTextField();
-        txtSearchIdNV.setBounds(245, 3, 100, 25);
+        txtSearchIdNV.setBounds(270, 3, 120, 25);
         searchPanel.add(txtSearchIdNV);
 
         JLabel lblSearchIdNCC = new JLabel("IDNCC:");
-        lblSearchIdNCC.setBounds(360, 5, 60, 20);
+        lblSearchIdNCC.setBounds(420, 5, 50, 20);
         searchPanel.add(lblSearchIdNCC);
 
         txtSearchIdNCC = new JTextField();
-        txtSearchIdNCC.setBounds(425, 3, 100, 25);
+        txtSearchIdNCC.setBounds(480, 3, 120, 25);
         searchPanel.add(txtSearchIdNCC);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(560, 3, 100, 25);
+        btnSearch.setBounds(630, 3, 100, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
 
     /**
      * Khởi tạo inputPanel (y = 90, cao = 100), ẩn khi visible = false.
+     * Gồm các ô: IDHDong, NgayBatDau, NgayKetThuc, NoiDung, IDNV, IDNCC, TrangThai, 
+     * và hai nút Lưu, Hủy.
      */
     private void initInputPanel(boolean visible) {
-        inputPanel = new JPanel();
-        inputPanel.setLayout(null);
+        inputPanel = new JPanel(null);
         inputPanel.setBounds(10, 90, 860, 100);
         add(inputPanel);
 
@@ -158,43 +160,51 @@ public class HopDongPanel extends JPanel {
 
         // Ngày bắt đầu
         JLabel lblNgayBatDau = new JLabel("Ngày bắt đầu:");
-        lblNgayBatDau.setBounds(220, 10, 90, 25);
+        lblNgayBatDau.setBounds(230, 10, 90, 25);
         inputPanel.add(lblNgayBatDau);
-        txtNgayBatDau = new JFormattedTextField();
-        txtNgayBatDau.setBounds(320, 10, 120, 25);
+        txtNgayBatDau = new JTextField();
+        txtNgayBatDau.setBounds(317, 10, 120, 25);
         inputPanel.add(txtNgayBatDau);
 
         // Ngày kết thúc
         JLabel lblNgayKetThuc = new JLabel("Ngày kết thúc:");
-        lblNgayKetThuc.setBounds(460, 10, 90, 25);
+        lblNgayKetThuc.setBounds(461, 10, 90, 25);
         inputPanel.add(lblNgayKetThuc);
-        txtNgayKetThuc = new JFormattedTextField();
-        txtNgayKetThuc.setBounds(560, 10, 120, 25);
+        txtNgayKetThuc = new JTextField();
+        txtNgayKetThuc.setBounds(559, 10, 120, 25);
         inputPanel.add(txtNgayKetThuc);
 
         // Nội dung
         JLabel lblNoiDung = new JLabel("Nội dung:");
-        lblNoiDung.setBounds(10, 45, 60, 25);
+        lblNoiDung.setBounds(10, 70, 70, 25);
         inputPanel.add(lblNoiDung);
         txtNoiDung = new JTextField();
-        txtNoiDung.setBounds(80, 45, 300, 25);
+        txtNoiDung.setBounds(90, 75, 400, 25);
         inputPanel.add(txtNoiDung);
 
         // IDNV
         JLabel lblIdNV = new JLabel("IDNV:");
-        lblIdNV.setBounds(400, 45, 50, 25);
+        lblIdNV.setBounds(230, 40, 40, 25);
         inputPanel.add(lblIdNV);
         txtIdNV = new JTextField();
-        txtIdNV.setBounds(450, 45, 100, 25);
+        txtIdNV.setBounds(317, 40, 120, 25);
         inputPanel.add(txtIdNV);
 
         // IDNCC
         JLabel lblIdNCC = new JLabel("IDNCC:");
-        lblIdNCC.setBounds(580, 45, 60, 25);
+        lblIdNCC.setBounds(461, 40, 50, 25);
         inputPanel.add(lblIdNCC);
         txtIdNCC = new JTextField();
-        txtIdNCC.setBounds(640, 45, 100, 25);
+        txtIdNCC.setBounds(559, 40, 120, 25);
         inputPanel.add(txtIdNCC);
+
+        // Trạng thái
+        JLabel lblTrangThai = new JLabel("Trạng thái:");
+        lblTrangThai.setBounds(10, 45, 70, 25);
+        inputPanel.add(lblTrangThai);
+        txtTrangThai = new JTextField();
+        txtTrangThai.setBounds(90, 45, 120, 25);
+        inputPanel.add(txtTrangThai);
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
@@ -212,7 +222,8 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Tải toàn bộ dữ liệu vào JTable (khi khởi động hoặc khi làm mới).
+     * Load dữ liệu HopDong vào JTable, gồm 7 cột:
+     *  IDHDong, Ngày bắt đầu, Ngày kết thúc, Nội dung, IDNV, IDNCC, Trạng thái.
      */
     private void loadDataToTable() {
         tblModel.setRowCount(0);
@@ -222,16 +233,17 @@ public class HopDongPanel extends JPanel {
                 hd.getIdHDong(),
                 DateHelper.toString(hd.getNgayBatDau(), "dd/MM/yyyy"),
                 DateHelper.toString(hd.getNgayKetThuc(), "dd/MM/yyyy"),
-                hd.getNoiDung(),
-                hd.getIdNV(),
-                hd.getIdNCC()
+                hd.getNoiDung() != null ? hd.getNoiDung() : "",
+                hd.getIdNV() != null ? hd.getIdNV() : "",
+                hd.getIdNCC() != null ? hd.getIdNCC() : "",
+                hd.getTrangThai()
             });
         }
     }
 
     /**
      * Khi nhấn “Tìm kiếm”: lấy idHDong, idNV, idNCC, gọi controller.searchHopDong(...),
-     * hiển thị kết quả, nếu có ít nhất 1 dòng, tự động chọn dòng đầu tiên.
+     * hiển thị kết quả lên table, chọn tự động dòng đầu tiên nếu có.
      */
     private void onSearch() {
         String idHDong = txtSearchIdHDong.getText().trim();
@@ -246,9 +258,10 @@ public class HopDongPanel extends JPanel {
                 hd.getIdHDong(),
                 DateHelper.toString(hd.getNgayBatDau(), "dd/MM/yyyy"),
                 DateHelper.toString(hd.getNgayKetThuc(), "dd/MM/yyyy"),
-                hd.getNoiDung(),
-                hd.getIdNV(),
-                hd.getIdNCC()
+                hd.getNoiDung() != null ? hd.getNoiDung() : "",
+                hd.getIdNV() != null ? hd.getIdNV() : "",
+                hd.getIdNCC() != null ? hd.getIdNCC() : "",
+                hd.getTrangThai()
             });
         }
 
@@ -261,7 +274,7 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Điền dữ liệu từ bảng lên inputPanel (nếu currentMode == NONE).
+     * Điền dữ liệu từ bảng lên inputPanel (nếu currentMode == "NONE").
      */
     private void populateInputFromTable(int row) {
         txtIdHDong.setText((String) tblModel.getValueAt(row, 0));
@@ -270,10 +283,11 @@ public class HopDongPanel extends JPanel {
         txtNoiDung.setText((String) tblModel.getValueAt(row, 3));
         txtIdNV.setText((String) tblModel.getValueAt(row, 4));
         txtIdNCC.setText((String) tblModel.getValueAt(row, 5));
+        txtTrangThai.setText((String) tblModel.getValueAt(row, 6));
     }
 
     /**
-     * Ẩn inputPanel và reset fields, enable lại phần tìm kiếm, bảng và các nút.
+     * Ẩn inputPanel và reset các ô, đồng thời enable lại nút/tìm kiếm/bảng.
      */
     private void hideInputPanel() {
         txtIdHDong.setText("");
@@ -282,6 +296,7 @@ public class HopDongPanel extends JPanel {
         txtNoiDung.setText("");
         txtIdNV.setText("");
         txtIdNCC.setText("");
+        txtTrangThai.setText("");
 
         inputPanel.setVisible(false);
         currentMode = "NONE";
@@ -298,7 +313,10 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Thêm”: hiện inputPanel, reset ô, disable các thành phần còn lại.
+     * Khi bấm “Thêm”:
+     *  - Hiện inputPanel (rỗng),
+     *  - Disable các thành phần khác (nút, bảng, tìm kiếm),
+     *  - currentMode = "ADDING".
      */
     private void onAdd() {
         currentMode = "ADDING";
@@ -310,6 +328,7 @@ public class HopDongPanel extends JPanel {
         txtNoiDung.setText("");
         txtIdNV.setText("");
         txtIdNCC.setText("");
+        txtTrangThai.setText("");
 
         txtIdHDong.setEditable(true);
 
@@ -319,13 +338,17 @@ public class HopDongPanel extends JPanel {
         btnRefresh.setEnabled(false);
         tblHopDong.setEnabled(false);
         btnSearch.setEnabled(false);
-        txtSearchIdHDong.setEnabled(true);
-        txtSearchIdNV.setEnabled(true);
-        txtSearchIdNCC.setEnabled(true);
+        txtSearchIdHDong.setEnabled(false);
+        txtSearchIdNV.setEnabled(false);
+        txtSearchIdNCC.setEnabled(false);
     }
 
     /**
-     * Khi bấm “Sửa”: phải có dòng được chọn, điền dữ liệu vào inputPanel, disable các thành phần khác.
+     * Khi bấm “Sửa”:
+     *  - Phải có dòng được chọn,
+     *  - Điền dữ liệu lên inputPanel,
+     *  - Disable các thành phần khác,
+     *  - currentMode = "EDITING".
      */
     private void onEdit() {
         int row = tblHopDong.getSelectedRow();
@@ -352,7 +375,10 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Xóa”: phải có dòng được chọn, xác nhận, gọi controller.deleteHopDong(idHDong).
+     * Khi bấm “Xóa”:
+     *  - Phải có dòng được chọn,
+     *  - Xác nhận trước khi xóa,
+     *  - Gọi controller.deleteHopDong(idHDong), nếu thành công reload bảng.
      */
     private void onDelete() {
         int row = tblHopDong.getSelectedRow();
@@ -360,10 +386,11 @@ public class HopDongPanel extends JPanel {
             MessageDialog.showWarning(this, "Vui lòng chọn hợp đồng cần xóa!", "Cảnh báo");
             return;
         }
-        String id = (String) tblModel.getValueAt(row, 0);
-        boolean confirm = MessageDialog.showConfirm(this, "Bạn có chắc muốn xóa hợp đồng " + id + "?", "Xác nhận");
+        String idHDong = (String) tblModel.getValueAt(row, 0);
+        boolean confirm = MessageDialog.showConfirm(this,
+                "Bạn có chắc muốn xóa hợp đồng " + idHDong + "?", "Xác nhận");
         if (confirm) {
-            if (controller.deleteHopDong(id)) {
+            if (controller.deleteHopDong(idHDong)) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
                 loadDataToTable();
             } else {
@@ -373,7 +400,9 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
+     * Khi bấm “Làm mới”:
+     *  - Ẩn inputPanel nếu đang hiển thị,
+     *  - Reload lại dữ liệu bảng.
      */
     private void onRefresh() {
         hideInputPanel();
@@ -382,43 +411,64 @@ public class HopDongPanel extends JPanel {
 
     /**
      * Khi bấm “Lưu” trong inputPanel:
-     *  - validate dữ liệu,
-     *  - nếu ADDING, gọi addHopDong,
-     *    nếu EDITING, gọi updateHopDong,
-     *  - ẩn inputPanel, load lại dữ liệu.
+     *  - Validate dữ liệu: IDHDong, Ngày bắt đầu, Ngày kết thúc, Trạng thái không được để trống;
+     *    Ngày phải đúng định dạng dd/MM/yyyy; Nếu nhập IDNV hoặc IDNCC, không bắt buộc nhưng nếu nhập
+     *    thì phải đúng độ dài (tùy bạn kiểm tra).
+     *  - Nếu currentMode == "ADDING": gọi controller.addHopDong(hd),
+     *    nếu currentMode == "EDITING": gọi controller.updateHopDong(hd),
+     *  - Ẩn inputPanel và reload bảng nếu thành công.
      */
     private void onSave() {
-        if (!Validator.isDate(txtNgayBatDau.getText(), "dd/MM/yyyy")) {
-            MessageDialog.showWarning(this, "Ngày bắt đầu phải đúng định dạng dd/MM/yyyy", "Cảnh báo");
+        String idHDong = txtIdHDong.getText().trim();
+        String ngayBatDauStr = txtNgayBatDau.getText().trim();
+        String ngayKetThucStr = txtNgayKetThuc.getText().trim();
+        String noiDung = txtNoiDung.getText().trim();
+        String idNV = txtIdNV.getText().trim();
+        String idNCC = txtIdNCC.getText().trim();
+        String trangThai = txtTrangThai.getText().trim();
+
+        if (idHDong.isEmpty()) {
+            MessageDialog.showWarning(this, "IDHDong không được để trống!", "Cảnh báo");
             return;
         }
-        if (!Validator.isDate(txtNgayKetThuc.getText(), "dd/MM/yyyy")) {
-            MessageDialog.showWarning(this, "Ngày kết thúc phải đúng định dạng dd/MM/yyyy", "Cảnh báo");
+        if (!Validator.isDate(ngayBatDauStr, "dd/MM/yyyy")) {
+            MessageDialog.showWarning(this, "Ngày bắt đầu phải đúng định dạng dd/MM/yyyy!", "Cảnh báo");
             return;
         }
+        if (!Validator.isDate(ngayKetThucStr, "dd/MM/yyyy")) {
+            MessageDialog.showWarning(this, "Ngày kết thúc phải đúng định dạng dd/MM/yyyy!", "Cảnh báo");
+            return;
+        }
+        if (trangThai.isEmpty()) {
+            MessageDialog.showWarning(this, "Trạng thái không được để trống!", "Cảnh báo");
+            return;
+        }
+        // idNV và idNCC có thể để trống, không kiểm tra thêm
+
         HopDong hd = new HopDong();
-        hd.setIdHDong(txtIdHDong.getText().trim());
-        hd.setNgayBatDau(DateHelper.toDate(txtNgayBatDau.getText().trim(), "dd/MM/yyyy"));
-        hd.setNgayKetThuc(DateHelper.toDate(txtNgayKetThuc.getText().trim(), "dd/MM/yyyy"));
-        hd.setNoiDung(txtNoiDung.getText().trim());
-        hd.setIdNV(txtIdNV.getText().trim());
-        hd.setIdNCC(txtIdNCC.getText().trim());
+        hd.setIdHDong(idHDong);
+        hd.setNgayBatDau(DateHelper.toDate(ngayBatDauStr, "dd/MM/yyyy"));
+        hd.setNgayKetThuc(DateHelper.toDate(ngayKetThucStr, "dd/MM/yyyy"));
+        hd.setNoiDung(noiDung.isEmpty() ? null : noiDung);
+        hd.setIdNV(idNV.isEmpty() ? null : idNV);
+        hd.setIdNCC(idNCC.isEmpty() ? null : idNCC);
+        hd.setTrangThai(trangThai);
 
         boolean success;
         if (currentMode.equals("ADDING")) {
             success = controller.addHopDong(hd);
             if (success) {
-                MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
+                MessageDialog.showInfo(this, "Thêm hợp đồng thành công!", "Thông báo");
             } else {
-                MessageDialog.showError(this, "Thêm thất bại!", "Lỗi");
+                MessageDialog.showError(this, "Thêm hợp đồng thất bại! Kiểm tra IDHDong hoặc kết nối DB.", "Lỗi");
                 return;
             }
         } else { // EDITING
             success = controller.updateHopDong(hd);
             if (success) {
-                MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
+                MessageDialog.showInfo(this, "Cập nhật hợp đồng thành công!", "Thông báo");
             } else {
-                MessageDialog.showError(this, "Cập nhật thất bại!", "Lỗi");
+                MessageDialog.showError(this, "Cập nhật hợp đồng thất bại! Kiểm tra lại dữ liệu.", "Lỗi");
                 return;
             }
         }
@@ -428,7 +478,8 @@ public class HopDongPanel extends JPanel {
     }
 
     /**
-     * Khi bấm “Hủy” trong inputPanel: chỉ cần ẩn inputPanel.
+     * Khi bấm “Hủy” trong inputPanel:
+     *  - Chỉ cần ẩn inputPanel, không thực hiện lưu.
      */
     private void onCancel() {
         hideInputPanel();

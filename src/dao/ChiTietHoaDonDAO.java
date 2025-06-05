@@ -2,22 +2,38 @@ package dao;
 
 import connectDB.DBConnection;
 import connectDB.DBCloseHelper;
+import entities.ChiTietHoaDon;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ChiTietHoaDonDAO.java
- * 
- * Chỉ chứa phương thức để tìm idThuoc đầu tiên của một hóa đơn (dùng cho chức năng khách).
+ *
+ * DAO cho bảng dbo.ChiTietHoaDon, đã sửa để join với bảng Thuoc lấy thêm tên thuốc.
  */
 public class ChiTietHoaDonDAO {
 
     /**
-     * Với một idHD, trả về idThuoc đầu tiên (theo thứ tự SQL trả về).
-     * Nếu bảng ChiTietHoaDon không có dòng nào cho idHD đó hoặc idHD không tồn tại, trả về null.
+     * Lấy danh sách ChiTietHoaDon (kèm tên thuốc) theo idHD.
+     *
+     * SQL:
+     *   SELECT ct.idHD, ct.idThuoc, t.tenThuoc, ct.soLuong, ct.donGia
+     *     FROM ChiTietHoaDon ct
+     *     JOIN Thuoc t ON ct.idThuoc = t.idThuoc
+     *    WHERE ct.idHD = ?
+     *
+     * @param idHD Mã hóa đơn cần lấy chi tiết.
+     * @return Danh sách ChiTietHoaDon có tenThuoc.
      */
-    public String getFirstIdThuocByHD(String idHD) {
-        String sql = "SELECT TOP 1 idThuoc FROM ChiTietHoaDon WHERE idHD = ?";
+    public List<ChiTietHoaDon> getByIdHD(String idHD) {
+        List<ChiTietHoaDon> list = new ArrayList<>();
+        String sql = ""
+            + "SELECT ct.idHD, ct.idThuoc, t.tenThuoc, ct.soLuong, ct.donGia "
+            + "FROM ChiTietHoaDon ct "
+            + "JOIN Thuoc t ON ct.idThuoc = t.idThuoc "
+            + "WHERE ct.idHD = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -26,14 +42,20 @@ public class ChiTietHoaDonDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, idHD);
             rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("idThuoc");
+            while (rs.next()) {
+                ChiTietHoaDon ct = new ChiTietHoaDon();
+                ct.setIdHD(rs.getString("idHD"));
+                ct.setIdThuoc(rs.getString("idThuoc"));
+                ct.setTenThuoc(rs.getString("tenThuoc")); // Lấy tên thuốc
+                ct.setSoLuong(rs.getInt("soLuong"));
+                ct.setDonGia(rs.getDouble("donGia"));
+                list.add(ct);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             DBCloseHelper.closeAll(rs, stmt, conn);
         }
-        return null;
+        return list;
     }
 }

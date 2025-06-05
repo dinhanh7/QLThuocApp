@@ -11,18 +11,18 @@ import java.util.List;
 /**
  * ThuocDAO.java
  *
- * Chứa các phương thức CRUD cơ bản cho bảng Thuoc,
- * và bổ sung thêm phương thức search() để tìm thuốc theo id hoặc tên.
+ * CRUD cho bảng dbo.Thuoc (đã sửa để dùng trực tiếp các trường donViTinh, danhMuc, xuatXu).
  */
 public class ThuocDAO {
 
     /**
-     * Lấy toàn bộ danh sách Thuoc.
+     * Lấy toàn bộ danh sách Thuốc.
      */
-    public List<Thuoc> getAll() {
+    public List<Thuoc> getAllThuoc() {
         List<Thuoc> list = new ArrayList<>();
-        String sql = "SELECT idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung " +
-                     "FROM Thuoc";
+        String sql = "SELECT idThuoc, tenThuoc, hinhAnh, thanhPhan, donViTinh, danhMuc, xuatXu, " +
+                     "       soLuongTon, giaNhap, donGia, hanSuDung " +
+                     "  FROM Thuoc";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -34,10 +34,11 @@ public class ThuocDAO {
                 Thuoc t = new Thuoc();
                 t.setIdThuoc(rs.getString("idThuoc"));
                 t.setTenThuoc(rs.getString("tenThuoc"));
-                t.setThanhPhan(rs.getString("thanhPhan"));
-                t.setIdDVT(rs.getString("idDVT"));
-                t.setIdDM(rs.getString("idDM"));
-                t.setIdXX(rs.getString("idXX"));
+                t.setHinhAnh(rs.getBytes("hinhAnh"));        // có thể null
+                t.setThanhPhan(rs.getString("thanhPhan"));    // có thể null
+                t.setDonViTinh(rs.getString("donViTinh"));
+                t.setDanhMuc(rs.getString("danhMuc"));
+                t.setXuatXu(rs.getString("xuatXu"));
                 t.setSoLuongTon(rs.getInt("soLuongTon"));
                 t.setGiaNhap(rs.getDouble("giaNhap"));
                 t.setDonGia(rs.getDouble("donGia"));
@@ -53,12 +54,69 @@ public class ThuocDAO {
     }
 
     /**
-     * Thêm mới Thuoc.
+     * Tìm kiếm Thuốc theo idThuoc hoặc tenThuoc.
+     * Nếu cả hai tham số rỗng, trả về toàn bộ.
      */
-    public boolean insert(Thuoc t) {
+    public List<Thuoc> searchThuoc(String idThuoc, String tenThuoc) {
+        List<Thuoc> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT idThuoc, tenThuoc, hinhAnh, thanhPhan, donViTinh, danhMuc, xuatXu, " +
+            "       soLuongTon, giaNhap, donGia, hanSuDung " +
+            "  FROM Thuoc " +
+            " WHERE 1=1"
+        );
+        if (idThuoc != null && !idThuoc.trim().isEmpty()) {
+            sql.append(" AND idThuoc LIKE ?");
+        }
+        if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
+            sql.append(" AND tenThuoc LIKE ?");
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql.toString());
+            int idx = 1;
+            if (idThuoc != null && !idThuoc.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + idThuoc.trim() + "%");
+            }
+            if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
+                stmt.setString(idx++, "%" + tenThuoc.trim() + "%");
+            }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Thuoc t = new Thuoc();
+                t.setIdThuoc(rs.getString("idThuoc"));
+                t.setTenThuoc(rs.getString("tenThuoc"));
+                t.setHinhAnh(rs.getBytes("hinhAnh"));
+                t.setThanhPhan(rs.getString("thanhPhan"));
+                t.setDonViTinh(rs.getString("donViTinh"));
+                t.setDanhMuc(rs.getString("danhMuc"));
+                t.setXuatXu(rs.getString("xuatXu"));
+                t.setSoLuongTon(rs.getInt("soLuongTon"));
+                t.setGiaNhap(rs.getDouble("giaNhap"));
+                t.setDonGia(rs.getDouble("donGia"));
+                t.setHanSuDung(rs.getDate("hanSuDung"));
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return list;
+    }
+
+    /**
+     * Thêm mới một Thuốc.
+     */
+    public boolean insertThuoc(Thuoc t) {
         String sql = "INSERT INTO Thuoc " +
-                     "(idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "(idThuoc, tenThuoc, hinhAnh, thanhPhan, donViTinh, danhMuc, xuatXu, " +
+                     " soLuongTon, giaNhap, donGia, hanSuDung) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -66,14 +124,24 @@ public class ThuocDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, t.getIdThuoc());
             stmt.setString(2, t.getTenThuoc());
-            stmt.setString(3, t.getThanhPhan());
-            stmt.setString(4, t.getIdDVT());
-            stmt.setString(5, t.getIdDM());
-            stmt.setString(6, t.getIdXX());
-            stmt.setInt(7, t.getSoLuongTon());
-            stmt.setDouble(8, t.getGiaNhap());
-            stmt.setDouble(9, t.getDonGia());
-            stmt.setDate(10, new java.sql.Date(t.getHanSuDung().getTime()));
+            if (t.getHinhAnh() != null) {
+                stmt.setBytes(3, t.getHinhAnh());
+            } else {
+                stmt.setNull(3, Types.VARBINARY);
+            }
+            if (t.getThanhPhan() != null) {
+                stmt.setString(4, t.getThanhPhan());
+            } else {
+                stmt.setNull(4, Types.NVARCHAR);
+            }
+            stmt.setString(5, t.getDonViTinh());
+            stmt.setString(6, t.getDanhMuc());
+            stmt.setString(7, t.getXuatXu());
+            stmt.setInt(8, t.getSoLuongTon());
+            stmt.setDouble(9, t.getGiaNhap());
+            stmt.setDouble(10, t.getDonGia());
+            stmt.setDate(11, new java.sql.Date(t.getHanSuDung().getTime()));
+
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -85,10 +153,11 @@ public class ThuocDAO {
     }
 
     /**
-     * Cập nhật Thuoc.
+     * Cập nhật dữ liệu cho Thuốc (theo idThuoc).
      */
-    public boolean update(Thuoc t) {
-        String sql = "UPDATE Thuoc SET tenThuoc = ?, thanhPhan = ?, idDVT = ?, idDM = ?, idXX = ?, " +
+    public boolean updateThuoc(Thuoc t) {
+        String sql = "UPDATE Thuoc SET " +
+                     "tenThuoc = ?, hinhAnh = ?, thanhPhan = ?, donViTinh = ?, danhMuc = ?, xuatXu = ?, " +
                      "soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ? " +
                      "WHERE idThuoc = ?";
         Connection conn = null;
@@ -97,15 +166,25 @@ public class ThuocDAO {
             conn = DBConnection.getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, t.getTenThuoc());
-            stmt.setString(2, t.getThanhPhan());
-            stmt.setString(3, t.getIdDVT());
-            stmt.setString(4, t.getIdDM());
-            stmt.setString(5, t.getIdXX());
-            stmt.setInt(6, t.getSoLuongTon());
-            stmt.setDouble(7, t.getGiaNhap());
-            stmt.setDouble(8, t.getDonGia());
-            stmt.setDate(9, new java.sql.Date(t.getHanSuDung().getTime()));
-            stmt.setString(10, t.getIdThuoc());
+            if (t.getHinhAnh() != null) {
+                stmt.setBytes(2, t.getHinhAnh());
+            } else {
+                stmt.setNull(2, Types.VARBINARY);
+            }
+            if (t.getThanhPhan() != null) {
+                stmt.setString(3, t.getThanhPhan());
+            } else {
+                stmt.setNull(3, Types.NVARCHAR);
+            }
+            stmt.setString(4, t.getDonViTinh());
+            stmt.setString(5, t.getDanhMuc());
+            stmt.setString(6, t.getXuatXu());
+            stmt.setInt(7, t.getSoLuongTon());
+            stmt.setDouble(8, t.getGiaNhap());
+            stmt.setDouble(9, t.getDonGia());
+            stmt.setDate(10, new java.sql.Date(t.getHanSuDung().getTime()));
+            stmt.setString(11, t.getIdThuoc());
+
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -117,9 +196,9 @@ public class ThuocDAO {
     }
 
     /**
-     * Xóa Thuoc theo idThuoc.
+     * Xóa Thuốc theo idThuoc.
      */
-    public boolean delete(String idThuoc) {
+    public boolean deleteThuoc(String idThuoc) {
         String sql = "DELETE FROM Thuoc WHERE idThuoc = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -135,61 +214,5 @@ public class ThuocDAO {
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
-    }
-
-    /**
-     * Tìm kiếm Thuoc theo idThuoc hoặc tenThuoc (khi 1 trong 2 trường có giá trị).
-     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách (tương đương getAll()).
-     */
-    public List<Thuoc> search(String idThuoc, String tenThuoc) {
-        List<Thuoc> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(
-                "SELECT idThuoc, tenThuoc, thanhPhan, idDVT, idDM, idXX, soLuongTon, giaNhap, donGia, hanSuDung " +
-                "FROM Thuoc WHERE 1=1"
-        );
-
-        if (idThuoc != null && !idThuoc.trim().isEmpty()) {
-            sql.append(" AND idThuoc LIKE ?");
-        }
-        if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
-            sql.append(" AND tenThuoc LIKE ?");
-        }
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql.toString());
-
-            int paramIndex = 1;
-            if (idThuoc != null && !idThuoc.trim().isEmpty()) {
-                stmt.setString(paramIndex++, "%" + idThuoc.trim() + "%");
-            }
-            if (tenThuoc != null && !tenThuoc.trim().isEmpty()) {
-                stmt.setString(paramIndex++, "%" + tenThuoc.trim() + "%");
-            }
-
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                Thuoc t = new Thuoc();
-                t.setIdThuoc(rs.getString("idThuoc"));
-                t.setTenThuoc(rs.getString("tenThuoc"));
-                t.setThanhPhan(rs.getString("thanhPhan"));
-                t.setIdDVT(rs.getString("idDVT"));
-                t.setIdDM(rs.getString("idDM"));
-                t.setIdXX(rs.getString("idXX"));
-                t.setSoLuongTon(rs.getInt("soLuongTon"));
-                t.setGiaNhap(rs.getDouble("giaNhap"));
-                t.setDonGia(rs.getDouble("donGia"));
-                t.setHanSuDung(rs.getDate("hanSuDung"));
-                list.add(t);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBCloseHelper.closeAll(rs, stmt, conn);
-        }
-        return list;
     }
 }

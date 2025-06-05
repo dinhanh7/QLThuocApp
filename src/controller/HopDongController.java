@@ -8,8 +8,7 @@ import java.util.List;
 /**
  * HopDongController.java
  *
- * Giữ nguyên các phương thức CRUD cơ bản (getAllHopDong, addHopDong, updateHopDong, deleteHopDong),
- * và bổ sung thêm searchHopDong(String idHDong, String idNV, String idNCC).
+ * Kết nối giữa GUI và DAO cho HopDong.
  */
 public class HopDongController {
 
@@ -20,26 +19,25 @@ public class HopDongController {
     }
 
     public List<HopDong> getAllHopDong() {
-        return hopDongDAO.getAll();
+        return hopDongDAO.getAllHopDong();
     }
 
     public boolean addHopDong(HopDong hd) {
-        return hopDongDAO.insert(hd);
+        return hopDongDAO.insertHopDong(hd);
     }
 
     public boolean updateHopDong(HopDong hd) {
-        return hopDongDAO.update(hd);
+        return hopDongDAO.updateHopDong(hd);
     }
 
     public boolean deleteHopDong(String idHDong) {
-        return hopDongDAO.delete(idHDong);
+        return hopDongDAO.deleteHopDong(idHDong);
     }
 
     /**
-     * Tìm kiếm Hợp đồng theo idHDong hoặc idNV hoặc idNCC.
-     * Nếu cả ba tham số đều rỗng, trả về toàn bộ danh sách.
+     * Tìm kiếm HopDong theo idHDong, idNV hoặc idNCC.
      */
     public List<HopDong> searchHopDong(String idHDong, String idNV, String idNCC) {
-        return hopDongDAO.search(idHDong, idNV, idNCC);
+        return hopDongDAO.searchHopDong(idHDong, idNV, idNCC);
     }
 }

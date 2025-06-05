@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.awt.Dimension;
 
 /**
  * PhieuDatHangPanel.java (đã bổ sung chức năng Tìm kiếm)
@@ -56,6 +57,7 @@ public class PhieuDatHangPanel extends JPanel {
      *  - JTable (y = 200, cao = 310)
      */
     private void initComponents() {
+    	//setPreferredSize(new Dimension(1600, 800));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
@@ -153,23 +155,23 @@ public class PhieuDatHangPanel extends JPanel {
         lblThoiGian.setBounds(220, 10, 70, 25);
         inputPanel.add(lblThoiGian);
         txtThoiGian = new JFormattedTextField();
-        txtThoiGian.setBounds(300, 10, 150, 25);
+        txtThoiGian.setBounds(275, 10, 150, 25);
         inputPanel.add(txtThoiGian);
 
         // IDKH
         JLabel lblIdKH = new JLabel("IDKH:");
-        lblIdKH.setBounds(470, 10, 50, 25);
+        lblIdKH.setBounds(449, 10, 50, 25);
         inputPanel.add(lblIdKH);
         txtIdKH = new JTextField();
-        txtIdKH.setBounds(530, 10, 100, 25);
+        txtIdKH.setBounds(491, 10, 60, 25);
         inputPanel.add(txtIdKH);
 
         // Tổng tiền
         JLabel lblTongTien = new JLabel("Tổng tiền:");
-        lblTongTien.setBounds(650, 10, 70, 25);
+        lblTongTien.setBounds(575, 10, 70, 25);
         inputPanel.add(lblTongTien);
         txtTongTien = new JTextField();
-        txtTongTien.setBounds(730, 10, 100, 25);
+        txtTongTien.setBounds(653, 10, 100, 25);
         inputPanel.add(txtTongTien);
 
         // Địa chỉ
@@ -182,18 +184,18 @@ public class PhieuDatHangPanel extends JPanel {
 
         // Phương thức thanh toán
         JLabel lblPTTT = new JLabel("PTTT:");
-        lblPTTT.setBounds(300, 45, 50, 25);
+        lblPTTT.setBounds(288, 45, 50, 25);
         inputPanel.add(lblPTTT);
         txtPTThanhToan = new JTextField();
-        txtPTThanhToan.setBounds(360, 45, 100, 25);
+        txtPTThanhToan.setBounds(322, 45, 100, 25);
         inputPanel.add(txtPTThanhToan);
 
         // Trạng thái
         JLabel lblTrangThai = new JLabel("Trạng thái:");
-        lblTrangThai.setBounds(480, 45, 70, 25);
+        lblTrangThai.setBounds(449, 45, 70, 25);
         inputPanel.add(lblTrangThai);
         txtTrangThai = new JTextField();
-        txtTrangThai.setBounds(560, 45, 100, 25);
+        txtTrangThai.setBounds(530, 45, 100, 25);
         inputPanel.add(txtTrangThai);
 
         // Nút Lưu

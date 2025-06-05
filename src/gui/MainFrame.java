@@ -4,18 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import gui.ThuocPanel;
-import gui.NhanVienPanel;
-import gui.KhachHangPanel;
-import gui.HoaDonPanel;
-import gui.PhieuNhapPanel;
-import gui.PhieuDatHangPanel;
-import gui.PhanHoiPanel;
-import gui.HopDongPanel;
-import gui.NhaCungCapPanel; // <--- import cho tab Nhà cung cấp
-
 /**
- * MainFrame.java (với nút Đăng xuất cố định ở góc trên bên phải)
+ * MainFrame.java (đã sửa initTabs(...) để luôn thêm ít nhất một vài tab nếu roleId không khớp).
  */
 public class MainFrame extends JFrame {
 
@@ -23,16 +13,15 @@ public class MainFrame extends JFrame {
     private ThuocPanel thuocPanel;
     private NhanVienPanel nhanVienPanel;
     private KhachHangPanel khachHangPanel;
+    private NhaCungCapPanel nhaCungCapPanel;
     private HoaDonPanel hoaDonPanel;
     private PhieuNhapPanel phieuNhapPanel;
-    private PhieuDatHangPanel phieuDatHangPanel;
     private PhanHoiPanel phanHoiPanel;
     private HopDongPanel hopDongPanel;
-    private NhaCungCapPanel nccPanel; // <--- panel Nhà cung cấp
 
     /**
      * @param roleId Chuỗi idVT (vai trò) của người dùng.
-     *               Ví dụ: "VT01" = Admin, "VT02" = Nhân viên.
+     *               Thường là "VT01" = Admin, hoặc "VT02" = Nhân viên.
      */
     public MainFrame(String roleId) {
         setTitle("Hệ thống Quản lý Nhà thuốc");
@@ -80,44 +69,52 @@ public class MainFrame extends JFrame {
 
     /**
      * Tạo JTabbedPane theo vai trò và thêm vào vùng CENTER.
+     * Nếu roleId không khớp "VT01" hay "VT02", vẫn thêm tab "Thuốc" để tránh giao diện trắng.
      */
     private void initTabs(String roleId) {
         tabbedPane = new JTabbedPane();
 
-        // Khởi tạo tất cả panel
+        // Khởi tạo tất cả panel trước (có NhaCungCapPanel mới)
         thuocPanel        = new ThuocPanel();
         nhanVienPanel     = new NhanVienPanel();
         khachHangPanel    = new KhachHangPanel();
+        nhaCungCapPanel   = new NhaCungCapPanel();
         hoaDonPanel       = new HoaDonPanel();
         phieuNhapPanel    = new PhieuNhapPanel();
-        phieuDatHangPanel = new PhieuDatHangPanel();
         phanHoiPanel      = new PhanHoiPanel();
         hopDongPanel      = new HopDongPanel();
-        nccPanel          = new NhaCungCapPanel(); // <--- khởi tạo panel Nhà cung cấp
 
-        // Nếu roleId = "VT01" (Admin), hiển thị đủ 9 tab (Bao gồm Nhà cung cấp)
-        if ("VT01".equals(roleId)) {
+        if (roleId != null) {
+            roleId = roleId.trim(); // bỏ dấu cách thừa
+        }
+
+        // Nếu roleId = "VT01" => Admin, hiển thị đủ 8 tab
+        if ("VT01".equalsIgnoreCase(roleId)) {
             tabbedPane.addTab("Thuốc", thuocPanel);
             tabbedPane.addTab("Nhân viên", nhanVienPanel);
             tabbedPane.addTab("Khách hàng", khachHangPanel);
-            tabbedPane.addTab("Nhà cung cấp", nccPanel);      // <--- thêm tab Nhà cung cấp
+            tabbedPane.addTab("Nhà cung cấp", nhaCungCapPanel);
             tabbedPane.addTab("Hóa đơn", hoaDonPanel);
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
-            tabbedPane.addTab("Phiếu đặt hàng", phieuDatHangPanel);
             tabbedPane.addTab("Phản hồi", phanHoiPanel);
             tabbedPane.addTab("Hợp đồng", hopDongPanel);
         }
-        // Nếu roleId = "VT02" (Nhân viên), hiển thị 7 tab (Bao gồm Nhà cung cấp)
-        else if ("VT02".equals(roleId)) {
+        // Nếu roleId = "VT02" => Nhân viên, hiển thị 6 tab
+        else if ("VT02".equalsIgnoreCase(roleId)) {
             tabbedPane.addTab("Thuốc", thuocPanel);
             tabbedPane.addTab("Khách hàng", khachHangPanel);
-            tabbedPane.addTab("Nhà cung cấp", nccPanel);      // <--- thêm tab Nhà cung cấp
             tabbedPane.addTab("Hóa đơn", hoaDonPanel);
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
-            tabbedPane.addTab("Phiếu đặt hàng", phieuDatHangPanel);
             tabbedPane.addTab("Phản hồi", phanHoiPanel);
+            // Nhân viên cũng được truy cập "Hợp đồng"?
+            tabbedPane.addTab("Hợp đồng", hopDongPanel);
         }
-        // Nếu có thêm vai trò khác, bạn mở rộng thêm điều kiện tại đây
+        // Nếu roleId khác (hoặc null/empty), ít nhất cho hiển thị tab "Thuốc" để không bị trắng
+        else {
+            tabbedPane.addTab("Thuốc", thuocPanel);
+            // bạn có thể thêm tab "Khách hàng" mặc định nếu muốn
+            tabbedPane.addTab("Khách hàng", khachHangPanel);
+        }
 
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }

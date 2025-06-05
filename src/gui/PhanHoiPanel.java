@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-
+import java.awt.Dimension;
 /**
  * PhanHoiPanel.java (đã bổ sung chức năng Tìm kiếm)
  *
@@ -56,6 +56,7 @@ public class PhanHoiPanel extends JPanel {
      *  - JTable (y = 200, cao = 310)
      */
     private void initComponents() {
+    	//setPreferredSize(new Dimension(1600, 800));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
@@ -161,15 +162,15 @@ public class PhanHoiPanel extends JPanel {
         lblIdHD.setBounds(400, 10, 50, 25);
         inputPanel.add(lblIdHD);
         txtIdHD = new JTextField();
-        txtIdHD.setBounds(460, 10, 100, 25);
+        txtIdHD.setBounds(460, 10, 60, 25);
         inputPanel.add(txtIdHD);
 
         // IDThuoc
         JLabel lblIdThuoc = new JLabel("IDThuoc:");
-        lblIdThuoc.setBounds(580, 10, 60, 25);
+        lblIdThuoc.setBounds(618, 10, 60, 25);
         inputPanel.add(lblIdThuoc);
         txtIdThuoc = new JTextField();
-        txtIdThuoc.setBounds(650, 10, 100, 25);
+        txtIdThuoc.setBounds(670, 10, 100, 25);
         inputPanel.add(txtIdThuoc);
 
         // Nội dung
@@ -185,15 +186,15 @@ public class PhanHoiPanel extends JPanel {
         lblThoiGian.setBounds(400, 45, 70, 25);
         inputPanel.add(lblThoiGian);
         txtThoiGian = new JFormattedTextField();
-        txtThoiGian.setBounds(480, 45, 150, 25);
+        txtThoiGian.setBounds(460, 45, 137, 25);
         inputPanel.add(txtThoiGian);
 
         // Đánh giá
         JLabel lblDanhGia = new JLabel("Đánh giá:");
-        lblDanhGia.setBounds(650, 45, 60, 25);
+        lblDanhGia.setBounds(618, 45, 60, 25);
         inputPanel.add(lblDanhGia);
         txtDanhGia = new JTextField();
-        txtDanhGia.setBounds(720, 45, 50, 25);
+        txtDanhGia.setBounds(670, 45, 50, 25);
         inputPanel.add(txtDanhGia);
 
         // Nút Lưu
