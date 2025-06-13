@@ -15,7 +15,7 @@ public class ChiTietPhieuNhap {
     private String idThuoc;
     private String tenThuoc; // Tên thuốc (gọi từ bảng Thuoc)
     private int soLuong;
-    private double donGia;
+
 
     public ChiTietPhieuNhap() {
     }
@@ -48,10 +48,14 @@ public class ChiTietPhieuNhap {
         this.soLuong = soLuong;
     }
 
-    public double getDonGia() {
-        return donGia;
+    private double giaNhap;
+
+    public double getGiaNhap() {
+        return giaNhap;
     }
-    public void setDonGia(double donGia) {
-        this.donGia = donGia;
+
+    public void setGiaNhap(double giaNhap) {
+        this.giaNhap = giaNhap;
     }
+
 }

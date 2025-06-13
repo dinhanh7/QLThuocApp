@@ -38,7 +38,7 @@ public class ViewChiTietPNDialog extends JDialog {
     private void initComponents() {
         tblModel = new DefaultTableModel();
         // Đổi tên cột đầu thành "Tên Thuốc"
-        tblModel.setColumnIdentifiers(new String[]{"Tên Thuốc", "Số lượng", "Đơn giá"});
+        tblModel.setColumnIdentifiers(new String[]{"ID Thuốc","Tên Thuốc", "Số lượng","Giá nhập"});
         tblChiTiet = new JTable(tblModel);
 
         JScrollPane scrollPane = new JScrollPane(tblChiTiet);
@@ -59,10 +59,11 @@ public class ViewChiTietPNDialog extends JDialog {
 
         for (ChiTietPhieuNhap ct : list) {
             tblModel.addRow(new Object[]{
+            		ct.getIdThuoc(),  
                 ct.getTenThuoc(), 
                 ct.getSoLuong(),
                 // Hiển thị DonGia với 1 chữ số thập phân (ví dụ 2000.0)
-                String.format("%.1f", ct.getDonGia())
+                String.format("%.1f", ct.getGiaNhap())
             });
         }
 

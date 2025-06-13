@@ -60,7 +60,11 @@ public class PhieuNhapPanel extends JPanel {
         btnAdd = new JButton("Thêm");
         btnAdd.setBounds(10, 10, 80, 30);
         add(btnAdd);
-        btnAdd.addActionListener(e -> onAdd());
+        btnAdd.addActionListener(e -> {
+            AddPhieuNhapDialog dlg = new AddPhieuNhapDialog((JFrame)SwingUtilities.getWindowAncestor(this));
+            dlg.setVisible(true);
+            loadDataToTable(); // reload lại bảng khi đóng dialog
+        });
 
         btnEdit = new JButton("Sửa");
         btnEdit.setBounds(100, 10, 80, 30);

@@ -1,5 +1,6 @@
 package gui;
 
+import controller.ChiTietPhieuNhapController;
 import controller.NhaCungCapController;
 import controller.PhieuNhapController;
 import controller.ThuocController;
@@ -251,6 +252,11 @@ public class AddPhieuNhapDialog extends JDialog {
             MessageDialog.showWarning(this, "Vui lòng nhập đầy đủ thông tin thuốc!", "Cảnh báo");
             return;
         }
+        Date hanSuDungDate = DateHelper.toDate(hanSD, "dd/MM/yyyy"); // Bạn dùng format nào thì điền đúng
+        if (hanSuDungDate == null) {
+            MessageDialog.showWarning(this, "Hạn sử dụng phải đúng định dạng dd/MM/yyyy!", "Cảnh báo");
+            return;
+        }
         String idThuoc = sinhIDThuocTuDong();
         Thuoc t = new Thuoc();
         t.setIdThuoc(idThuoc);
@@ -262,7 +268,7 @@ public class AddPhieuNhapDialog extends JDialog {
         t.setSoLuongTon(Integer.parseInt(sl));
         t.setGiaNhap(Double.parseDouble(giaNhap));
         t.setDonGia(Double.parseDouble(donGia));
-        t.setHanSuDung(hanSD);
+        t.setHanSuDung(hanSuDungDate);
 
         listThuocTam.add(t);
 
@@ -271,11 +277,14 @@ public class AddPhieuNhapDialog extends JDialog {
         ct.setIdPN(txtIDPN.getText());
         ct.setIdThuoc(idThuoc);
         ct.setSoLuong(Integer.parseInt(sl));
-        ct.setDonGia(Double.parseDouble(donGia));
+        ct.setGiaNhap(Double.parseDouble(giaNhap)); 
         listChiTietTam.add(ct);
 
         // Hiển thị ra bảng
-        tblModelThuoc.addRow(new Object[]{idThuoc, ten, sl, giaNhap, donGia, hanSD});
+        tblModelThuoc.addRow(new Object[]{
+        	    idThuoc, ten, sl, giaNhap, donGia, DateHelper.toString(hanSuDungDate, "dd/MM/yyyy")
+        	});
+
 
         tongTien += Double.parseDouble(giaNhap) * Integer.parseInt(sl);
         lblTongTien.setText("Tổng tiền: " + tongTien);
@@ -330,6 +339,14 @@ public class AddPhieuNhapDialog extends JDialog {
             // Thực hiện lưu vào DB qua DAO (bạn cần tạo thêm DAO/Controller cho ChiTietPhieuNhap)
             // ví dụ: chiTietPhieuNhapController.addChiTietPhieuNhap(ct);
         }
+        ChiTietPhieuNhapController ctController = new ChiTietPhieuNhapController();
+        for (ChiTietPhieuNhap ct : listChiTietTam) {
+            if (!ctController.addChiTietPhieuNhap(ct)) {
+                MessageDialog.showError(this, "Lưu chi tiết phiếu nhập thất bại!", "Lỗi");
+                return;
+            }
+        }
+
         MessageDialog.showInfo(this, "Lưu phiếu nhập thành công!", "Thành công");
         dispose();
     }

@@ -8,29 +8,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ChiTietPhieuNhapDAO.java
- *
- * Đã chỉnh sửa truy vấn trong getByIdPN(...) để join với bảng Thuoc
- * và lấy thêm cột tenThuoc (tên thuốc).
- */
 public class ChiTietPhieuNhapDAO {
 
-    /**
-     * Trả về danh sách ChiTietPhieuNhap (kèm cả tên thuốc) theo idPN.
-     * 
-     * SELECT ct.idThuoc, t.tenThuoc, ct.soLuong, ct.donGia
-     *   FROM ChiTietPhieuNhap ct
-     *   JOIN Thuoc t ON ct.idThuoc = t.idThuoc
-     *  WHERE ct.idPN = ?
-     */
+    // Lấy danh sách chi tiết phiếu nhập theo idPN (dùng cho chức năng xem chi tiết)
     public List<ChiTietPhieuNhap> getByIdPN(String idPN) {
         List<ChiTietPhieuNhap> list = new ArrayList<>();
-        String sql = ""
-            + "SELECT ct.idPN, ct.idThuoc, t.tenThuoc, ct.soLuong, ct.donGia "
-            + "FROM ChiTietPhieuNhap ct "
-            + "JOIN Thuoc t ON ct.idThuoc = t.idThuoc "
-            + "WHERE ct.idPN = ?";
+        String sql = "SELECT ct.idPN, ct.idThuoc, t.tenThuoc, ct.soLuong, ct.giaNhap "
+                   + "FROM ChiTietPhieuNhap ct "
+                   + "JOIN Thuoc t ON ct.idThuoc = t.idThuoc "
+                   + "WHERE ct.idPN = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -45,9 +31,9 @@ public class ChiTietPhieuNhapDAO {
                 ChiTietPhieuNhap ct = new ChiTietPhieuNhap();
                 ct.setIdPN(rs.getString("idPN"));
                 ct.setIdThuoc(rs.getString("idThuoc"));
-                ct.setTenThuoc(rs.getString("tenThuoc")); // Tên thuốc mới
+                ct.setTenThuoc(rs.getString("tenThuoc"));
                 ct.setSoLuong(rs.getInt("soLuong"));
-                ct.setDonGia(rs.getDouble("donGia"));
+                ct.setGiaNhap(rs.getDouble("giaNhap")); // Đúng field
                 list.add(ct);
             }
         } catch (SQLException e) {
@@ -56,5 +42,68 @@ public class ChiTietPhieuNhapDAO {
             DBCloseHelper.closeAll(rs, stmt, conn);
         }
         return list;
+    }
+
+    // Thêm một chi tiết phiếu nhập mới
+    public boolean insert(ChiTietPhieuNhap ct) {
+        String sql = "INSERT INTO ChiTietPhieuNhap (idPN, idThuoc, soLuong, giaNhap) VALUES (?, ?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, ct.getIdPN());
+            stmt.setString(2, ct.getIdThuoc());
+            stmt.setInt(3, ct.getSoLuong());
+            stmt.setDouble(4, ct.getGiaNhap()); // Đúng field
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+
+    // Xóa tất cả chi tiết theo idPN (ít dùng)
+    public boolean deleteByPhieuNhap(String idPN) {
+        String sql = "DELETE FROM ChiTietPhieuNhap WHERE idPN = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idPN);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+
+    // Cập nhật số lượng, giá nhập chi tiết phiếu nhập
+    public boolean update(ChiTietPhieuNhap ct) {
+        String sql = "UPDATE ChiTietPhieuNhap SET soLuong = ?, giaNhap = ? WHERE idPN = ? AND idThuoc = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, ct.getSoLuong());
+            stmt.setDouble(2, ct.getGiaNhap()); // Đúng field
+            stmt.setString(3, ct.getIdPN());
+            stmt.setString(4, ct.getIdThuoc());
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
     }
 }
