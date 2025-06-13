@@ -243,5 +243,36 @@ public class HoaDonDAO {
             DBCloseHelper.closeAll(stmtHD, conn);
         }
     }
+    //thêm hàm từ đây 246 đến 277
+    public String getKhachHangIdByHoaDonId(String idHD) {
+        String sql = "SELECT idKH FROM HoaDon WHERE idHD = ?";
+        try (Connection conn = DriverManager.getConnection(
+        	    "jdbc:sqlserver://localhost:1433;databaseName=QLTHUOC;encrypt=false;", "sa", "sa");
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, idHD);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("idKH");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // không tìm thấy
+    }
+    public boolean exists(String idHD) {
+        String sql = "SELECT COUNT(*) FROM HoaDon WHERE idHD = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, idHD);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
