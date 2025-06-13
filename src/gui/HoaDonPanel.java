@@ -2,6 +2,7 @@ package gui;
 
 import controller.HoaDonController;
 
+
 import entities.HoaDon;
 import utils.DateHelper;
 import utils.MessageDialog;
@@ -22,31 +23,18 @@ import java.text.SimpleDateFormat;
 
 
 public class HoaDonPanel extends JPanel {
-
+	private HoaDonController controller;
     private JTable tblHoaDon;
     private DefaultTableModel tblModel;
-
-    private JPanel inputPanel;
-    private JTextField txtIdHD, txtThoiGian, txtIdNV, txtIdKH, txtTongTien;
-    private JTextField txtPhuongThucThanhToan, txtTrangThaiDonHang;
-    private JLabel lblDiemHienTaiValue;
-    private JTextField txtDiemSuDung;
-    private JLabel lblThanhTienValue;
-    private JButton btnSave, btnCancel;
-
     private JTextField txtSearchIdHD, txtSearchIdNV, txtSearchIdKH;
     private JButton btnSearch;
 
     private JButton btnAdd, btnEdit, btnDelete, btnViewDetail, btnRefresh;
 
-    private HoaDonController controller;
-    private String currentMode = "NONE"; // "NONE" | "ADDING" | "EDITING"
-
     public HoaDonPanel() {
         controller = new HoaDonController();
         initComponents();
         initSearchPanel();
-        initInputPanel(false);
         loadDataToTable();
     }
 
@@ -92,9 +80,6 @@ public class HoaDonPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = tblHoaDon.getSelectedRow();
-                if (row >= 0 && currentMode.equals("NONE")) {
-                    populateInputFromTable(row);
-                }
             }
         });
     }
@@ -135,126 +120,8 @@ public class HoaDonPanel extends JPanel {
         btnSearch.addActionListener(e -> onSearch());
     }
 
-    private void initInputPanel(boolean visible) {
-        inputPanel = new JPanel(null);
-        inputPanel.setBounds(10, 90, 860, 100);
-        add(inputPanel);
-
-        JLabel lblIdHD = new JLabel("IDHD:");
-        lblIdHD.setBounds(10, 10, 40, 25);
-        inputPanel.add(lblIdHD);
-        txtIdHD = new JTextField();
-        txtIdHD.setBounds(60, 10, 100, 25);
-        inputPanel.add(txtIdHD);
-
-        JLabel lblThoiGian = new JLabel("Thời gian:");
-        lblThoiGian.setBounds(180, 10, 70, 25);
-        inputPanel.add(lblThoiGian);
-        txtThoiGian = new JTextField();
-        txtThoiGian.setBounds(262, 10, 150, 25);
-        inputPanel.add(txtThoiGian);
-
-        JLabel lblIdNV = new JLabel("IDNV:");
-        lblIdNV.setBounds(420, 10, 40, 25);
-        inputPanel.add(lblIdNV);
-        txtIdNV = new JTextField();
-        txtIdNV.setBounds(475, 10, 100, 25);
-        inputPanel.add(txtIdNV);
-
-        JLabel lblIdKH = new JLabel("IDKH:");
-        lblIdKH.setBounds(626, 10, 40, 25);
-        inputPanel.add(lblIdKH);
-        txtIdKH = new JTextField();
-        txtIdKH.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                String idKH = txtIdKH.getText().trim();
-                if (idKH.isEmpty()) {
-                	lblDiemHienTaiValue.setText("");
-                    return;
-                }
-                // Gọi sang controller lấy điểm tích lũy hiện tại
-                int diemHienCo = controller.getDiemHienTai(idKH);
-                lblDiemHienTaiValue.setText("");
-                lblDiemHienTaiValue.setText(String.valueOf(diemHienCo));
-                lblDiemHienTaiValue.repaint();
-                capNhatThanhTienSauGiam(); // Cập nhật luôn số tiền phải trả nếu có thay đổi điểm
-            }
-        });
-        txtIdKH.setBounds(663, 10, 100, 25);
-        inputPanel.add(txtIdKH);
-
-        JLabel lblTongTien = new JLabel("Tổng tiền:");
-        lblTongTien.setBounds(10, 40, 70, 25);
-        inputPanel.add(lblTongTien);
-        txtTongTien = new JTextField();
-        txtTongTien.setBounds(60, 40, 100, 25);
-        inputPanel.add(txtTongTien);
-
-        JLabel lblPTTT = new JLabel("PT Thanh toán:");
-        lblPTTT.setBounds(180, 40, 100, 25);
-        inputPanel.add(lblPTTT);
-        txtPhuongThucThanhToan = new JTextField();
-        txtPhuongThucThanhToan.setBounds(262, 40, 150, 25);
-        inputPanel.add(txtPhuongThucThanhToan);
-
-        JLabel lblTrangThai = new JLabel("Trạng thái:");
-        lblTrangThai.setBounds(420, 40, 70, 25);
-        inputPanel.add(lblTrangThai);
-        txtTrangThaiDonHang = new JTextField();
-        txtTrangThaiDonHang.setBounds(475, 40, 100, 25);
-        inputPanel.add(txtTrangThaiDonHang);
-        JLabel lblDiemHienTai = new JLabel("Điểm hiện có:");
-        lblDiemHienTai.setBounds(10, 70, 80, 25);
-        inputPanel.add(lblDiemHienTai);
-
-        lblDiemHienTaiValue = new JLabel("0");
-        lblDiemHienTaiValue.setBounds(90, 70, 100, 25);
-        inputPanel.add(lblDiemHienTaiValue);
-
-        JLabel lblDiemSuDung = new JLabel("Sử dụng điểm:");
-        lblDiemSuDung.setBounds(180, 70, 80, 25);
-        inputPanel.add(lblDiemSuDung);
-
-        txtDiemSuDung = new JTextField("0");
-        txtDiemSuDung.setBounds(260, 70, 50, 25);
-        inputPanel.add(txtDiemSuDung);
-
-        JLabel lblThanhTienSauGiam = new JLabel("Thanh toán:");
-        lblThanhTienSauGiam.setBounds(340, 70, 80, 25);
-        inputPanel.add(lblThanhTienSauGiam);
-
-        lblThanhTienValue = new JLabel("0");
-        lblThanhTienValue.setBounds(420, 70, 100, 25);
-        inputPanel.add(lblThanhTienValue);
-
-        btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
-        inputPanel.add(btnSave);
-        btnSave.addActionListener(e -> onSave());
-
-        btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
-        inputPanel.add(btnCancel);
-        btnCancel.addActionListener(e -> onCancel());
-
-        inputPanel.setVisible(visible);
-     // Thêm vào cuối các trường nhập ở inputPanel (sau dòng txtTrangThaiDonHang)
-
-
-        txtDiemSuDung.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {
-                capNhatThanhTienSauGiam();
-            }
-        });
-        txtTongTien.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {
-                capNhatThanhTienSauGiam();
-            }
-        });
-    }
+    
+    
 
     private void loadDataToTable() {
         tblModel.setRowCount(0);
@@ -299,41 +166,6 @@ public class HoaDonPanel extends JPanel {
             });
         }
     }
-
-    private void populateInputFromTable(int row) {
-        txtIdHD.setText((String) tblModel.getValueAt(row, 0));
-        txtThoiGian.setText((String) tblModel.getValueAt(row, 1));
-        txtIdNV.setText((String) tblModel.getValueAt(row, 2));
-        txtIdKH.setText((String) tblModel.getValueAt(row, 3));
-        txtTongTien.setText((String) tblModel.getValueAt(row, 4));
-        txtPhuongThucThanhToan.setText((String) tblModel.getValueAt(row, 5));
-        txtTrangThaiDonHang.setText((String) tblModel.getValueAt(row, 6));
-    }
-
-    private void hideInputPanel() {
-        txtIdHD.setText("");
-        txtThoiGian.setText("");
-        txtIdNV.setText("");
-        txtIdKH.setText("");
-        txtTongTien.setText("");
-        txtPhuongThucThanhToan.setText("");
-        txtTrangThaiDonHang.setText("");
-
-        inputPanel.setVisible(false);
-        currentMode = "NONE";
-
-        btnAdd.setEnabled(true);
-        btnEdit.setEnabled(true);
-        btnDelete.setEnabled(true);
-        btnViewDetail.setEnabled(true);
-        btnRefresh.setEnabled(true);
-        tblHoaDon.setEnabled(true);
-        btnSearch.setEnabled(true);
-        txtSearchIdHD.setEnabled(true);
-        txtSearchIdNV.setEnabled(true);
-        txtSearchIdKH.setEnabled(true);
-    }
-
     // ======================= XỬ LÝ CHÍNH ===========================
 
     private void onAdd() {
@@ -376,12 +208,6 @@ public class HoaDonPanel extends JPanel {
             MessageDialog.showWarning(this, "Vui lòng chọn hóa đơn cần sửa!", "Cảnh báo");
             return;
         }
-        currentMode = "EDITING";
-        inputPanel.setVisible(true);
-
-        populateInputFromTable(row);
-        txtIdHD.setEditable(false);
-
         btnAdd.setEnabled(false);
         btnEdit.setEnabled(false);
         btnDelete.setEnabled(false);
@@ -428,109 +254,9 @@ public class HoaDonPanel extends JPanel {
     }
 
     private void onRefresh() {
-        hideInputPanel();
         loadDataToTable();
     }
 
-    private void onSave() {
-        String idHD = txtIdHD.getText().trim();
-        String thoiGianStr = txtThoiGian.getText().trim();
-        String idNV = txtIdNV.getText().trim();
-        String idKH = txtIdKH.getText().trim();
-        String tongTienStr = txtTongTien.getText().trim();
-        String phuongThuc = txtPhuongThucThanhToan.getText().trim();
-        String trangThai = txtTrangThaiDonHang.getText().trim();
-
-        if (idHD.isEmpty()) {
-            MessageDialog.showWarning(this, "IDHD không được để trống!", "Cảnh báo");
-            return;
-        }
-        if (!Validator.isDateTime(thoiGianStr, "dd/MM/yyyy HH:mm:ss")) {
-            MessageDialog.showWarning(this, "Thời gian phải đúng định dạng dd/MM/yyyy HH:mm:ss!", "Cảnh báo");
-            return;
-        }
-        if (idNV.isEmpty()) {
-            MessageDialog.showWarning(this, "IDNV không được để trống!", "Cảnh báo");
-            return;
-        }
-        if (idKH.isEmpty()) {
-            MessageDialog.showWarning(this, "IDKH không được để trống!", "Cảnh báo");
-            return;
-        }
-        if (!Validator.isDouble(tongTienStr)) {
-            MessageDialog.showWarning(this, "Tổng tiền phải là số!", "Cảnh báo");
-            return;
-        }
-        if (trangThai.isEmpty()) {
-            MessageDialog.showWarning(this, "Trạng thái đơn hàng không được để trống!", "Cảnh báo");
-            return;
-        }
-
-        // Lấy số điểm sử dụng để trừ
-        int diemSuDung = 0;
-        try {
-            diemSuDung = Integer.parseInt(txtDiemSuDung.getText().trim());
-            if (diemSuDung < 0) diemSuDung = 0;
-        } catch (Exception ex) {
-            diemSuDung = 0;
-        }
-
-        // Lấy số tiền đã trừ điểm
-        double tongTienSauGiam = 0;
-        try {
-            tongTienSauGiam = Double.parseDouble(lblThanhTienValue.getText().trim());
-        } catch (Exception ex) {
-            tongTienSauGiam = 0;
-        }
-
-        HoaDon hd = new HoaDon();
-        hd.setIdHD(idHD);
-        hd.setThoiGian(DateHelper.toDateTime(thoiGianStr, "dd/MM/yyyy HH:mm:ss"));
-        hd.setIdNV(idNV);
-        hd.setIdKH(idKH);
-        hd.setTongTien(tongTienSauGiam);  // LƯU TIỀN ĐÃ TRỪ ĐIỂM
-        hd.setPhuongThucThanhToan(phuongThuc.isEmpty() ? null : phuongThuc);
-        hd.setTrangThaiDonHang(trangThai);
-
-        boolean success;
-        StringBuilder errorMsg = new StringBuilder();
-        if (currentMode.equals("EDITING")) {
-            success = controller.updateHoaDon(hd, errorMsg);
-            if (success) {
-                MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
-            } else {
-                MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Cập nhật thất bại!", "Lỗi");
-                return;
-            }
-        }
-        // Nếu vẫn muốn ADDING, hãy thông báo chuyển sang dùng nút Thêm
-        else if (currentMode.equals("ADDING")) {
-            MessageDialog.showWarning(this, "Vui lòng bấm nút Thêm để nhập hóa đơn mới!", "Thông báo");
-            return;
-        }
-
-        hideInputPanel();
-        loadDataToTable();
-    }
-
-
-    private void onCancel() {
-        hideInputPanel();
-    }
-    private void capNhatThanhTienSauGiam() {
-        try {
-            double tongTien = Double.parseDouble(txtTongTien.getText().trim());
-            int diemHienCo = Integer.parseInt(lblDiemHienTaiValue.getText());
-            int diemSuDung = Integer.parseInt(txtDiemSuDung.getText().trim());
-            if (diemSuDung > diemHienCo) diemSuDung = diemHienCo;
-            if (diemSuDung < 0) diemSuDung = 0;
-            double thanhTien = tongTien - diemSuDung * 1000; // 1 điểm = 1000đ, tuỳ bạn quy đổi
-            if (thanhTien < 0) thanhTien = 0;
-            lblThanhTienValue.setText(String.format("%.0f", thanhTien));
-        } catch (Exception ex) {
-            lblThanhTienValue.setText("0");
-        }
-    }
     private void reloadHoaDonTable() {
         // Lấy danh sách hóa đơn mới nhất từ controller
         List<HoaDon> ds = controller.getAllHoaDon();
