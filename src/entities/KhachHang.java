@@ -12,7 +12,13 @@ public class KhachHang {
 
     public KhachHang() {
     }
-
+    public KhachHang(String idKH, String hoTen, String sdt, String gioiTinh, Date ngayThamGia) {
+        this.idKH = idKH;
+        this.hoTen = hoTen;
+        this.sdt = sdt;
+        this.gioiTinh = gioiTinh;
+        this.ngayThamGia = ngayThamGia;
+    }
     public String getIdKH() {
         return idKH;
     }
@@ -52,6 +58,11 @@ public class KhachHang {
     public void setNgayThamGia(Date ngayThamGia) {
         this.ngayThamGia = ngayThamGia;
     }
+    // thêm phần này 62-64
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+    
     public int getDiemTichLuy() { return diemTichLuy; }
     public void setDiemTichLuy(int diemTichLuy) { this.diemTichLuy = diemTichLuy; }
 }
