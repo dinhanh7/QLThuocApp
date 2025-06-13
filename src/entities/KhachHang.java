@@ -52,4 +52,8 @@ public class KhachHang {
     public void setNgayThamGia(Date ngayThamGia) {
         this.ngayThamGia = ngayThamGia;
     }
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+
 }

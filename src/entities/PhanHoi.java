@@ -78,4 +78,8 @@ public class PhanHoi {
     public void setDanhGia(int danhGia) {
         this.danhGia = danhGia;
     }
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+
 }

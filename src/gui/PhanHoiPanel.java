@@ -374,6 +374,7 @@ public class PhanHoiPanel extends JPanel {
         }
     }
 
+
     /**
      * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
      */

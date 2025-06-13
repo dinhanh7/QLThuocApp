@@ -50,6 +50,7 @@ public class KhachHangController {
         }
     }
 
+
     /**
      * Tìm kiếm Khách hàng theo hoTen hoặc sdt.
      * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.

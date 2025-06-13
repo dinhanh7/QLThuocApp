@@ -41,4 +41,7 @@ public class NhaCungCap {
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
     }
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }

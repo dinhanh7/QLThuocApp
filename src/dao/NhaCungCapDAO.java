@@ -8,19 +8,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * NhaCungCapDAO.java
- *
- * CRUD cho bảng NhaCungCap, kèm phương thức search(idNCC, tenNCC).
- */
 public class NhaCungCapDAO {
 
-    /**
-     * Lấy danh sách toàn bộ Nhà cung cấp.
-     */
+    // Lấy tất cả nhà cung cấp chưa xóa
     public List<NhaCungCap> getAll() {
         List<NhaCungCap> list = new ArrayList<>();
-        String sql = "SELECT idNCC, tenNCC, sdt, diaChi FROM NhaCungCap";
+        String sql = "SELECT idNCC, tenNCC, sdt, diaChi FROM NhaCungCap WHERE (isDeleted IS NULL OR isDeleted = 0)";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -44,11 +37,9 @@ public class NhaCungCapDAO {
         return list;
     }
 
-    /**
-     * Thêm mới một Nhà cung cấp.
-     */
+    // Thêm mới NCC (isDeleted = 0)
     public boolean insert(NhaCungCap ncc) {
-        String sql = "INSERT INTO NhaCungCap (idNCC, tenNCC, sdt, diaChi) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO NhaCungCap (idNCC, tenNCC, sdt, diaChi, isDeleted) VALUES (?, ?, ?, ?, 0)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -68,9 +59,7 @@ public class NhaCungCapDAO {
         }
     }
 
-    /**
-     * Cập nhật dữ liệu Nhà cung cấp theo idNCC.
-     */
+    // Cập nhật thông tin (trừ isDeleted)
     public boolean update(NhaCungCap ncc) {
         String sql = "UPDATE NhaCungCap SET tenNCC = ?, sdt = ?, diaChi = ? WHERE idNCC = ?";
         Connection conn = null;
@@ -92,11 +81,9 @@ public class NhaCungCapDAO {
         }
     }
 
-    /**
-     * Xóa Nhà cung cấp theo idNCC.
-     */
+    // XÓA MỀM: cập nhật isDeleted = 1 thay vì DELETE
     public boolean delete(String idNCC) {
-        String sql = "DELETE FROM NhaCungCap WHERE idNCC = ?";
+        String sql = "UPDATE NhaCungCap SET isDeleted = 1 WHERE idNCC = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -113,16 +100,12 @@ public class NhaCungCapDAO {
         }
     }
 
-    /**
-     * Tìm kiếm Nhà cung cấp theo idNCC hoặc tenNCC.
-     * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
-     */
+    // Tìm kiếm NCC theo id hoặc tên (chỉ hiện chưa xóa)
     public List<NhaCungCap> search(String idNCC, String tenNCC) {
         List<NhaCungCap> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT idNCC, tenNCC, sdt, diaChi FROM NhaCungCap WHERE 1=1"
+            "SELECT idNCC, tenNCC, sdt, diaChi FROM NhaCungCap WHERE (isDeleted IS NULL OR isDeleted = 0)"
         );
-
         if (idNCC != null && !idNCC.trim().isEmpty()) {
             sql.append(" AND idNCC LIKE ?");
         }

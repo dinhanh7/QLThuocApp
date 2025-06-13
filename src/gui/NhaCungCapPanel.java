@@ -345,6 +345,7 @@ public class NhaCungCapPanel extends JPanel {
         }
     }
 
+
     /**
      * Khi bấm “Làm mới”:
      *  - Ẩn inputPanel nếu đang hiển thị,

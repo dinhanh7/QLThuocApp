@@ -376,12 +376,13 @@ public class KhachHangPanel extends JPanel {
             StringBuilder errorMsg = new StringBuilder();
             if (controller.deleteKhachHang(id, errorMsg)) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
-                loadDataToTable();
+                loadDataToTable(); // Chỉ KH chưa xóa mới hiện!
             } else {
                 MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Xóa thất bại!", "Lỗi");
             }
         }
-    }   
+    }
+
     /**
      * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
      */
