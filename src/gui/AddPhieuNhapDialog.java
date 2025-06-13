@@ -26,6 +26,8 @@ public class AddPhieuNhapDialog extends JDialog {
     private DefaultTableModel tblModelThuoc;
     private JTable tblThuoc;
     private JLabel lblTongTien;
+    private JButton btnXoaThuoc; // Thêm ở khai báo thành viên
+
 
     // Dữ liệu tạm
     private List<Thuoc> listThuocTam = new ArrayList<>();
@@ -164,9 +166,35 @@ public class AddPhieuNhapDialog extends JDialog {
         });
 
         btnThemNCC.addActionListener(e -> showThemNCCDialog());
-
+        
         // Thêm thuốc
         btnThemThuoc.addActionListener(e -> themThuocVaoTam());
+        
+        //xoa thuoc
+        btnXoaThuoc = new JButton("Xóa dòng thuốc");
+        btnXoaThuoc.setBounds(10, 390, 150, 30); // Điều chỉnh vị trí phù hợp layout của bạn
+        add(btnXoaThuoc);
+        btnXoaThuoc.addActionListener(e -> {
+            int row = tblThuoc.getSelectedRow();
+            if (row < 0) {
+                MessageDialog.showWarning(this, "Vui lòng chọn dòng thuốc muốn xóa!", "Cảnh báo");
+                return;
+            }
+            // Xóa trong list tạm
+            String idThuoc = tblModelThuoc.getValueAt(row, 0).toString();
+            // Xóa khỏi listThuocTam
+            listThuocTam.removeIf(t -> t.getIdThuoc().equals(idThuoc));
+            // Xóa khỏi listChiTietTam
+            listChiTietTam.removeIf(ct -> ct.getIdThuoc().equals(idThuoc));
+            // Trừ tổng tiền
+            double giaNhap = Double.parseDouble(tblModelThuoc.getValueAt(row, 3).toString());
+            int soLuong = Integer.parseInt(tblModelThuoc.getValueAt(row, 2).toString());
+            tongTien -= giaNhap * soLuong;
+            lblTongTien.setText("Tổng tiền: " + tongTien);
+
+            // Xóa khỏi bảng hiển thị
+            tblModelThuoc.removeRow(row);
+        });
 
         // Nút Lưu
         btnLuu.addActionListener(e -> luuPhieuNhap());
