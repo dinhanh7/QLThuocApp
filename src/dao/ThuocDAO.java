@@ -185,4 +185,35 @@ public class ThuocDAO {
             return false;
         }
     }
+    // lấy thuốc theo id
+    public Thuoc getById(String idThuoc) {
+        String sql = "SELECT idThuoc, tenThuoc, hinhAnh, thanhPhan, donViTinh, danhMuc, xuatXu, " +
+                     "soLuongTon, giaNhap, donGia, hanSuDung " +
+                     "FROM Thuoc WHERE idThuoc = ? AND isDeleted = 0";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, idThuoc);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Thuoc t = new Thuoc();
+                    t.setIdThuoc(rs.getString("idThuoc"));
+                    t.setTenThuoc(rs.getString("tenThuoc"));
+                    t.setHinhAnh(rs.getBytes("hinhAnh"));
+                    t.setThanhPhan(rs.getString("thanhPhan"));
+                    t.setDonViTinh(rs.getString("donViTinh"));
+                    t.setDanhMuc(rs.getString("danhMuc"));
+                    t.setXuatXu(rs.getString("xuatXu"));
+                    t.setSoLuongTon(rs.getInt("soLuongTon"));
+                    t.setGiaNhap(rs.getDouble("giaNhap"));
+                    t.setDonGia(rs.getDouble("donGia"));
+                    t.setHanSuDung(rs.getDate("hanSuDung"));
+                    return t;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

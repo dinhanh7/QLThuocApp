@@ -1,8 +1,17 @@
 package controller;
 
 import dao.HoaDonDAO;
+import entities.ChiTietHoaDon;
 import controller.KhachHangController;
 import entities.HoaDon;
+import entities.HoaDon;
+import entities.ChiTietHoaDon;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
+
+import connectDB.DBCloseHelper;
+import connectDB.DBConnection;
 
 import java.util.List;
 
@@ -28,14 +37,16 @@ public class HoaDonController {
      * @param hd        Đối tượng hóa đơn cần thêm.
      * @param errorMsg  Nếu có lỗi sẽ nhận được message lỗi để GUI hiển thị.
      */
-    public boolean addHoaDon(HoaDon hd, StringBuilder errorMsg) {
+    public boolean addHoaDon(HoaDon hd, List<ChiTietHoaDon> chiTietList, StringBuilder errorMsg) {
         try {
-            return hoaDonDAO.insertHoaDon(hd);
+            // Gọi DAO để insert master-detail (cả hóa đơn và chi tiết)
+            return hoaDonDAO.insertHoaDonWithDetails(hd, chiTietList);
         } catch (RuntimeException ex) {
             if (errorMsg != null) errorMsg.append(ex.getMessage());
             return false;
         }
     }
+
 
     /**
      * Cập nhật hóa đơn, trả về true nếu thành công, false nếu lỗi.
@@ -82,6 +93,49 @@ public class HoaDonController {
     }
     public boolean congDiem(String idKH, int soDiemCong) {
         return khachHangController.congDiem(idKH, soDiemCong);
+    }
+    public boolean insertHoaDonWithDetails(HoaDon hd, List<ChiTietHoaDon> chiTietList) {
+        Connection conn = null;
+        PreparedStatement stmtHD = null, stmtCT = null;
+        String sqlHD = "INSERT INTO HoaDon (idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sqlCT = "INSERT INTO ChiTietHoaDon (idHD, idThuoc, soLuong, donGia) VALUES (?, ?, ?, ?)";
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            // Thêm hóa đơn
+            stmtHD = conn.prepareStatement(sqlHD);
+            stmtHD.setString(1, hd.getIdHD());
+            stmtHD.setTimestamp(2, new java.sql.Timestamp(hd.getThoiGian().getTime()));
+            stmtHD.setString(3, hd.getIdNV());
+            stmtHD.setString(4, hd.getIdKH());
+            stmtHD.setDouble(5, hd.getTongTien());
+            stmtHD.setString(6, hd.getPhuongThucThanhToan());
+            stmtHD.setString(7, hd.getTrangThaiDonHang());
+            stmtHD.executeUpdate();
+
+            // Thêm từng chi tiết hóa đơn
+            stmtCT = conn.prepareStatement(sqlCT);
+            for (ChiTietHoaDon ct : chiTietList) {
+                stmtCT.setString(1, hd.getIdHD());
+                stmtCT.setString(2, ct.getIdThuoc());
+                stmtCT.setInt(3, ct.getSoLuong());
+                stmtCT.setDouble(4, ct.getDonGia());
+                stmtCT.addBatch();
+            }
+            stmtCT.executeBatch();
+
+            conn.commit();
+            return true;
+        } catch (Exception ex) {
+            if (conn != null) try { conn.rollback(); } catch (Exception ignore) {}
+            ex.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm hóa đơn và chi tiết hóa đơn: " + ex.getMessage());
+        } finally {
+            DBCloseHelper.closeAll(stmtCT, null);
+            DBCloseHelper.closeAll(stmtHD, conn);
+        }
     }
 
 }

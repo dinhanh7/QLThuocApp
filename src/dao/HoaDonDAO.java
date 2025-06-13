@@ -2,6 +2,7 @@ package dao;
 
 import connectDB.DBConnection;
 import connectDB.DBCloseHelper;
+import entities.ChiTietHoaDon;
 import entities.HoaDon;
 
 import java.sql.*;
@@ -199,4 +200,48 @@ public class HoaDonDAO {
         }
         return list;
     }
+    public boolean insertHoaDonWithDetails(HoaDon hd, List<ChiTietHoaDon> chiTietList) {
+        Connection conn = null;
+        PreparedStatement stmtHD = null, stmtCT = null;
+        String sqlHD = "INSERT INTO HoaDon (idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sqlCT = "INSERT INTO ChiTietHoaDon (idHD, idThuoc, soLuong, donGia) VALUES (?, ?, ?, ?)";
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            // Thêm hóa đơn
+            stmtHD = conn.prepareStatement(sqlHD);
+            stmtHD.setString(1, hd.getIdHD());
+            stmtHD.setTimestamp(2, new java.sql.Timestamp(hd.getThoiGian().getTime()));
+            stmtHD.setString(3, hd.getIdNV());
+            stmtHD.setString(4, hd.getIdKH());
+            stmtHD.setDouble(5, hd.getTongTien());
+            stmtHD.setString(6, hd.getPhuongThucThanhToan());
+            stmtHD.setString(7, hd.getTrangThaiDonHang());
+            stmtHD.executeUpdate();
+
+            // Thêm từng chi tiết hóa đơn
+            stmtCT = conn.prepareStatement(sqlCT);
+            for (ChiTietHoaDon ct : chiTietList) {
+                stmtCT.setString(1, hd.getIdHD());
+                stmtCT.setString(2, ct.getIdThuoc());
+                stmtCT.setInt(3, ct.getSoLuong());
+                stmtCT.setDouble(4, ct.getDonGia());
+                stmtCT.addBatch();
+            }
+            stmtCT.executeBatch();
+
+            conn.commit();
+            return true;
+        } catch (Exception ex) {
+            if (conn != null) try { conn.rollback(); } catch (Exception ignore) {}
+            ex.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm hóa đơn và chi tiết hóa đơn: " + ex.getMessage());
+        } finally {
+            DBCloseHelper.closeAll(stmtCT, null);
+            DBCloseHelper.closeAll(stmtHD, conn);
+        }
+    }
+
 }

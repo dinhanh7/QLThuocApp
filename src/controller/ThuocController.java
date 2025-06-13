@@ -1,6 +1,7 @@
 package controller;
 
 import dao.ThuocDAO;
+
 import entities.Thuoc;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public class ThuocController {
     public List<Thuoc> getAllThuoc() {
         return thuocDAO.getAllThuoc();
     }
-
+    public Thuoc getById(String idThuoc) {
+        return thuocDAO.getById(idThuoc);
+    }
     public boolean addThuoc(Thuoc t) {
         return thuocDAO.insertThuoc(t);
     }

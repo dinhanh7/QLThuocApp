@@ -1,0 +1,108 @@
+//This is code of: DBCloseHelper.java
+package connectDB;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DBCloseHelper {
+
+    /**
+     * Đóng ResultSet nếu không null và bắt mọi SQLException.
+     */
+    public static void close(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                System.err.println("Lỗi khi đóng ResultSet:");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Đóng Statement (hoặc PreparedStatement, CallableStatement) nếu không null.
+     */
+    public static void close(Statement stmt) {
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                System.err.println("Lỗi khi đóng Statement:");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Đóng Connection nếu không null.
+     */
+    public static void close(Connection conn) {
+        if (conn != null) {
+            try {
+                if (!conn.isClosed()) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.err.println("Lỗi khi đóng Connection:");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Đóng đồng thời ResultSet, Statement và Connection.
+     * Thứ tự: ResultSet → Statement → Connection.
+     */
+    public static void closeAll(ResultSet rs, Statement stmt, Connection conn) {
+        close(rs);
+        close(stmt);
+        close(conn);
+    }
+
+    /**
+     * Đóng Statement và Connection (nếu bạn chỉ dùng Statement).
+     */
+    public static void closeAll(Statement stmt, Connection conn) {
+        close(stmt);
+        close(conn);
+    }
+}
+// DBCloseHelper.java 
+
+//This is code of: DBConnection.java
+package connectDB;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DBConnection {
+    // URL kết nối tới SQL Server
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=QLTHUOC;encrypt=false;";
+    private static final String USER = "sa";
+    private static final String PASS = "123123";
+
+    static {
+        try {
+            // Nạp driver JDBC của Microsoft SQL Server
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Không tìm thấy driver JDBC cho SQL Server:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Trả về một Connection tới database QLTHUOC.
+     * @return Connection đã mở
+     * @throws SQLException nếu không thể kết nối
+     */
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASS);
+    }
+}
+// DBConnection.java 
+

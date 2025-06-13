@@ -1,6 +1,7 @@
 package gui;
 
 import controller.HoaDonController;
+
 import entities.HoaDon;
 import utils.DateHelper;
 import utils.MessageDialog;
@@ -8,12 +9,17 @@ import utils.Validator;
 import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+import gui.AddHoaDonDialog;
+import entities.HoaDon;
+import entities.ChiTietHoaDon;
+import java.util.List;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.text.SimpleDateFormat;
+
 
 public class HoaDonPanel extends JPanel {
 
@@ -331,30 +337,38 @@ public class HoaDonPanel extends JPanel {
     // ======================= XỬ LÝ CHÍNH ===========================
 
     private void onAdd() {
-        currentMode = "ADDING";
-        inputPanel.setVisible(true);
+        AddHoaDonDialog dialog = new AddHoaDonDialog((JFrame) SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
 
-        txtIdHD.setText("");
-        txtThoiGian.setText("");
-        txtIdNV.setText("");
-        txtIdKH.setText("");
-        txtTongTien.setText("");
-        txtPhuongThucThanhToan.setText("");
-        txtTrangThaiDonHang.setText("");
+        if (dialog.isSaved()) {
+            HoaDon hd = dialog.getHoaDon();
+            List<ChiTietHoaDon> chiTietList = dialog.getChiTietHoaDonList();
 
-        txtIdHD.setEditable(true);
+            StringBuilder errorMsg = new StringBuilder();
+            boolean ok = controller.addHoaDon(hd, chiTietList, errorMsg);
 
-        btnAdd.setEnabled(false);
-        btnEdit.setEnabled(false);
-        btnDelete.setEnabled(false);
-        btnViewDetail.setEnabled(false);
-        btnRefresh.setEnabled(false);
-        tblHoaDon.setEnabled(false);
-        btnSearch.setEnabled(false);
-        txtSearchIdHD.setEnabled(false);
-        txtSearchIdNV.setEnabled(false);
-        txtSearchIdKH.setEnabled(false);
+            // XỬ LÝ TÍCH/ TRỪ ĐIỂM
+            int diemSuDung = dialog.getDiemSuDung();
+            double thanhToanSauGiam = dialog.getThanhTienSauGiam();
+
+            if (ok) {
+                // Trừ điểm cho khách nếu có sử dụng
+                if (diemSuDung > 0) {
+                    controller.truDiem(hd.getIdKH(), diemSuDung);
+                }
+                // Cộng điểm thưởng sau mua (VD: mỗi 100k được 1 điểm)
+                int diemCong = (int) (thanhToanSauGiam / 100000);
+                if (diemCong > 0) {
+                    controller.congDiem(hd.getIdKH(), diemCong);
+                }
+                MessageDialog.showInfo(this, "Thêm hóa đơn thành công!", "Thông báo");
+                reloadHoaDonTable();
+            } else {
+                MessageDialog.showError(this, "Lỗi: " + errorMsg.toString(), "Thêm hóa đơn thất bại");
+            }
+        }
     }
+
 
     private void onEdit() {
         int row = tblHoaDon.getSelectedRow();
@@ -480,21 +494,7 @@ public class HoaDonPanel extends JPanel {
 
         boolean success;
         StringBuilder errorMsg = new StringBuilder();
-        if (currentMode.equals("ADDING")) {
-            success = controller.addHoaDon(hd, errorMsg);
-            if (success) {
-                // Trừ điểm thực sự cho khách hàng nếu đã sử dụng điểm
-                if (diemSuDung > 0) {
-                    controller.truDiem(idKH, diemSuDung);
-                    // Cập nhật lại điểm tích lũy đang hiển thị
-                    lblDiemHienTaiValue.setText(String.valueOf(controller.getDiemHienTai(idKH)));
-                }
-                MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
-            } else {
-                MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Thêm thất bại!", "Lỗi");
-                return;
-            }
-        } else { // EDITING
+        if (currentMode.equals("EDITING")) {
             success = controller.updateHoaDon(hd, errorMsg);
             if (success) {
                 MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
@@ -502,6 +502,11 @@ public class HoaDonPanel extends JPanel {
                 MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Cập nhật thất bại!", "Lỗi");
                 return;
             }
+        }
+        // Nếu vẫn muốn ADDING, hãy thông báo chuyển sang dùng nút Thêm
+        else if (currentMode.equals("ADDING")) {
+            MessageDialog.showWarning(this, "Vui lòng bấm nút Thêm để nhập hóa đơn mới!", "Thông báo");
+            return;
         }
 
         hideInputPanel();
@@ -526,4 +531,26 @@ public class HoaDonPanel extends JPanel {
             lblThanhTienValue.setText("0");
         }
     }
+    private void reloadHoaDonTable() {
+        // Lấy danh sách hóa đơn mới nhất từ controller
+        List<HoaDon> ds = controller.getAllHoaDon();
+
+        // Xóa hết dữ liệu cũ trên bảng
+        tblModel.setRowCount(0);
+
+        // Thêm lại từng dòng hóa đơn mới
+        for (HoaDon hd : ds) {
+            Object[] rowData = {
+                hd.getIdHD(),
+                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(hd.getThoiGian()),
+                hd.getIdNV(),
+                hd.getIdKH(),
+                hd.getTongTien(),
+                hd.getPhuongThucThanhToan(),
+                hd.getTrangThaiDonHang()
+            };
+            tblModel.addRow(rowData);
+        }
+    }
+
 }
