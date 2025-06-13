@@ -8,20 +8,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * HopDongDAO.java
- *
- * CRUD cho bảng dbo.HopDong, bây giờ đã có thêm cột trangThai.
- */
 public class HopDongDAO {
 
-    /**
-     * Lấy toàn bộ HopDong từ CSDL.
-     */
+    // Lấy toàn bộ hợp đồng chưa bị xóa
     public List<HopDong> getAllHopDong() {
         List<HopDong> list = new ArrayList<>();
         String sql = "SELECT idHDong, ngayBatDau, ngayKetThuc, noiDung, idNV, idNCC, trangThai " +
-                     "  FROM HopDong";
+                     "FROM HopDong WHERE (isDeleted IS NULL OR isDeleted = 0)";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -48,15 +41,12 @@ public class HopDongDAO {
         return list;
     }
 
-    /**
-     * Tìm kiếm HopDong theo idHDong, idNV hoặc idNCC.
-     * Nếu cả ba tham số đều rỗng, trả về toàn bộ danh sách.
-     */
+    // Tìm kiếm hợp đồng (chỉ hiện chưa xóa)
     public List<HopDong> searchHopDong(String idHDong, String idNV, String idNCC) {
         List<HopDong> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
             "SELECT idHDong, ngayBatDau, ngayKetThuc, noiDung, idNV, idNCC, trangThai " +
-            "  FROM HopDong WHERE 1=1"
+            "FROM HopDong WHERE (isDeleted IS NULL OR isDeleted = 0)"
         );
         if (idHDong != null && !idHDong.trim().isEmpty()) {
             sql.append(" AND idHDong LIKE ?");
@@ -104,13 +94,10 @@ public class HopDongDAO {
         return list;
     }
 
-    /**
-     * Thêm mới một HopDong.
-     */
+    // Thêm mới hợp đồng (isDeleted = 0)
     public boolean insertHopDong(HopDong hd) {
-        String sql = "INSERT INTO HopDong " +
-                     "(idHDong, ngayBatDau, ngayKetThuc, noiDung, idNV, idNCC, trangThai) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO HopDong (idHDong, ngayBatDau, ngayKetThuc, noiDung, idNV, idNCC, trangThai, isDeleted) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -135,7 +122,6 @@ public class HopDongDAO {
                 stmt.setNull(6, Types.NVARCHAR);
             }
             stmt.setString(7, hd.getTrangThai());
-
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -146,13 +132,9 @@ public class HopDongDAO {
         }
     }
 
-    /**
-     * Cập nhật HopDong theo idHDong.
-     */
+    // Cập nhật hợp đồng (không đổi isDeleted)
     public boolean updateHopDong(HopDong hd) {
-        String sql = "UPDATE HopDong SET " +
-                     "ngayBatDau = ?, ngayKetThuc = ?, noiDung = ?, idNV = ?, idNCC = ?, trangThai = ? " +
-                     "WHERE idHDong = ?";
+        String sql = "UPDATE HopDong SET ngayBatDau = ?, ngayKetThuc = ?, noiDung = ?, idNV = ?, idNCC = ?, trangThai = ? WHERE idHDong = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -177,7 +159,6 @@ public class HopDongDAO {
             }
             stmt.setString(6, hd.getTrangThai());
             stmt.setString(7, hd.getIdHDong());
-
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
@@ -188,11 +169,9 @@ public class HopDongDAO {
         }
     }
 
-    /**
-     * Xóa HopDong theo idHDong.
-     */
+    // XÓA MỀM: chỉ cập nhật isDeleted = 1
     public boolean deleteHopDong(String idHDong) {
-        String sql = "DELETE FROM HopDong WHERE idHDong = ?";
+        String sql = "UPDATE HopDong SET isDeleted = 1 WHERE idHDong = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {

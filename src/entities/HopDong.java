@@ -84,4 +84,8 @@ public class HopDong {
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+
 }

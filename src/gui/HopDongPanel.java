@@ -399,6 +399,7 @@ public class HopDongPanel extends JPanel {
         }
     }
 
+
     /**
      * Khi bấm “Làm mới”:
      *  - Ẩn inputPanel nếu đang hiển thị,

@@ -316,7 +316,7 @@ public class ThuocPanel extends JPanel {
         txtXuatXu.setText((String) tblModel.getValueAt(row, 5));
         txtSoLuongTon.setText(tblModel.getValueAt(row, 6).toString());
         txtGiaNhap.setText(tblModel.getValueAt(row, 7).toString());
-        txtDonGia.setText(tblModel.getValueAt(row, 😎.toString());
+        txtDonGia.setText(tblModel.getValueAt(row, 8).toString());
         txtHanSuDung.setText((String) tblModel.getValueAt(row, 9));
     }
 
