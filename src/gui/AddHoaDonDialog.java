@@ -3,6 +3,7 @@ package gui;
 import controller.ThuocController;
 import entities.ChiTietHoaDon;
 import entities.HoaDon;
+import entities.KhachHang;
 import entities.Thuoc;
 import controller.KhachHangController;
 import javax.swing.*;
@@ -20,16 +21,20 @@ public class AddHoaDonDialog extends JDialog {
 	private JLabel lblThanhTienSauGiam;
 	private int diemHienTai = 0;  // tích điểm hiện tại của khách
     private JTextField txtIdHD, txtThoiGian, txtIdNV, txtPhuongThuc, txtTrangThai, txtTongTien;
-    private JComboBox<String> cbIdKH;
+    private JComboBox<String> cbKhachHang;
+    private JButton btnThemKhachHang;
+    private List<String> danhSachKhach;
     private JTable tblThuoc;
     private DefaultTableModel modelThuoc;
     private JButton btnAddThuoc, btnDeleteThuoc, btnSave, btnCancel;
     private boolean saved = false;
     private int diemSuDung = 0;
+    private boolean isUpdatingTable = false;
     private double thanhTienSauGiam = 0.0;
     private List<Thuoc> allThuocList = new ArrayList<>();
     private ThuocController thuocController = new ThuocController();
     private KhachHangController khachHangController = new KhachHangController();
+
     public AddHoaDonDialog(JFrame parent) {
         super(parent, "Thêm hóa đơn mới", true);
         setSize(750, 550);
@@ -45,30 +50,7 @@ public class AddHoaDonDialog extends JDialog {
         txtIdHD = new JTextField();
         txtThoiGian = new JTextField();
         txtIdNV = new JTextField();
-        cbIdKH = new JComboBox<>();
-        cbIdKH.setEditable(true); // Cho phép vừa chọn vừa gõ
-        List<entities.KhachHang> allKhachList = khachHangController.getAllKhachHang();
-        for (entities.KhachHang kh : allKhachList) {
-            cbIdKH.addItem(kh.getIdKH() + " - " + kh.getHoTen() + " - " + kh.getSdt());
-        }
 
-        // Gợi ý: nếu project có SwingX, thêm dòng này để tự động autocomplete khi gõ
-        // org.jdesktop.swingx.autocomplete.AutoCompleteDecorator.decorate(cbIdKH);
-
-        cbIdKH.addActionListener(e -> {
-            String selected = (String) cbIdKH.getSelectedItem();
-            String idKH = selected != null ? selected.split(" - ")[0].trim() : "";
-            diemHienTai = 0;
-            if (!idKH.isEmpty()) {
-                try {
-                    diemHienTai = khachHangController.getDiemHienTai(idKH);
-                } catch (Exception ex) {
-                    diemHienTai = 0;
-                }
-            }
-            lblDiemHienTai.setText("Điểm hiện có: " + diemHienTai);
-            capNhatThanhTienSauGiam();
-        });
 
         lblDiemHienTai = new JLabel("Điểm hiện có: 0");
         txtDiemSuDung = new JTextField("0");
@@ -87,6 +69,85 @@ public class AddHoaDonDialog extends JDialog {
         // Thời gian thực (hiện tại) không cho nhập tay
         txtThoiGian.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
         txtThoiGian.setEditable(false);
+        List<KhachHang> allKhachList = khachHangController.getAllKhachHang();
+        cbKhachHang = new JComboBox<>();
+        cbKhachHang.setEditable(true);
+        danhSachKhach = new ArrayList<>();
+        for (KhachHang kh : allKhachList) {
+            String s = kh.getIdKH() + " - " + kh.getHoTen() + " - " + kh.getSdt();
+            danhSachKhach.add(s);
+            cbKhachHang.addItem(s);
+        }
+        cbKhachHang.getEditor().getEditorComponent().addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                String input = ((JTextField) cbKhachHang.getEditor().getEditorComponent()).getText().trim();
+                cbKhachHang.hidePopup();
+                cbKhachHang.removeAllItems();
+                boolean found = false;
+                for (String s : danhSachKhach) {
+                    if (s.toLowerCase().contains(input.toLowerCase())) {
+                        cbKhachHang.addItem(s);
+                        found = true;
+                    }
+                }
+                cbKhachHang.setSelectedItem(input);
+                btnThemKhachHang.setVisible(!found && !input.isEmpty());
+                cbKhachHang.showPopup();
+            }
+        });
+        btnThemKhachHang = new JButton("Thêm khách hàng");
+        btnThemKhachHang.setVisible(false);
+        btnThemKhachHang.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Viết code thêm khách hàng mới tại đây!");
+            // Khi thêm xong, ví dụ:
+            // KhachHang khMoi = ... // lấy từ form thêm mới
+            // String s = khMoi.getIdKH() + " - " + khMoi.getHoTen() + " - " + khMoi.getSdt();
+            // danhSachKhach.add(s);
+            // cbKhachHang.addItem(s);
+            // cbKhachHang.setSelectedItem(s);
+            // btnThemKhachHang.setVisible(false);
+        });
+        cbKhachHang.addActionListener(e -> {
+            String selected = (String) cbKhachHang.getSelectedItem();
+            String idKH = selected != null ? selected.split(" - ")[0].trim() : "";
+            diemHienTai = 0;
+            if (!idKH.isEmpty()) {
+                try {
+                    diemHienTai = khachHangController.getDiemHienTai(idKH);
+                } catch (Exception ex) {
+                    diemHienTai = 0;
+                }
+            }
+            lblDiemHienTai.setText("Điểm hiện có: " + diemHienTai);
+            capNhatThanhTienSauGiam();
+        });
+
+
+
+
+        cbKhachHang.getEditor().getEditorComponent().addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                String input = ((JTextField) cbKhachHang.getEditor().getEditorComponent()).getText().trim();
+                cbKhachHang.hidePopup();
+                cbKhachHang.removeAllItems();
+                boolean found = false;
+                for (String s : danhSachKhach) {
+                    if (s.toLowerCase().contains(input.toLowerCase())) {
+                        cbKhachHang.addItem(s);
+                        found = true;
+                    }
+                }
+                cbKhachHang.setSelectedItem(input);
+                btnThemKhachHang.setVisible(!found && !input.isEmpty());
+                cbKhachHang.showPopup();
+            }
+        });
+        btnThemKhachHang.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Viết code thêm khách hàng mới tại đây!");
+            // Sau khi thêm mới, hãy thêm vào danhSachKhach và cbKhachHang như mẫu trên.
+        });
 
         pnlInfo.add(new JLabel("Mã hóa đơn:"));
         pnlInfo.add(txtIdHD);
@@ -94,7 +155,10 @@ public class AddHoaDonDialog extends JDialog {
         pnlInfo.add(txtIdNV);
         pnlInfo.add(txtThoiGian);
         pnlInfo.add(new JLabel("ID Khách hàng:"));
-        pnlInfo.add(cbIdKH);
+        JPanel khachHangPanel = new JPanel(new BorderLayout());
+        khachHangPanel.add(cbKhachHang, BorderLayout.CENTER);
+        khachHangPanel.add(btnThemKhachHang, BorderLayout.EAST);
+        pnlInfo.add(khachHangPanel);
         pnlInfo.add(lblDiemHienTai); // chỉ add 1 lần!
         pnlInfo.add(new JLabel("Điểm sử dụng:"));
         pnlInfo.add(txtDiemSuDung);
@@ -169,6 +233,9 @@ public class AddHoaDonDialog extends JDialog {
     // ====== Các hàm xử lý tính toán và lấy dữ liệu ======
 
     private void updateThanhTienVaTongTien() {
+        if (isUpdatingTable) return;
+        isUpdatingTable = true;
+
         double tongTien = 0.0;
         for (int i = 0; i < modelThuoc.getRowCount(); i++) {
             String tenThuoc = String.valueOf(modelThuoc.getValueAt(i, 0));
@@ -187,12 +254,19 @@ public class AddHoaDonDialog extends JDialog {
                 }
             }
             double thanhTien = soLuong * donGia;
-            modelThuoc.setValueAt(donGia, i, 2);
-            modelThuoc.setValueAt(thanhTien, i, 3);
+
+            if (!String.valueOf(modelThuoc.getValueAt(i, 2)).equals(String.valueOf(donGia))) {
+                modelThuoc.setValueAt(donGia, i, 2);
+            }
+            if (!String.valueOf(modelThuoc.getValueAt(i, 3)).equals(String.valueOf(thanhTien))) {
+                modelThuoc.setValueAt(thanhTien, i, 3);
+            }
             tongTien += thanhTien;
         }
         txtTongTien.setText(String.format("%.0f", tongTien));
+        isUpdatingTable = false;
     }
+
 
     private void onSave() {
         if (txtIdHD.getText().trim().isEmpty()) {
@@ -228,11 +302,9 @@ public class AddHoaDonDialog extends JDialog {
             hd.setThoiGian(new Date());
         }
         hd.setIdNV(txtIdNV.getText().trim());
-        {
-            String selected = (String) cbIdKH.getSelectedItem();
-            String idKH = selected != null ? selected.split(" - ")[0].trim() : "";
-        }
-
+        String selected = (String) cbKhachHang.getSelectedItem();
+        String idKH = selected != null ? selected.split(" - ")[0].trim() : "";
+        hd.setIdKH(idKH);
         hd.setTongTien(Double.parseDouble(txtTongTien.getText()));
         hd.setPhuongThucThanhToan(txtPhuongThuc.getText().trim());
         hd.setTrangThaiDonHang(txtTrangThai.getText().trim());
@@ -269,7 +341,6 @@ public class AddHoaDonDialog extends JDialog {
         }
         return list;
     }
-
     public boolean isSaved() {
         return saved;
     }
