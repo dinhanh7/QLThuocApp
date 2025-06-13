@@ -19,13 +19,12 @@ public class NhanVienDAO {
     /**
      * Lấy tất cả NhanVien (kèm cột luong, trangThai và LEFT JOIN TaiKhoan để lấy username/password).
      */
-    public List<NhanVien> getAll() {
+	public List<NhanVien> getAll() {
         List<NhanVien> list = new ArrayList<>();
-        String sql = "SELECT n.idNV, n.hoTen, n.sdt, n.gioiTinh, n.namSinh, n.ngayVaoLam, " +
-                     "       n.luong, n.trangThai, " +
-                     "       t.username, t.password " +
-                     "  FROM NhanVien n " +
-                     "  LEFT JOIN TaiKhoan t ON n.idNV = t.idNV";
+        String sql = "SELECT n.idNV, n.hoTen, n.sdt, n.gioiTinh, n.namSinh, n.ngayVaoLam, "
+                   + "n.luong, n.trangThai, n.isDeleted, t.username, t.password "
+                   + "FROM NhanVien n LEFT JOIN TaiKhoan t ON n.idNV = t.idNV "
+                   + "WHERE (n.isDeleted IS NULL OR n.isDeleted = 0)";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -45,6 +44,7 @@ public class NhanVienDAO {
                 nv.setTrangThai(rs.getString("trangThai"));
                 nv.setUsername(rs.getString("username"));
                 nv.setPassword(rs.getString("password"));
+                // Lấy luôn isDeleted nếu cần (không nhất thiết)
                 list.add(nv);
             }
         } catch (SQLException e) {
@@ -55,19 +55,18 @@ public class NhanVienDAO {
         return list;
     }
 
+
     /**
      * Tìm kiếm NhanVien theo idNV hoặc hoTen (kèm cả luong, trangThai và username/password).
      * Nếu cả hai tham số đều rỗng, trả về toàn bộ.
      */
-    public List<NhanVien> search(String idNV, String hoTen) {
+	public List<NhanVien> search(String idNV, String hoTen) {
         List<NhanVien> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT n.idNV, n.hoTen, n.sdt, n.gioiTinh, n.namSinh, n.ngayVaoLam, " +
-            "       n.luong, n.trangThai, " +
-            "       t.username, t.password " +
-            "  FROM NhanVien n " +
-            "  LEFT JOIN TaiKhoan t ON n.idNV = t.idNV " +
-            " WHERE 1=1"
+            "SELECT n.idNV, n.hoTen, n.sdt, n.gioiTinh, n.namSinh, n.ngayVaoLam, "
+            + "n.luong, n.trangThai, n.isDeleted, t.username, t.password "
+            + "FROM NhanVien n LEFT JOIN TaiKhoan t ON n.idNV = t.idNV "
+            + "WHERE (n.isDeleted IS NULL OR n.isDeleted = 0)"
         );
         if (idNV != null && !idNV.trim().isEmpty()) {
             sql.append(" AND n.idNV LIKE ?");
@@ -111,7 +110,6 @@ public class NhanVienDAO {
         }
         return list;
     }
-
     /**
      * Thêm mới NhanVien (kèm cả hai cột luong và trangThai) và thêm TaiKhoan nếu có username.
      */
@@ -253,32 +251,20 @@ public class NhanVienDAO {
      * Xóa NhanVien (và luôn xóa TaiKhoan nếu có).
      */
     public boolean delete(String idNV) {
+        String sql = "UPDATE NhanVien SET isDeleted = 1 WHERE idNV = ?";
         Connection conn = null;
-        PreparedStatement stmtTK = null;
-        PreparedStatement stmtNV = null;
-        String sqlTK = "DELETE FROM TaiKhoan WHERE idNV = ?";
-        String sqlNV = "DELETE FROM NhanVien WHERE idNV = ?";
+        PreparedStatement stmt = null;
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            stmtTK = conn.prepareStatement(sqlTK);
-            stmtTK.setString(1, idNV);
-            stmtTK.executeUpdate();
-
-            stmtNV = conn.prepareStatement(sqlNV);
-            stmtNV.setString(1, idNV);
-            int rows = stmtNV.executeUpdate();
-
-            conn.commit();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idNV);
+            int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            if (conn != null) try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             return false;
         } finally {
-            DBCloseHelper.closeAll(null, stmtTK, null);
-            DBCloseHelper.closeAll(null, stmtNV, conn);
+            DBCloseHelper.closeAll(stmt, conn);
         }
     }
 }

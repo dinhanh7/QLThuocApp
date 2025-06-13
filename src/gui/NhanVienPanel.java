@@ -418,18 +418,18 @@ public class NhanVienPanel extends JPanel {
             MessageDialog.showWarning(this, "Vui lòng chọn nhân viên cần xóa!", "Cảnh báo");
             return;
         }
-        String idNV = (String) tblModel.getValueAt(row, 0);
-        boolean confirm = MessageDialog.showConfirm(this,
-                "Bạn có chắc muốn xóa nhân viên " + idNV + "?", "Xác nhận");
+        String id = (String) tblModel.getValueAt(row, 0);
+        boolean confirm = MessageDialog.showConfirm(this, "Bạn có chắc muốn xóa nhân viên " + id + "?", "Xác nhận");
         if (confirm) {
-            if (controller.deleteNhanVien(idNV)) {
+            if (controller.deleteNhanVien(id)) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
-                loadDataToTable();
+                loadDataToTable(); // Chỉ nhân viên chưa xóa mới hiện lên!
             } else {
                 MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
             }
         }
     }
+
 
     /**
      * Khi bấm “Làm mới”:
