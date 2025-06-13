@@ -1,4 +1,3 @@
-// KhachHang.java 
 package entities;
 
 import java.util.Date;
@@ -9,6 +8,7 @@ public class KhachHang {
     private String sdt;
     private String gioiTinh;
     private Date ngayThamGia;
+    private int diemTichLuy; // điểm tích lũy
 
     public KhachHang() {
     }
@@ -52,8 +52,6 @@ public class KhachHang {
     public void setNgayThamGia(Date ngayThamGia) {
         this.ngayThamGia = ngayThamGia;
     }
-    private Boolean isDeleted;
-    public Boolean getIsDeleted() { return isDeleted; }
-    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
-
+    public int getDiemTichLuy() { return diemTichLuy; }
+    public void setDiemTichLuy(int diemTichLuy) { this.diemTichLuy = diemTichLuy; }
 }

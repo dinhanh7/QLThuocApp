@@ -1,0 +1,428 @@
+//This is code of: DateHelper.java
+package utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Các phương thức định dạng và chuyển đổi Date ↔ String.
+ */
+public class DateHelper {
+    // Mẫu định dạng ngày-tháng-năm
+    private static final String DEFAULT_DATE_PATTERN = "dd/MM/yyyy";
+    private static final SimpleDateFormat DEFAULT_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+
+    /**
+     * Chuyển Date thành String với mẫu mặc định "dd/MM/yyyy".
+     * @param date đối tượng Date
+     * @return chuỗi định dạng ngày hoặc empty nếu date == null
+     */
+    
+    public static String toString(Date date) {
+        if (date == null) {
+            return "";
+        }
+        return DEFAULT_FORMAT.format(date);
+    }
+
+    /**
+     * Chuyển String thành Date theo mẫu mặc định "dd/MM/yyyy".
+     * @param dateStr chuỗi ngày (vd: "31/12/2024")
+     * @return đối tượng Date hoặc null nếu không thể parse
+     */
+    public static Date toDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return DEFAULT_FORMAT.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Chuyển Date thành String theo mẫu custom, ví dụ "yyyy-MM-dd HH:mm:ss".
+     * @param date đối tượng Date
+     * @param pattern chuỗi mẫu (SimpleDateFormat)
+     * @return chuỗi định dạng hoặc empty nếu date == null
+     */
+    public static String toString(java.util.Date date, String pattern) {
+        if (date == null) return "";
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+        return sdf.format(date);
+    }
+
+    /**
+     * Chuyển String thành Date theo mẫu custom.
+     * @param dateStr chuỗi ngày
+     * @param pattern mẫu tương ứng
+     * @return Date hoặc null nếu lỗi parse
+     */
+    public static Date toDate(String dateStr, String pattern) {
+        if (dateStr == null || dateStr.trim().isEmpty() || pattern == null || pattern.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            SimpleDateFormat fmt = new SimpleDateFormat(pattern);
+            return fmt.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static java.util.Date toDateTime(String dateStr, String pattern) {
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+            sdf.setLenient(false);
+            return sdf.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    /**
+     * Lấy Date hiện tại (không giờ, chỉ ngày).
+     * @return đối tượng Date của ngày hiện tại (00:00:00)
+     */
+    public static Date now() {
+        return toDate(toString(new Date()));
+    }
+}
+// DateHelper.java 
+
+//This is code of: ExportHelper.java
+package utils;
+
+import javax.swing.JTable;
+import javax.swing.table.TableModel;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Xuất dữ liệu ra file CSV (có thể mở bằng Excel).
+ * Nếu muốn xuất PDF hoặc định dạng Excel (.xlsx) chuyên sâu, bạn cần bổ sung thư viện Apache POI (cho Excel) 
+ * hoặc iText (cho PDF) vào project.
+ */
+public class ExportHelper {
+
+    /**
+     * Xuất JTable ra CSV (ngăn cách bằng dấu phẩy).
+     * @param table JTable cần xuất
+     * @param outputFile File đích (định dạng .csv)
+     * @throws IOException nếu lỗi IO
+     */
+    public static void exportTableToCSV(JTable table, File outputFile) throws IOException {
+        if (table == null || outputFile == null) {
+            throw new IllegalArgumentException("Table hoặc outputFile không được null");
+        }
+
+        TableModel model = table.getModel();
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8))) {
+            int columnCount = model.getColumnCount();
+            int rowCount = model.getRowCount();
+
+            // Viết header
+            for (int col = 0; col < columnCount; col++) {
+                bw.write(model.getColumnName(col));
+                if (col < columnCount - 1) {
+                    bw.write(",");
+                }
+            }
+            bw.newLine();
+
+            // Viết dữ liệu từng dòng
+            for (int row = 0; row < rowCount; row++) {
+                for (int col = 0; col < columnCount; col++) {
+                    Object value = model.getValueAt(row, col);
+                    String cell = value != null ? value.toString().replaceAll(",", " ") : "";
+                    bw.write(cell);
+                    if (col < columnCount - 1) {
+                        bw.write(",");
+                    }
+                }
+                bw.newLine();
+            }
+        }
+    }
+
+    /**
+     * (Tùy chọn) Xuất danh sách entity ra file CSV.
+     * Ví dụ: List<Thuoc> → CSV với các cột tương ứng.
+     * Bạn có thể overload hoặc thêm phương thức khác để xuất List<Entity>...
+     */
+    public static <T> void exportListToCSV(Iterable<T> list, File outputFile) throws IOException {
+        // TODO: Cài đặt theo từng entity cụ thể hoặc sử dụng reflection.
+        throw new UnsupportedOperationException("Phương thức exportListToCSV cần được cài đặt riêng theo entity.");
+    }
+
+    /**
+     * (Placeholder) Xuất JTable ra file PDF.
+     * Để làm việc này, cần bổ sung thư viện iText (hoặc OpenPDF). Sample ví dụ sẽ như sau:
+     *
+     *   Document document = new Document();
+     *   PdfWriter.getInstance(document, new FileOutputStream(outputFile));
+     *   document.open();
+     *   PdfPTable pdfTable = new PdfPTable(table.getColumnCount());
+     *   // ... thêm header, dữ liệu ...
+     *   document.add(pdfTable);
+     *   document.close();
+     *
+     * Method này chưa cài đặt sẵn để tránh phụ thuộc thư viện.
+     */
+    public static void exportTableToPDF(JTable table, File outputFile) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Muốn xuất PDF, phải thêm thư viện iText hoặc OpenPDF và cài đặt logic ở đây.");
+    }
+}
+// ExportHelper.java 
+
+//This is code of: ImageHelper.java
+package utils;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+
+/**
+ * Xử lý ảnh (đọc/ghi byte[] ↔ BufferedImage, tạo ImageIcon, scale ảnh...).
+ */
+public class ImageHelper {
+
+    /**
+     * Chuyển byte[] (lấy từ CSDL) thành ImageIcon để hiển thị lên JLabel.
+     * @param data mảng byte (hình ảnh)
+     * @return ImageIcon hoặc null nếu lỗi
+     */
+    public static ImageIcon toImageIcon(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(data);
+            BufferedImage img = ImageIO.read(bis);
+            return new ImageIcon(img);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Chuyển từ file ảnh (jpg, png, ...) thành byte[] để lưu vào CSDL.
+     */
+    public static byte[] toByteArray(File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             InputStream is = new FileInputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Scale ảnh (ImageIcon) về kích thước mong muốn.
+     * @param icon ImageIcon gốc
+     * @param width chiều rộng mới
+     * @param height chiều cao mới
+     * @return ImageIcon đã scale hoặc null nếu icon == null
+     */
+    public static ImageIcon scaleImage(ImageIcon icon, int width, int height) {
+        if (icon == null) {
+            return null;
+        }
+        Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
+    /**
+     * Lưu byte[] thành file ảnh trên đĩa (đường dẫn chỉ định). 
+     */
+    public static boolean saveImage(byte[] data, String outputPath) {
+        if (data == null || outputPath == null || outputPath.trim().isEmpty()) {
+            return false;
+        }
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
+            BufferedImage img = ImageIO.read(bis);
+            String formatName = outputPath.substring(outputPath.lastIndexOf('.') + 1);
+            return ImageIO.write(img, formatName, new File(outputPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
+// ImageHelper.java 
+
+//This is code of: MessageDialog.java
+package utils;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Các phương thức tiện ích hiển thị thông báo bằng JOptionPane.
+ */
+public class MessageDialog {
+
+    /**
+     * Hiển thị thông báo thông tin (INFO).
+     */
+    public static void showInfo(Component parent, String message, String title) {
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Hiển thị cảnh báo (WARNING).
+     */
+    public static void showWarning(Component parent, String message, String title) {
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.WARNING_MESSAGE);
+    }
+
+    /**
+     * Hiển thị lỗi (ERROR).
+     */
+    public static void showError(Component parent, String message, String title) {
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Hiển thị hộp thoại xác nhận (YES/NO).
+     * @return true nếu người dùng chọn Yes
+     */
+    public static boolean showConfirm(Component parent, String message, String title) {
+        int option = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return option == JOptionPane.YES_OPTION;
+    }
+}
+// MessageDialog.java 
+
+//This is code of: Validator.java
+package utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+/**
+ * Validator.java
+ *
+ * Các phương thức tiện ích để kiểm tra tính hợp lệ của dữ liệu đầu vào.
+ */
+public class Validator {
+
+    /**
+     * Kiểm tra xem chuỗi text có thể được chuyển sang Date với định dạng format không.
+     * Ví dụ: isDate("31/12/2023", "dd/MM/yyyy") trả về true,
+     * isDate("2023-12-31", "dd/MM/yyyy") trả về false.
+     *
+     * @param text   Chuỗi cần kiểm tra.
+     * @param format Mẫu định dạng (ví dụ: "dd/MM/yyyy" hoặc "dd/MM/yyyy HH:mm").
+     * @return true nếu text đúng định dạng, false nếu không.
+     */
+	public static boolean isDateTime(String dateStr, String pattern) {
+        if (dateStr == null || dateStr.trim().isEmpty()) return false;
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+            sdf.setLenient(false);
+            java.util.Date d = sdf.parse(dateStr);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public static boolean isDate(String text, String format) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        sdf.setLenient(false);
+        try {
+            sdf.parse(text.trim());
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem chuỗi text có thể parse thành kiểu double không.
+     * Ví dụ: isDouble("123.45") trả về true, isDouble("abc") trả về false.
+     *
+     * @param text Chuỗi cần kiểm tra.
+     * @return true nếu có thể parse thành double, false nếu không.
+     */
+    public static boolean isDouble(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Double.parseDouble(text.trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem chuỗi text có thể parse thành kiểu int không.
+     * Ví dụ: isInteger("123") trả về true, isInteger("12.3") hoặc isInteger("abc") trả về false.
+     *
+     * @param text Chuỗi cần kiểm tra.
+     * @return true nếu có thể parse thành integer, false nếu không.
+     */
+    public static boolean isInteger(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Integer.parseInt(text.trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem chuỗi text có phải là số điện thoại hợp lệ (10 hoặc 11 chữ số) hay không.
+     * Ví dụ: isPhone("0912345678") trả về true, isPhone("12345") trả về false.
+     *
+     * @param text Chuỗi cần kiểm tra.
+     * @return true nếu text là 10-11 chữ số, false nếu không.
+     */
+    public static boolean isPhone(String text) {
+        if (text == null) {
+            return false;
+        }
+        return text.trim().matches("\\d{10,11}");
+    }
+
+    /**
+     * Kiểm tra xem chuỗi text có phải là email hợp lệ hay không.
+     * (Nếu hệ thống cần kiểm tra email, có thể dùng regex đơn giản dưới đây.)
+     *
+     * Ví dụ: isEmail("user@example.com") trả về true,
+     * isEmail("user@example") trả về false.
+     *
+     * @param text Chuỗi cần kiểm tra.
+     * @return true nếu text khớp regex email, false nếu không.
+     */
+    public static boolean isEmail(String text) {
+        if (text == null) {
+            return false;
+        }
+        // Regex cơ bản cho email
+        return text.trim().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    }
+}
+

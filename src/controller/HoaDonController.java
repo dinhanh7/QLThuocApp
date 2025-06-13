@@ -1,22 +1,19 @@
 package controller;
 
 import dao.HoaDonDAO;
+import controller.KhachHangController;
 import entities.HoaDon;
 
 import java.util.List;
 
-/**
- * HoaDonController.java
- *
- * Kết nối giữa GUI và DAO cho Hóa đơn.
- * ĐÃ SỬA: Hỗ trợ bắt lỗi từ DAO và truyền thông báo lỗi về GUI.
- */
 public class HoaDonController {
 
     private HoaDonDAO hoaDonDAO;
+    private KhachHangController khachHangController; // <-- Khai báo ở đây, TRƯỚC constructor
 
     public HoaDonController() {
         hoaDonDAO = new HoaDonDAO();
+        khachHangController = new KhachHangController(); // Khởi tạo trong constructor
     }
 
     /**
@@ -75,4 +72,16 @@ public class HoaDonController {
     public List<HoaDon> searchHoaDon(String idHD, String idNV, String idKH) {
         return hoaDonDAO.searchHoaDon(idHD, idNV, idKH);
     }
+
+
+    public int getDiemHienTai(String idKH) {
+        return khachHangController.getDiemHienTai(idKH);
+    }
+    public boolean truDiem(String idKH, int soDiemTru) {
+        return khachHangController.truDiem(idKH, soDiemTru);
+    }
+    public boolean congDiem(String idKH, int soDiemCong) {
+        return khachHangController.congDiem(idKH, soDiemCong);
+    }
+
 }

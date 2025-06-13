@@ -21,7 +21,7 @@ public class KhachHangDAO {
      */
 	public List<KhachHang> getAll() {
         List<KhachHang> list = new ArrayList<>();
-        String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE (isDeleted IS NULL OR isDeleted = 0)";
+        String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -46,11 +46,12 @@ public class KhachHangDAO {
         return list;
     }
 
+
     /**
      * Thêm mới KhachHang.
      */
 	public boolean insert(KhachHang kh) {
-        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia, isDeleted) VALUES (?, ?, ?, ?, ?, 0)";
+        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -64,6 +65,7 @@ public class KhachHangDAO {
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
+            // Nếu lỗi trùng khóa
             if (e.getErrorCode() == 2627) {
                 throw new RuntimeException("ID khách hàng đã tồn tại!");
             }
@@ -103,7 +105,7 @@ public class KhachHangDAO {
      * Xóa KhachHang theo idKH.
      */
 	public boolean delete(String idKH) {
-        String sql = "UPDATE KhachHang SET isDeleted = 1 WHERE idKH = ?";
+        String sql = "DELETE FROM KhachHang WHERE idKH = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -113,6 +115,7 @@ public class KhachHangDAO {
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
+            // Kiểm tra lỗi ràng buộc FK (ví dụ có hóa đơn liên quan)
             if (e.getErrorCode() == 547) {
                 throw new RuntimeException("Không thể xóa vì khách hàng đã có hóa đơn liên quan!");
             }
@@ -127,11 +130,12 @@ public class KhachHangDAO {
      * Tìm kiếm Khách hàng theo hoTen hoặc sdt (hoặc cả hai).
      * Nếu cả hai tham số đều rỗng, trả về toàn bộ danh sách.
      */
-	public List<KhachHang> search(String hoTen, String sdt) {
+    public List<KhachHang> search(String hoTen, String sdt) {
         List<KhachHang> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE (isDeleted IS NULL OR isDeleted = 0)"
+            "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE 1=1"
         );
+
         if (hoTen != null && !hoTen.trim().isEmpty()) {
             sql.append(" AND hoTen LIKE ?");
         }
@@ -170,12 +174,11 @@ public class KhachHangDAO {
         return list;
     }
 
-
     /**
      * Lấy KhachHang theo SĐT (đã có sẵn):
      */
-	public KhachHang getBySDT(String sdt) {
-        String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE sdt = ? AND (isDeleted IS NULL OR isDeleted = 0)";
+    public KhachHang getBySDT(String sdt) {
+        String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang WHERE sdt = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -197,6 +200,66 @@ public class KhachHangDAO {
             e.printStackTrace();
         } finally {
             DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return null;
+    }
+    public boolean updateDiemTichLuy(String idKH, int diemMoi) {
+        String sql = "UPDATE KhachHang SET diemTichLuy = ? WHERE idKH = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, diemMoi);
+            stmt.setString(2, idKH);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean congDiem(String idKH, int soDiemCong) {
+        String sql = "UPDATE KhachHang SET diemTichLuy = diemTichLuy + ? WHERE idKH = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, soDiemCong);
+            stmt.setString(2, idKH);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean truDiem(String idKH, int soDiemTru) {
+        String sql = "UPDATE KhachHang SET diemTichLuy = diemTichLuy - ? WHERE idKH = ? AND diemTichLuy >= ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, soDiemTru);
+            stmt.setString(2, idKH);
+            stmt.setInt(3, soDiemTru);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public KhachHang getById(String idKH) {
+        String sql = "SELECT * FROM KhachHang WHERE idKH = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, idKH);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    KhachHang kh = new KhachHang();
+                    kh.setIdKH(rs.getString("idKH"));
+                    kh.setHoTen(rs.getString("hoTen"));
+                    kh.setSdt(rs.getString("sdt"));
+                    // ... các trường khác của KhachHang ...
+                    kh.setDiemTichLuy(rs.getInt("diemTichLuy")); // nhớ lấy trường điểm tích lũy!
+                    return kh;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
