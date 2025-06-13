@@ -4,7 +4,8 @@ import dao.PhanHoiDAO;
 import entities.PhanHoi;
 
 import java.util.List;
-
+import java.util.Date;// thêm cái này
+import dao.HoaDonDAO; // thêm cái này
 /**
  * PhanHoiController.java
  *
@@ -14,7 +15,7 @@ import java.util.List;
 public class PhanHoiController {
 
     private PhanHoiDAO phanHoiDAO;
-
+	private HoaDonDAO hoaDonDAO = new HoaDonDAO();
     public PhanHoiController() {
         phanHoiDAO = new PhanHoiDAO();
     }
