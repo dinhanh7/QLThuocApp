@@ -9,7 +9,6 @@ import java.util.Date;
  *   idPH     (String)  – khóa chính
  *   idKH     (String)  – khóa ngoại tới KhachHang.idKH
  *   idHD     (String)  – khóa ngoại tới HoaDon.idHD
- *   idThuoc  (String)  – khóa ngoại tới Thuoc.idThuoc
  *   noiDung  (String)
  *   thoiGian (Date)
  *   danhGia  (int)
@@ -18,10 +17,21 @@ public class PhanHoi {
     private String idPH;
     private String idKH;
     private String idHD;
-    private String idThuoc;
     private String noiDung;
     private Date thoiGian;
     private int danhGia;
+    public PhanHoi() {
+        // constructor rỗng để phục vụ tạo đối tượng tạm thời khi load dữ liệu
+    }
+
+    public PhanHoi(String idPH, String idKH, String idHD, String noiDung, Date thoiGian, int danhGia) {
+        this.idPH = idPH;
+        this.idKH = idKH;
+        this.idHD = idHD;
+        this.noiDung = noiDung;
+        this.thoiGian = thoiGian;
+        this.danhGia = danhGia;
+    }
 
     public String getIdPH() {
         return idPH;
@@ -45,14 +55,6 @@ public class PhanHoi {
 
     public void setIdHD(String idHD) {
         this.idHD = idHD;
-    }
-
-    public String getIdThuoc() {
-        return idThuoc;
-    }
-
-    public void setIdThuoc(String idThuoc) {
-        this.idThuoc = idThuoc;
     }
 
     public String getNoiDung() {
@@ -81,5 +83,4 @@ public class PhanHoi {
     private Boolean isDeleted;
     public Boolean getIsDeleted() { return isDeleted; }
     public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
-
 }
