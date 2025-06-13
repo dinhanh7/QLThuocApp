@@ -195,10 +195,49 @@ public class ThuocDAO {
         }
     }
 
-    /**
-     * Xóa Thuốc theo idThuoc.
-     */
+
+    private boolean isThuocReferenced(String idThuoc) {
+        String sql1 = "SELECT COUNT(*) FROM ChiTietHoaDon WHERE idThuoc = ?";
+        String sql2 = "SELECT COUNT(*) FROM ChiTietPhieuNhap WHERE idThuoc = ?";
+        String sql3 = "SELECT COUNT(*) FROM PhanHoi WHERE idThuoc = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+
+            stmt = conn.prepareStatement(sql1);
+            stmt.setString(1, idThuoc);
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) return true;
+            rs.close();
+
+            stmt = conn.prepareStatement(sql2);
+            stmt.setString(1, idThuoc);
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) return true;
+            rs.close();
+
+            stmt = conn.prepareStatement(sql3);
+            stmt.setString(1, idThuoc);
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true; // Nếu có lỗi thì giả định có liên kết để không xóa nhầm
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return false;
+    }
+
+    // HÀM XÓA THUỐC
     public boolean deleteThuoc(String idThuoc) {
+        if (isThuocReferenced(idThuoc)) {
+            // Trả về false, báo lỗi ở Controller/GUI
+            throw new RuntimeException("Không thể xóa vì thuốc đã có dữ liệu liên quan (Hóa đơn, Phiếu nhập hoặc Phản hồi)!");
+        }
+
         String sql = "DELETE FROM Thuoc WHERE idThuoc = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -210,9 +249,10 @@ public class ThuocDAO {
             return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Lỗi SQL khi xóa thuốc: " + e.getMessage());
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
     }
+
 }

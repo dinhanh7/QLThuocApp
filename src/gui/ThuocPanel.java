@@ -418,24 +418,29 @@ public class ThuocPanel extends JPanel {
      *  - Gọi controller.deleteThuoc(idThuoc),
      *  - Nếu thành công, load lại table.
      */
-    private void onDelete() {
+   private void onDelete() {
         int row = tblThuoc.getSelectedRow();
         if (row < 0) {
             MessageDialog.showWarning(this, "Vui lòng chọn thuốc cần xóa!", "Cảnh báo");
             return;
         }
-        String id = (String) tblModel.getValueAt(row, 0);
+        String idThuoc = (String) tblModel.getValueAt(row, 0);
         boolean confirm = MessageDialog.showConfirm(this,
-                "Bạn có chắc muốn xóa thuốc " + id + "?", "Xác nhận");
+                "Bạn có chắc muốn xóa thuốc " + idThuoc + "?", "Xác nhận");
         if (confirm) {
-            if (controller.deleteThuoc(id)) {
+            StringBuilder errorMessage = new StringBuilder();
+            boolean success = controller.deleteThuoc(idThuoc, errorMessage);
+            if (success) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
                 loadDataToTable();
             } else {
-                MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
+                String msg = errorMessage.length() > 0
+                    ? errorMessage.toString()
+                    : "Xóa thất bại!";
+                MessageDialog.showError(this, msg, "Lỗi");
+            }
             }
         }
-    }
 
     /**
      * Khi bấm “Làm mới”:

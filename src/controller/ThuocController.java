@@ -30,8 +30,13 @@ public class ThuocController {
         return thuocDAO.updateThuoc(t);
     }
 
-    public boolean deleteThuoc(String idThuoc) {
-        return thuocDAO.deleteThuoc(idThuoc);
+    public boolean deleteThuoc(String idThuoc, StringBuilder errorMessage) {
+        try {
+            return thuocDAO.deleteThuoc(idThuoc);
+        } catch (RuntimeException ex) {
+            if (errorMessage != null) errorMessage.append(ex.getMessage());
+            return false;
+        }
     }
 
     /**
