@@ -19,7 +19,7 @@ public class KhachHangDAO {
     /**
      * Lấy toàn bộ danh sách KhachHang.
      */
-    public List<KhachHang> getAll() {
+	public List<KhachHang> getAll() {
         List<KhachHang> list = new ArrayList<>();
         String sql = "SELECT idKH, hoTen, sdt, gioiTinh, ngayThamGia FROM KhachHang";
         Connection conn = null;
@@ -46,12 +46,12 @@ public class KhachHangDAO {
         return list;
     }
 
+
     /**
      * Thêm mới KhachHang.
      */
-    public boolean insert(KhachHang kh) {
-        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+	public boolean insert(KhachHang kh) {
+        String sql = "INSERT INTO KhachHang (idKH, hoTen, sdt, gioiTinh, ngayThamGia) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -65,8 +65,12 @@ public class KhachHangDAO {
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
+            // Nếu lỗi trùng khóa
+            if (e.getErrorCode() == 2627) {
+                throw new RuntimeException("ID khách hàng đã tồn tại!");
+            }
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Lỗi SQL khi thêm khách hàng: " + e.getMessage());
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
@@ -75,9 +79,8 @@ public class KhachHangDAO {
     /**
      * Cập nhật KhachHang.
      */
-    public boolean update(KhachHang kh) {
-        String sql = "UPDATE KhachHang SET hoTen = ?, sdt = ?, gioiTinh = ?, ngayThamGia = ? " +
-                     "WHERE idKH = ?";
+	public boolean update(KhachHang kh) {
+        String sql = "UPDATE KhachHang SET hoTen = ?, sdt = ?, gioiTinh = ?, ngayThamGia = ? WHERE idKH = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -92,7 +95,7 @@ public class KhachHangDAO {
             return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Lỗi SQL khi cập nhật khách hàng: " + e.getMessage());
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
@@ -101,7 +104,7 @@ public class KhachHangDAO {
     /**
      * Xóa KhachHang theo idKH.
      */
-    public boolean delete(String idKH) {
+	public boolean delete(String idKH) {
         String sql = "DELETE FROM KhachHang WHERE idKH = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -112,8 +115,12 @@ public class KhachHangDAO {
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
+            // Kiểm tra lỗi ràng buộc FK (ví dụ có hóa đơn liên quan)
+            if (e.getErrorCode() == 547) {
+                throw new RuntimeException("Không thể xóa vì khách hàng đã có hóa đơn liên quan!");
+            }
             e.printStackTrace();
-            return false;
+            throw new RuntimeException("Lỗi SQL khi xóa khách hàng: " + e.getMessage());
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }

@@ -331,6 +331,39 @@ public class KhachHangPanel extends JPanel {
     /**
      * Khi bấm “Xóa”: phải có dòng được chọn, xác nhận, gọi controller.deleteKhachHang(idKH).
      */
+    private void onSave() {
+        // Validate dữ liệu, tạo KhachHang...
+        KhachHang kh = new KhachHang();
+        kh.setIdKH(txtIdKH.getText().trim());
+        kh.setHoTen(txtHoTen.getText().trim());
+        kh.setSdt(txtSDT.getText().trim());
+        kh.setGioiTinh(txtGioiTinh.getText().trim());
+        kh.setNgayThamGia(DateHelper.toDate(txtNgayThamGia.getText().trim(), "dd/MM/yyyy"));
+
+        boolean success;
+        StringBuilder errorMsg = new StringBuilder();
+        if (currentMode.equals("ADDING")) {
+            success = controller.addKhachHang(kh, errorMsg);
+            if (success) {
+                MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
+            } else {
+                MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Thêm thất bại!", "Lỗi");
+                return;
+            }
+        } else { // EDITING
+            success = controller.updateKhachHang(kh, errorMsg);
+            if (success) {
+                MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
+            } else {
+                MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Cập nhật thất bại!", "Lỗi");
+                return;
+            }
+        }
+
+        hideInputPanel();
+        loadDataToTable();
+    }
+
     private void onDelete() {
         int row = tblKhachHang.getSelectedRow();
         if (row < 0) {
@@ -340,15 +373,15 @@ public class KhachHangPanel extends JPanel {
         String id = (String) tblModel.getValueAt(row, 0);
         boolean confirm = MessageDialog.showConfirm(this, "Bạn có chắc muốn xóa khách hàng " + id + "?", "Xác nhận");
         if (confirm) {
-            if (controller.deleteKhachHang(id)) {
+            StringBuilder errorMsg = new StringBuilder();
+            if (controller.deleteKhachHang(id, errorMsg)) {
                 MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
                 loadDataToTable();
             } else {
-                MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
+                MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Xóa thất bại!", "Lỗi");
             }
         }
-    }
-
+    }   
     /**
      * Khi bấm “Làm mới”: ẩn inputPanel (nếu đang hiển thị) và load lại danh sách.
      */
@@ -364,40 +397,7 @@ public class KhachHangPanel extends JPanel {
      *    nếu EDITING, gọi updateKhachHang,
      *  - ẩn inputPanel, load lại dữ liệu.
      */
-    private void onSave() {
-        if (!Validator.isNullOrEmpty(txtIdKH.getText()) && !Validator.isDate(txtNgayThamGia.getText(), "dd/MM/yyyy")) {
-            MessageDialog.showWarning(this, "Ngày tham gia phải đúng định dạng dd/MM/yyyy", "Cảnh báo");
-            return;
-        }
-        KhachHang kh = new KhachHang();
-        kh.setIdKH(txtIdKH.getText().trim());
-        kh.setHoTen(txtHoTen.getText().trim());
-        kh.setSdt(txtSDT.getText().trim());
-        kh.setGioiTinh(txtGioiTinh.getText().trim());
-        kh.setNgayThamGia(DateHelper.toDate(txtNgayThamGia.getText().trim(), "dd/MM/yyyy"));
 
-        boolean success;
-        if (currentMode.equals("ADDING")) {
-            success = controller.addKhachHang(kh);
-            if (success) {
-                MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
-            } else {
-                MessageDialog.showError(this, "Thêm thất bại!", "Lỗi");
-                return;
-            }
-        } else { // EDITING
-            success = controller.updateKhachHang(kh);
-            if (success) {
-                MessageDialog.showInfo(this, "Cập nhật thành công!", "Thông báo");
-            } else {
-                MessageDialog.showError(this, "Cập nhật thất bại!", "Lỗi");
-                return;
-            }
-        }
-
-        hideInputPanel();
-        loadDataToTable();
-    }
 
     /**
      * Khi bấm “Hủy” trong inputPanel: chỉ cần ẩn inputPanel.

@@ -23,16 +23,31 @@ public class KhachHangController {
         return khachHangDAO.getAll();
     }
 
-    public boolean addKhachHang(KhachHang kh) {
-        return khachHangDAO.insert(kh);
+    public boolean addKhachHang(KhachHang kh, StringBuilder errorMsg) {
+        try {
+            return khachHangDAO.insert(kh);
+        } catch (RuntimeException ex) {
+            if (errorMsg != null) errorMsg.append(ex.getMessage());
+            return false;
+        }
     }
 
-    public boolean updateKhachHang(KhachHang kh) {
-        return khachHangDAO.update(kh);
+    public boolean updateKhachHang(KhachHang kh, StringBuilder errorMsg) {
+        try {
+            return khachHangDAO.update(kh);
+        } catch (RuntimeException ex) {
+            if (errorMsg != null) errorMsg.append(ex.getMessage());
+            return false;
+        }
     }
 
-    public boolean deleteKhachHang(String idKH) {
-        return khachHangDAO.delete(idKH);
+    public boolean deleteKhachHang(String idKH, StringBuilder errorMsg) {
+        try {
+            return khachHangDAO.delete(idKH);
+        } catch (RuntimeException ex) {
+            if (errorMsg != null) errorMsg.append(ex.getMessage());
+            return false;
+        }
     }
 
     /**
