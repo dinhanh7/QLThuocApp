@@ -5,9 +5,12 @@ import entities.HoaDon;
 import utils.DateHelper;
 import utils.MessageDialog;
 import utils.Validator;
-
+import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -20,6 +23,9 @@ public class HoaDonPanel extends JPanel {
     private JPanel inputPanel;
     private JTextField txtIdHD, txtThoiGian, txtIdNV, txtIdKH, txtTongTien;
     private JTextField txtPhuongThucThanhToan, txtTrangThaiDonHang;
+    private JLabel lblDiemHienTaiValue;
+    private JTextField txtDiemSuDung;
+    private JLabel lblThanhTienValue;
     private JButton btnSave, btnCancel;
 
     private JTextField txtSearchIdHD, txtSearchIdNV, txtSearchIdKH;
@@ -39,6 +45,7 @@ public class HoaDonPanel extends JPanel {
     }
 
     private void initComponents() {
+    	setPreferredSize(new Dimension(1600,1200));
         setLayout(null);
 
         btnAdd = new JButton("Thêm");
@@ -86,6 +93,7 @@ public class HoaDonPanel extends JPanel {
         });
     }
 
+    
     private void initSearchPanel() {
         JPanel searchPanel = new JPanel(null);
         searchPanel.setBounds(10, 50, 860, 30);
@@ -151,6 +159,22 @@ public class HoaDonPanel extends JPanel {
         lblIdKH.setBounds(626, 10, 40, 25);
         inputPanel.add(lblIdKH);
         txtIdKH = new JTextField();
+        txtIdKH.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String idKH = txtIdKH.getText().trim();
+                if (idKH.isEmpty()) {
+                	lblDiemHienTaiValue.setText("");
+                    return;
+                }
+                // Gọi sang controller lấy điểm tích lũy hiện tại
+                int diemHienCo = controller.getDiemHienTai(idKH);
+                lblDiemHienTaiValue.setText("");
+                lblDiemHienTaiValue.setText(String.valueOf(diemHienCo));
+                lblDiemHienTaiValue.repaint();
+                capNhatThanhTienSauGiam(); // Cập nhật luôn số tiền phải trả nếu có thay đổi điểm
+            }
+        });
         txtIdKH.setBounds(663, 10, 100, 25);
         inputPanel.add(txtIdKH);
 
@@ -174,6 +198,29 @@ public class HoaDonPanel extends JPanel {
         txtTrangThaiDonHang = new JTextField();
         txtTrangThaiDonHang.setBounds(475, 40, 100, 25);
         inputPanel.add(txtTrangThaiDonHang);
+        JLabel lblDiemHienTai = new JLabel("Điểm hiện có:");
+        lblDiemHienTai.setBounds(10, 70, 80, 25);
+        inputPanel.add(lblDiemHienTai);
+
+        lblDiemHienTaiValue = new JLabel("0");
+        lblDiemHienTaiValue.setBounds(90, 70, 100, 25);
+        inputPanel.add(lblDiemHienTaiValue);
+
+        JLabel lblDiemSuDung = new JLabel("Sử dụng điểm:");
+        lblDiemSuDung.setBounds(180, 70, 80, 25);
+        inputPanel.add(lblDiemSuDung);
+
+        txtDiemSuDung = new JTextField("0");
+        txtDiemSuDung.setBounds(260, 70, 50, 25);
+        inputPanel.add(txtDiemSuDung);
+
+        JLabel lblThanhTienSauGiam = new JLabel("Thanh toán:");
+        lblThanhTienSauGiam.setBounds(340, 70, 80, 25);
+        inputPanel.add(lblThanhTienSauGiam);
+
+        lblThanhTienValue = new JLabel("0");
+        lblThanhTienValue.setBounds(420, 70, 100, 25);
+        inputPanel.add(lblThanhTienValue);
 
         btnSave = new JButton("Lưu");
         btnSave.setBounds(800, 10, 60, 30);
@@ -186,6 +233,21 @@ public class HoaDonPanel extends JPanel {
         btnCancel.addActionListener(e -> onCancel());
 
         inputPanel.setVisible(visible);
+     // Thêm vào cuối các trường nhập ở inputPanel (sau dòng txtTrangThaiDonHang)
+
+
+        txtDiemSuDung.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                capNhatThanhTienSauGiam();
+            }
+        });
+        txtTongTien.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                capNhatThanhTienSauGiam();
+            }
+        });
     }
 
     private void loadDataToTable() {
@@ -390,12 +452,29 @@ public class HoaDonPanel extends JPanel {
             return;
         }
 
+        // Lấy số điểm sử dụng để trừ
+        int diemSuDung = 0;
+        try {
+            diemSuDung = Integer.parseInt(txtDiemSuDung.getText().trim());
+            if (diemSuDung < 0) diemSuDung = 0;
+        } catch (Exception ex) {
+            diemSuDung = 0;
+        }
+
+        // Lấy số tiền đã trừ điểm
+        double tongTienSauGiam = 0;
+        try {
+            tongTienSauGiam = Double.parseDouble(lblThanhTienValue.getText().trim());
+        } catch (Exception ex) {
+            tongTienSauGiam = 0;
+        }
+
         HoaDon hd = new HoaDon();
         hd.setIdHD(idHD);
         hd.setThoiGian(DateHelper.toDateTime(thoiGianStr, "dd/MM/yyyy HH:mm:ss"));
         hd.setIdNV(idNV);
         hd.setIdKH(idKH);
-        hd.setTongTien(Double.parseDouble(tongTienStr));
+        hd.setTongTien(tongTienSauGiam);  // LƯU TIỀN ĐÃ TRỪ ĐIỂM
         hd.setPhuongThucThanhToan(phuongThuc.isEmpty() ? null : phuongThuc);
         hd.setTrangThaiDonHang(trangThai);
 
@@ -404,6 +483,12 @@ public class HoaDonPanel extends JPanel {
         if (currentMode.equals("ADDING")) {
             success = controller.addHoaDon(hd, errorMsg);
             if (success) {
+                // Trừ điểm thực sự cho khách hàng nếu đã sử dụng điểm
+                if (diemSuDung > 0) {
+                    controller.truDiem(idKH, diemSuDung);
+                    // Cập nhật lại điểm tích lũy đang hiển thị
+                    lblDiemHienTaiValue.setText(String.valueOf(controller.getDiemHienTai(idKH)));
+                }
                 MessageDialog.showInfo(this, "Thêm thành công!", "Thông báo");
             } else {
                 MessageDialog.showError(this, errorMsg.length() > 0 ? errorMsg.toString() : "Thêm thất bại!", "Lỗi");
@@ -423,7 +508,22 @@ public class HoaDonPanel extends JPanel {
         loadDataToTable();
     }
 
+
     private void onCancel() {
         hideInputPanel();
+    }
+    private void capNhatThanhTienSauGiam() {
+        try {
+            double tongTien = Double.parseDouble(txtTongTien.getText().trim());
+            int diemHienCo = Integer.parseInt(lblDiemHienTaiValue.getText());
+            int diemSuDung = Integer.parseInt(txtDiemSuDung.getText().trim());
+            if (diemSuDung > diemHienCo) diemSuDung = diemHienCo;
+            if (diemSuDung < 0) diemSuDung = 0;
+            double thanhTien = tongTien - diemSuDung * 1000; // 1 điểm = 1000đ, tuỳ bạn quy đổi
+            if (thanhTien < 0) thanhTien = 0;
+            lblThanhTienValue.setText(String.format("%.0f", thanhTien));
+        } catch (Exception ex) {
+            lblThanhTienValue.setText("0");
+        }
     }
 }
