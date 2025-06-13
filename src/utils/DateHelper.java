@@ -17,6 +17,7 @@ public class DateHelper {
      * @param date đối tượng Date
      * @return chuỗi định dạng ngày hoặc empty nếu date == null
      */
+    
     public static String toString(Date date) {
         if (date == null) {
             return "";
@@ -47,12 +48,10 @@ public class DateHelper {
      * @param pattern chuỗi mẫu (SimpleDateFormat)
      * @return chuỗi định dạng hoặc empty nếu date == null
      */
-    public static String toString(Date date, String pattern) {
-        if (date == null || pattern == null || pattern.trim().isEmpty()) {
-            return "";
-        }
-        SimpleDateFormat fmt = new SimpleDateFormat(pattern);
-        return fmt.format(date);
+    public static String toString(java.util.Date date, String pattern) {
+        if (date == null) return "";
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+        return sdf.format(date);
     }
 
     /**
@@ -73,7 +72,15 @@ public class DateHelper {
             return null;
         }
     }
-
+    public static java.util.Date toDateTime(String dateStr, String pattern) {
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+            sdf.setLenient(false);
+            return sdf.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
     /**
      * Lấy Date hiện tại (không giờ, chỉ ngày).
      * @return đối tượng Date của ngày hiện tại (00:00:00)

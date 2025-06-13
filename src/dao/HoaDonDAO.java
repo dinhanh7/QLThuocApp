@@ -11,17 +11,17 @@ import java.util.List;
 /**
  * HoaDonDAO.java
  *
- * CRUD cho bảng dbo.HoaDon (đã bổ sung các trường phuongThucThanhToan và trangThaiDonHang).
+ * CRUD cho bảng dbo.HoaDon (bổ sung trường phuongThucThanhToan và trangThaiDonHang).
+ * ĐÃ SỬA: Trả về lỗi chi tiết khi vi phạm ràng buộc, lỗi SQL cho Controller xử lý.
  */
 public class HoaDonDAO {
 
     /**
-     * Lấy toàn bộ danh sách Hóa đơn, kèm cả hai cột mới.
+     * Lấy toàn bộ danh sách Hóa đơn.
      */
     public List<HoaDon> getAllHoaDon() {
         List<HoaDon> list = new ArrayList<>();
-        String sql = "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang " +
-                     "  FROM HoaDon";
+        String sql = "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang FROM HoaDon";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -49,14 +49,110 @@ public class HoaDonDAO {
     }
 
     /**
+     * Thêm mới một Hóa đơn (kèm trường mới).
+     * Báo lỗi nếu trùng khóa hoặc thiếu khóa ngoại.
+     */
+    public boolean insertHoaDon(HoaDon hd) {
+        String sql = "INSERT INTO HoaDon (idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, hd.getIdHD());
+            stmt.setTimestamp(2, new java.sql.Timestamp(hd.getThoiGian().getTime()));
+            stmt.setString(3, hd.getIdNV());
+            stmt.setString(4, hd.getIdKH());
+            stmt.setDouble(5, hd.getTongTien());
+            if (hd.getPhuongThucThanhToan() != null) {
+                stmt.setString(6, hd.getPhuongThucThanhToan());
+            } else {
+                stmt.setNull(6, Types.NVARCHAR);
+            }
+            stmt.setString(7, hd.getTrangThaiDonHang());
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 2627) { // Trùng PK
+                throw new RuntimeException("ID hóa đơn đã tồn tại!");
+            }
+            if (e.getErrorCode() == 547) { // FK constraint failed
+                throw new RuntimeException("ID nhân viên hoặc khách hàng không tồn tại!");
+            }
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi SQL khi thêm hóa đơn: " + e.getMessage());
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+
+    /**
+     * Cập nhật Hóa đơn (theo idHD).
+     */
+    public boolean updateHoaDon(HoaDon hd) {
+        String sql = "UPDATE HoaDon SET thoiGian=?, idNV=?, idKH=?, tongTien=?, phuongThucThanhToan=?, trangThaiDonHang=? WHERE idHD=?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setTimestamp(1, new java.sql.Timestamp(hd.getThoiGian().getTime()));
+            stmt.setString(2, hd.getIdNV());
+            stmt.setString(3, hd.getIdKH());
+            stmt.setDouble(4, hd.getTongTien());
+            if (hd.getPhuongThucThanhToan() != null) {
+                stmt.setString(5, hd.getPhuongThucThanhToan());
+            } else {
+                stmt.setNull(5, Types.NVARCHAR);
+            }
+            stmt.setString(6, hd.getTrangThaiDonHang());
+            stmt.setString(7, hd.getIdHD());
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 547) {
+                throw new RuntimeException("ID nhân viên hoặc khách hàng không tồn tại!");
+            }
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi SQL khi cập nhật hóa đơn: " + e.getMessage());
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+
+    /**
+     * Xóa Hóa đơn theo idHD.
+     * Báo lỗi nếu còn chi tiết hóa đơn hoặc phản hồi liên quan.
+     */
+    public boolean deleteHoaDon(String idHD) {
+        String sql = "DELETE FROM HoaDon WHERE idHD = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idHD);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 547) { // FK constraint failed
+                throw new RuntimeException("Không thể xóa hóa đơn này vì đã có chi tiết hóa đơn hoặc phản hồi liên quan!");
+            }
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi SQL khi xóa hóa đơn: " + e.getMessage());
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+
+    /**
      * Tìm kiếm Hóa đơn theo idHD, idNV hoặc idKH.
      * Nếu cả ba tham số đều rỗng, trả về toàn bộ.
      */
     public List<HoaDon> searchHoaDon(String idHD, String idNV, String idKH) {
         List<HoaDon> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang " +
-            "  FROM HoaDon WHERE 1=1"
+            "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang FROM HoaDon WHERE 1=1"
         );
         if (idHD != null && !idHD.trim().isEmpty()) {
             sql.append(" AND idHD LIKE ?");
@@ -102,93 +198,5 @@ public class HoaDonDAO {
             DBCloseHelper.closeAll(rs, stmt, conn);
         }
         return list;
-    }
-
-    /**
-     * Thêm mới một Hóa đơn (kèm 2 trường mới).
-     */
-    public boolean insertHoaDon(HoaDon hd) {
-        String sql = "INSERT INTO HoaDon " +
-                     "(idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, hd.getIdHD());
-            stmt.setTimestamp(2, new java.sql.Timestamp(hd.getThoiGian().getTime()));
-            stmt.setString(3, hd.getIdNV());
-            stmt.setString(4, hd.getIdKH());
-            stmt.setDouble(5, hd.getTongTien());
-            if (hd.getPhuongThucThanhToan() != null) {
-                stmt.setString(6, hd.getPhuongThucThanhToan());
-            } else {
-                stmt.setNull(6, Types.NVARCHAR);
-            }
-            stmt.setString(7, hd.getTrangThaiDonHang());
-            int rows = stmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            DBCloseHelper.closeAll(stmt, conn);
-        }
-    }
-
-    /**
-     * Cập nhật Hóa đơn (theo idHD), bao gồm 2 trường mới.
-     */
-    public boolean updateHoaDon(HoaDon hd) {
-        String sql = "UPDATE HoaDon SET " +
-                     "thoiGian = ?, idNV = ?, idKH = ?, tongTien = ?, " +
-                     "phuongThucThanhToan = ?, trangThaiDonHang = ? " +
-                     "WHERE idHD = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setTimestamp(1, new java.sql.Timestamp(hd.getThoiGian().getTime()));
-            stmt.setString(2, hd.getIdNV());
-            stmt.setString(3, hd.getIdKH());
-            stmt.setDouble(4, hd.getTongTien());
-            if (hd.getPhuongThucThanhToan() != null) {
-                stmt.setString(5, hd.getPhuongThucThanhToan());
-            } else {
-                stmt.setNull(5, Types.NVARCHAR);
-            }
-            stmt.setString(6, hd.getTrangThaiDonHang());
-            stmt.setString(7, hd.getIdHD());
-            int rows = stmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            DBCloseHelper.closeAll(stmt, conn);
-        }
-    }
-
-    /**
-     * Xóa Hóa đơn theo idHD.
-     */
-    public boolean deleteHoaDon(String idHD) {
-        String sql = "DELETE FROM HoaDon WHERE idHD = ?";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, idHD);
-            int rows = stmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            DBCloseHelper.closeAll(stmt, conn);
-        }
     }
 }

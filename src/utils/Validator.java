@@ -19,6 +19,17 @@ public class Validator {
      * @param format Mẫu định dạng (ví dụ: "dd/MM/yyyy" hoặc "dd/MM/yyyy HH:mm").
      * @return true nếu text đúng định dạng, false nếu không.
      */
+	public static boolean isDateTime(String dateStr, String pattern) {
+        if (dateStr == null || dateStr.trim().isEmpty()) return false;
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(pattern);
+            sdf.setLenient(false);
+            java.util.Date d = sdf.parse(dateStr);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     public static boolean isDate(String text, String format) {
         if (text == null || text.trim().isEmpty()) {
             return false;
