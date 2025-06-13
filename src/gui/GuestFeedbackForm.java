@@ -147,13 +147,19 @@ public class GuestFeedbackForm extends JFrame {
             return;
         }
 
-        // Gọi controller để tự động xử lý
-        boolean success = phanHoiController.addPhanHoiGuest(sdt, idHD, noiDung, danhGia);
+        // Tìm idThuoc từ idHD
+        ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO();
+        String idThuoc = chiTietHoaDonDAO.getFirstIdThuocByHD(idHD);
+        if (idThuoc == null) {
+            MessageDialog.showError(this, "Không tìm thấy thuốc trong hóa đơn " + idHD, "Lỗi");
+            return;
+        }
+
+        // Gọi controller để gửi phản hồi với thông tin mặc định cho khách
+        boolean success = phanHoiController.addPhanHoiGuest(idHD, sdt, noiDung, danhGia);
         if (success) {
             MessageDialog.showInfo(this, "Gửi phản hồi thành công. Cảm ơn bạn!", "Thông báo");
-            // Sau khi gửi xong, trở về LoginForm
-            LoginForm login = new LoginForm();
-            login.setVisible(true);
+            new LoginForm().setVisible(true);
             this.dispose();
         } else {
             MessageDialog.showError(this, "Gửi phản hồi thất bại. Vui lòng kiểm tra lại thông tin.", "Lỗi");
