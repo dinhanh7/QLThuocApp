@@ -83,7 +83,7 @@ public class PhanHoiPanel extends JPanel {
         // --- Bảng dữ liệu (y = 200, cao = 310) --- //
         tblModel = new DefaultTableModel();
         tblModel.setColumnIdentifiers(new String[]{
-            "IDPH", "IDKH", "IDHD", "IDThuoc", "Nội dung", "Thời gian", "Đánh giá"
+            "IDPH", "IDKH", "IDHD", "Nội dung", "Thời gian", "Đánh giá"
         });
         tblPhanHoi = new JTable(tblModel);
         JScrollPane scrollPane = new JScrollPane(tblPhanHoi);
@@ -165,14 +165,6 @@ public class PhanHoiPanel extends JPanel {
         txtIdHD.setBounds(460, 10, 60, 25);
         inputPanel.add(txtIdHD);
 
-        // IDThuoc
-        JLabel lblIdThuoc = new JLabel("IDThuoc:");
-        lblIdThuoc.setBounds(618, 10, 60, 25);
-        inputPanel.add(lblIdThuoc);
-        txtIdThuoc = new JTextField();
-        txtIdThuoc.setBounds(670, 10, 100, 25);
-        inputPanel.add(txtIdThuoc);
-
         // Nội dung
         JLabel lblNoiDung = new JLabel("Nội dung:");
         lblNoiDung.setBounds(10, 45, 60, 25);
@@ -223,7 +215,6 @@ public class PhanHoiPanel extends JPanel {
                 ph.getIdPH(),
                 ph.getIdKH(),
                 ph.getIdHD(),
-                ph.getIdThuoc(),
                 ph.getNoiDung(),
                 DateHelper.toString(ph.getThoiGian(), "dd/MM/yyyy HH:mm"),
                 ph.getDanhGia()
@@ -247,7 +238,6 @@ public class PhanHoiPanel extends JPanel {
                 ph.getIdPH(),
                 ph.getIdKH(),
                 ph.getIdHD(),
-                ph.getIdThuoc(),
                 ph.getNoiDung(),
                 DateHelper.toString(ph.getThoiGian(), "dd/MM/yyyy HH:mm"),
                 ph.getDanhGia()
@@ -269,10 +259,9 @@ public class PhanHoiPanel extends JPanel {
         txtIdPH.setText((String) tblModel.getValueAt(row, 0));
         txtIdKH.setText((String) tblModel.getValueAt(row, 1));
         txtIdHD.setText((String) tblModel.getValueAt(row, 2));
-        txtIdThuoc.setText((String) tblModel.getValueAt(row, 3));
-        txtNoiDung.setText((String) tblModel.getValueAt(row, 4));
-        txtThoiGian.setText((String) tblModel.getValueAt(row, 5));
-        txtDanhGia.setText(tblModel.getValueAt(row, 6).toString());
+        txtNoiDung.setText((String) tblModel.getValueAt(row, 3));
+        txtThoiGian.setText((String) tblModel.getValueAt(row, 4));
+        txtDanhGia.setText(tblModel.getValueAt(row, 5).toString());
     }
 
     /**
@@ -282,7 +271,6 @@ public class PhanHoiPanel extends JPanel {
         txtIdPH.setText("");
         txtIdKH.setText("");
         txtIdHD.setText("");
-        txtIdThuoc.setText("");
         txtNoiDung.setText("");
         txtThoiGian.setText("");
         txtDanhGia.setText("");
@@ -310,7 +298,6 @@ public class PhanHoiPanel extends JPanel {
         txtIdPH.setText("");
         txtIdKH.setText("");
         txtIdHD.setText("");
-        txtIdThuoc.setText("");
         txtNoiDung.setText("");
         txtThoiGian.setText("");
         txtDanhGia.setText("");
@@ -403,7 +390,6 @@ public class PhanHoiPanel extends JPanel {
         ph.setIdPH(txtIdPH.getText().trim());
         ph.setIdKH(txtIdKH.getText().trim());
         ph.setIdHD(txtIdHD.getText().trim());
-        ph.setIdThuoc(txtIdThuoc.getText().trim());
         ph.setNoiDung(txtNoiDung.getText().trim());
         ph.setThoiGian(DateHelper.toDate(txtThoiGian.getText().trim(), "dd/MM/yyyy HH:mm"));
         ph.setDanhGia(Integer.parseInt(txtDanhGia.getText().trim()));
