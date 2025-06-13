@@ -58,4 +58,24 @@ public class ChiTietHoaDonDAO {
         }
         return list;
     }
+    public String getFirstIdThuocByHD(String idHD) {
+        String sql = "SELECT TOP 1 idThuoc FROM ChiTietHoaDon WHERE idHD = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idHD);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("idThuoc");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBCloseHelper.closeAll(rs, stmt, conn);
+        }
+        return null;
+    }
 }
