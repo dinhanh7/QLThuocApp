@@ -152,7 +152,7 @@ public class EditPhieuNhapDialog extends JDialog {
         lblIdNCC.setBounds(10, 18, 60, 25);
         nccDetailPanel.add(lblIdNCC);
         txtNewIdNCC = new JTextField();
-        txtNewIdNCC.setBounds(60, 18, 80, 25);
+        txtNewIdNCC.setBounds(62, 18, 80, 25);
         nccDetailPanel.add(txtNewIdNCC);
 
         JLabel lblTenNCC = new JLabel("Tên NCC:");
@@ -166,18 +166,19 @@ public class EditPhieuNhapDialog extends JDialog {
         lblDiaChi.setBounds(370, 18, 60, 25);
         nccDetailPanel.add(lblDiaChi);
         txtNewDiaChi = new JTextField();
-        txtNewDiaChi.setBounds(420, 18, 150, 25);
+        txtNewDiaChi.setBounds(420, 18, 140, 25);
         nccDetailPanel.add(txtNewDiaChi);
 
         JLabel lblSdt = new JLabel("SĐT:");
-        lblSdt.setBounds(580, 18, 35, 25);
+        lblSdt.setBounds(568, 18, 35, 25);
         nccDetailPanel.add(lblSdt);
         txtNewSdt = new JTextField();
-        txtNewSdt.setBounds(610, 18, 110, 25);
+        txtNewSdt.setBounds(596, 18, 110, 25);
         nccDetailPanel.add(txtNewSdt);
 
-        btnAddNCC = new JButton("Lưu NCC mới");
-        btnAddNCC.setBounds(740, 16, 100, 30);
+        btnAddNCC = new JButton("  Lưu NCC");
+        btnAddNCC.setIcon(new ImageIcon(EditPhieuNhapDialog.class.getResource("/icon/chungSave.png")));
+        btnAddNCC.setBounds(730, 16, 110, 30);
         nccDetailPanel.add(btnAddNCC);
         nccDetailPanel.setVisible(false);
         pnlInfo.add(nccDetailPanel);
@@ -249,9 +250,10 @@ public class EditPhieuNhapDialog extends JDialog {
         }
         
         //xoa thuoc
-        JButton btnXoaThuoc = new JButton("Xóa thuốc");
-        btnXoaThuoc.setForeground(Color.RED);
-        btnXoaThuoc.setFont(btnXoaThuoc.getFont().deriveFont(12f));
+        JButton btnXoaThuoc = new JButton("  Xóa thuốc");
+        btnXoaThuoc.setIcon(new ImageIcon(EditPhieuNhapDialog.class.getResource("/icon/chungDelete.png")));
+        btnXoaThuoc.setForeground(Color.BLACK);
+        btnXoaThuoc.setFont(btnXoaThuoc.getFont().deriveFont(8f));
 
         btnXoaThuoc.addActionListener(e -> {
             int selectedRow = tblThuoc.getSelectedRow();
@@ -270,12 +272,13 @@ public class EditPhieuNhapDialog extends JDialog {
 //        pnlXoaThuoc.add(btnXoaThuoc);
 //        pnlXoaThuoc.setBounds(20, 340, 300, 40); // Tùy chỉnh vị trí/size cho phù hợp
 //        getContentPane().add(pnlXoaThuoc);
-        btnXoaThuoc.setBounds(750, -1, 120, 25); // width 140 đủ cho chữ lớn, chỉnh lại nếu cần nhỏ hơn
+        btnXoaThuoc.setBounds(726, 1, 136, 25); // width 140 đủ cho chữ lớn, chỉnh lại nếu cần nhỏ hơn
         panelNhapThuoc.add(btnXoaThuoc);
 
         
      // Tạo label tổng tiền
         lblTongTien = new JLabel("Tổng tiền: 0");
+        lblTongTien.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
         // Panel tổng tiền căn trái
         JPanel pnlTongTien = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -284,7 +287,9 @@ public class EditPhieuNhapDialog extends JDialog {
         // Panel nút căn phải
         JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnSave = new JButton("Lưu");
-        btnCancel = new JButton("Hủy");
+        btnSave.setIcon(new ImageIcon(EditPhieuNhapDialog.class.getResource("/icon/chungSave.png")));
+        btnCancel = new JButton("  Hủy");
+        btnCancel.setIcon(new ImageIcon(EditPhieuNhapDialog.class.getResource("/icon/chungCancel.png")));
         pnlBtns.add(btnSave);
         pnlBtns.add(btnCancel);
 
@@ -372,42 +377,42 @@ public class EditPhieuNhapDialog extends JDialog {
         panelNhapThuoc.add(txtDanhMuc);
 
         btnThemThuoc = new JButton("Thêm thuốc");
-        btnThemThuoc.setBounds(713, 55, 120, 25);
+        btnThemThuoc.setBounds(726, 25, 136, 25);
         panelNhapThuoc.add(btnThemThuoc);
 
         JLabel lblXuatXu = new JLabel("Xuất xứ:");
         lblXuatXu.setBounds(10, 55, 50, 25);
         panelNhapThuoc.add(lblXuatXu);
         txtXuatXu = new JTextField();
-        txtXuatXu.setBounds(60, 55, 80, 25);
+        txtXuatXu.setBounds(70, 55, 80, 25);
         panelNhapThuoc.add(txtXuatXu);
 
         JLabel lblSoLuong = new JLabel("Số lượng:");
-        lblSoLuong.setBounds(150, 55, 60, 25);
+        lblSoLuong.setBounds(190, 55, 60, 25);
         panelNhapThuoc.add(lblSoLuong);
         txtSoLuong = new JTextField();
-        txtSoLuong.setBounds(210, 55, 60, 25);
+        txtSoLuong.setBounds(260, 55, 60, 25);
         panelNhapThuoc.add(txtSoLuong);
 
         JLabel lblGiaNhap = new JLabel("Giá nhập:");
-        lblGiaNhap.setBounds(280, 55, 60, 25);
+        lblGiaNhap.setBounds(338, 55, 60, 25);
         panelNhapThuoc.add(lblGiaNhap);
         txtGiaNhap = new JTextField();
-        txtGiaNhap.setBounds(340, 55, 80, 25);
+        txtGiaNhap.setBounds(395, 55, 80, 25);
         panelNhapThuoc.add(txtGiaNhap);
 
         JLabel lblDonGia = new JLabel("Đơn giá:");
-        lblDonGia.setBounds(430, 55, 50, 25);
+        lblDonGia.setBounds(490, 55, 50, 25);
         panelNhapThuoc.add(lblDonGia);
         txtDonGia = new JTextField();
-        txtDonGia.setBounds(480, 55, 70, 25);
+        txtDonGia.setBounds(545, 55, 70, 25);
         panelNhapThuoc.add(txtDonGia);
 
         JLabel lblHanSD = new JLabel("Hạn SD:");
-        lblHanSD.setBounds(560, 55, 50, 25);
+        lblHanSD.setBounds(624, 55, 50, 25);
         panelNhapThuoc.add(lblHanSD);
         txtHanSuDung = new JTextField();
-        txtHanSuDung.setBounds(610, 55, 90, 25);
+        txtHanSuDung.setBounds(682, 55, 90, 25);
         panelNhapThuoc.add(txtHanSuDung);
 
         // Sự kiện thêm thuốc
