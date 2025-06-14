@@ -142,4 +142,56 @@ public class NhaCungCapDAO {
         }
         return list;
     }
+    // setup for trash
+    public List<NhaCungCap> getDeleted() {
+        List<NhaCungCap> list = new ArrayList<>();
+        String sql = "SELECT * FROM NhaCungCap WHERE isDeleted = 1";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                NhaCungCap ncc = new NhaCungCap();
+                ncc.setIdNCC(rs.getString("idNCC"));
+                ncc.setTenNCC(rs.getString("tenNCC"));
+                ncc.setSdt(rs.getString("sdt"));
+                ncc.setDiaChi(rs.getString("diaChi"));
+                list.add(ncc);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean restore(String idNCC) {
+        String sql = "UPDATE NhaCungCap SET isDeleted = 0 WHERE idNCC = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idNCC);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteForever(String idNCC) {
+        String sql = "DELETE FROM NhaCungCap WHERE idNCC = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idNCC);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
