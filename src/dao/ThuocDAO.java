@@ -125,10 +125,44 @@ public class ThuocDAO {
     }
 
     // Cập nhật thuốc
+//    public boolean updateThuoc(Thuoc t) {
+//        String sql = "UPDATE Thuoc SET " +
+//                     "tenThuoc = ?, hinhAnh = ?, thanhPhan = ?, donViTinh = ?, danhMuc = ?, xuatXu = ?, " +
+//                     "soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ? " +
+//                     "WHERE idThuoc = ?";
+//        try (Connection conn = DBConnection.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setString(1, t.getTenThuoc());
+//            if (t.getHinhAnh() != null) {
+//                stmt.setBytes(2, t.getHinhAnh());
+//            } else {
+//                stmt.setNull(2, Types.VARBINARY);
+//            }
+//            if (t.getThanhPhan() != null) {
+//                stmt.setString(3, t.getThanhPhan());
+//            } else {
+//                stmt.setNull(3, Types.NVARCHAR);
+//            }
+//            stmt.setString(4, t.getDonViTinh());
+//            stmt.setString(5, t.getDanhMuc());
+//            stmt.setString(6, t.getXuatXu());
+//            stmt.setInt(7, t.getSoLuongTon());
+//            stmt.setDouble(8, t.getGiaNhap());
+//            stmt.setDouble(9, t.getDonGia());
+//            stmt.setDate(10, new java.sql.Date(t.getHanSuDung().getTime()));
+//            stmt.setString(11, t.getIdThuoc());
+//
+//            return stmt.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
     public boolean updateThuoc(Thuoc t) {
         String sql = "UPDATE Thuoc SET " +
                      "tenThuoc = ?, hinhAnh = ?, thanhPhan = ?, donViTinh = ?, danhMuc = ?, xuatXu = ?, " +
-                     "soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ? " +
+                     "soLuongTon = ?, giaNhap = ?, donGia = ?, hanSuDung = ?, isDeleted = ? " +
                      "WHERE idThuoc = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -151,7 +185,15 @@ public class ThuocDAO {
             stmt.setDouble(8, t.getGiaNhap());
             stmt.setDouble(9, t.getDonGia());
             stmt.setDate(10, new java.sql.Date(t.getHanSuDung().getTime()));
-            stmt.setString(11, t.getIdThuoc());
+
+            // isDeleted
+            if (t.getIsDeleted() != null) {
+                stmt.setBoolean(11, t.getIsDeleted());
+            } else {
+                stmt.setNull(11, Types.BIT);
+            }
+
+            stmt.setString(12, t.getIdThuoc());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -159,6 +201,7 @@ public class ThuocDAO {
             return false;
         }
     }
+
 
     // Xóa mềm thuốc (isDeleted = 1)
     public boolean deleteThuoc(String idThuoc) {
@@ -215,7 +258,9 @@ public class ThuocDAO {
         }
         return null;
     }
-    // setup for trash
+    
+    //cua Tung
+ // setup for trash
     public List<Thuoc> getDeleted() {
         List<Thuoc> list = new ArrayList<>();
         String sql = "SELECT * FROM Thuoc WHERE isDeleted = 1";
@@ -293,4 +338,5 @@ public class ThuocDAO {
             return false;
         }
     }
+
 }
