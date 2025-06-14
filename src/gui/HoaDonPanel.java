@@ -8,12 +8,15 @@ import utils.DateHelper;
 import utils.MessageDialog;
 import utils.Validator;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import gui.AddHoaDonDialog;
 import entities.HoaDon;
 import entities.ChiTietHoaDon;
 import java.util.List;
+import java.util.Map;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;

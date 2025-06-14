@@ -1,11 +1,13 @@
 package controller;
 
 import dao.PhanHoiDAO;
+import entities.KhachHang;
 import entities.PhanHoi;
 
 import java.util.List;
 import java.util.Date;// thêm cái này
 import dao.HoaDonDAO; // thêm cái này
+import dao.KhachHangDAO;
 /**
  * PhanHoiController.java
  *

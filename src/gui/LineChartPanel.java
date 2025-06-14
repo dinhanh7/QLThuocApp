@@ -71,7 +71,7 @@ public class LineChartPanel extends JPanel {
             g2.fillOval(x - pointSize / 2, y - pointSize / 2, pointSize, pointSize);
 
             g2.setColor(Color.BLACK);
-            g2.setFont(new Font("SansSerif", Font.PLAIN, 7));
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
             g2.drawString(String.valueOf(values.get(i)), x - 5, y - 10);
         }
 
@@ -79,7 +79,7 @@ public class LineChartPanel extends JPanel {
         for (int i = 0; i < labels.size(); i++) {
             int x = (int) (padding + i * xScale);
             g2.setColor(Color.BLACK);
-            g2.setFont(new Font("SansSerif", Font.PLAIN, 9));
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
             if (labels.size() > 15 && i % 2 != 0) continue; // bỏ nhãn xen kẽ nếu quá nhiều
             g2.drawString(labels.get(i), x - 10, height - padding + 15);
