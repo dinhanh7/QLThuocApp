@@ -28,7 +28,7 @@ public class HoaDonPanel extends JPanel {
     private DefaultTableModel tblModel;
     private JTextField txtSearchIdHD, txtSearchIdNV, txtSearchIdKH;
     private JButton btnSearch;
-
+    private JButton btnTinhDoanhThu;
     private JButton btnAdd, btnEdit, btnDelete, btnViewDetail, btnRefresh;
 
     public HoaDonPanel() {
