@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
     private PhieuNhapPanel phieuNhapPanel;
     private PhanHoiPanel phanHoiPanel;
     private HopDongPanel hopDongPanel;
-
+    private TrashPanel trashPanel;
     /**
      * @param roleId Chuỗi idVT (vai trò) của người dùng.
      *               Thường là "VT01" = Admin, hoặc "VT02" = Nhân viên.
