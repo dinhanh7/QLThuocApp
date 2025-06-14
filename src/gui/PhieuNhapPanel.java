@@ -344,23 +344,23 @@ public class PhieuNhapPanel extends JPanel {
             MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập cần sửa!", "Cảnh báo");
             return;
         }
-        currentMode = "EDITING";
-        inputPanel.setVisible(true);
-
-        populateInputFromTable(row);
-
-        txtIdPN.setEditable(false);
-
-        btnAdd.setEnabled(false);
-        btnEdit.setEnabled(false);
-        btnDelete.setEnabled(false);
-        btnViewDetail.setEnabled(false);
-        btnRefresh.setEnabled(false);
-        tblPhieuNhap.setEnabled(false);
-        btnSearch.setEnabled(false);
-        txtSearchIdPN.setEnabled(false);
-        txtSearchIdNV.setEnabled(false);
-        txtSearchIdNCC.setEnabled(false);
+        // Lấy idPN từ bảng, lấy dữ liệu từ controller
+        String idPN = (String) tblModel.getValueAt(row, 0);
+        List<PhieuNhap> all = controller.getAllPhieuNhap();
+        PhieuNhap selectedPN = null;
+        for (PhieuNhap pn : all) {
+            if (pn.getIdPN().equals(idPN)) {
+                selectedPN = pn;
+                break;
+            }
+        }
+        if (selectedPN == null) {
+            MessageDialog.showError(this, "Không tìm thấy dữ liệu phiếu nhập!", "Lỗi");
+            return;
+        }
+        EditPhieuNhapDialog dlg = new EditPhieuNhapDialog(SwingUtilities.getWindowAncestor(this), selectedPN);
+        dlg.setVisible(true);
+        loadDataToTable(); // reload lại bảng khi đóng dialog
     }
 
     /**
@@ -369,24 +369,24 @@ public class PhieuNhapPanel extends JPanel {
      *  - Xác nhận trước khi xóa,
      *  - Gọi controller.deletePhieuNhap(idPN), nếu thành công reload bảng.
      */
-    private void onDelete() {
-        int row = tblPhieuNhap.getSelectedRow();
-        if (row < 0) {
-            MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập cần xóa!", "Cảnh báo");
-            return;
-        }
-        String idPN = (String) tblModel.getValueAt(row, 0);
-        boolean confirm = MessageDialog.showConfirm(this,
-                "Bạn có chắc muốn xóa Phiếu nhập " + idPN + "?", "Xác nhận");
-        if (confirm) {
-            if (controller.deletePhieuNhap(idPN)) {
-                MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
-                loadDataToTable();
-            } else {
-                MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
-            }
-        }
-    }
+//    private void onDelete() {
+//        int row = tblPhieuNhap.getSelectedRow();
+//        if (row < 0) {
+//            MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập cần xóa!", "Cảnh báo");
+//            return;
+//        }
+//        String idPN = (String) tblModel.getValueAt(row, 0);
+//        boolean confirm = MessageDialog.showConfirm(this,
+//                "Bạn có chắc muốn xóa Phiếu nhập " + idPN + "?", "Xác nhận");
+//        if (confirm) {
+//            if (controller.deletePhieuNhap(idPN)) {
+//                MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
+//                loadDataToTable();
+//            } else {
+//                MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
+//            }
+//        }
+//    }
 
     /**
      * Khi bấm “Xem chi tiết”:
@@ -479,6 +479,24 @@ public class PhieuNhapPanel extends JPanel {
         hideInputPanel();
         loadDataToTable();
     }
+    private void onDelete() {
+        int row = tblPhieuNhap.getSelectedRow();
+        if (row < 0) {
+            MessageDialog.showWarning(this, "Vui lòng chọn phiếu nhập cần xóa!", "Cảnh báo");
+            return;
+        }
+        String idPN = (String) tblModel.getValueAt(row, 0);
+        boolean confirm = MessageDialog.showConfirm(this, "Bạn có chắc muốn xóa phiếu nhập " + idPN + "?", "Xác nhận");
+        if (confirm) {
+            boolean ok = controller.deletePhieuNhap(idPN);
+            if (ok) {
+                MessageDialog.showInfo(this, "Xóa thành công!", "Thông báo");
+                loadDataToTable(); // refresh lại bảng
+            } else {
+                MessageDialog.showError(this, "Xóa thất bại!", "Lỗi");
+            }
+        }
+    }
 
     /**
      * Khi bấm “Hủy” trong inputPanel:
@@ -487,4 +505,5 @@ public class PhieuNhapPanel extends JPanel {
     private void onCancel() {
         hideInputPanel();
     }
+    
 }
