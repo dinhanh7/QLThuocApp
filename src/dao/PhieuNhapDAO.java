@@ -170,4 +170,60 @@ public class PhieuNhapDAO {
         }
         return list;
     }
+    // setup for trash
+    public List<PhieuNhap> getDeleted() {
+        List<PhieuNhap> list = new ArrayList<>();
+        String sql = "SELECT * FROM PhieuNhap WHERE isDeleted = 1";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                PhieuNhap pn = new PhieuNhap();
+                pn.setIdPN(rs.getString("idPN"));
+                pn.setThoiGian(rs.getTimestamp("thoiGian"));
+                pn.setIdNV(rs.getString("idNV"));
+                pn.setIdNCC(rs.getString("idNCC"));
+                pn.setTongTien(rs.getDouble("tongTien"));
+                list.add(pn);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean restore(String id) {
+        String sql = "UPDATE PhieuNhap SET isDeleted = 0 WHERE idPN = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    public boolean deleteForever(String id) {
+        String sql = "DELETE FROM PhieuNhap WHERE idPN = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
