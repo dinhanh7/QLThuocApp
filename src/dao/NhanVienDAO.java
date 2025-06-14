@@ -313,15 +313,25 @@ public class NhanVienDAO {
         return false;
     }
 
-    public boolean deleteForever(String id) {
-        String sql = "DELETE FROM NhanVien WHERE idNV = ?";
+ public boolean deleteForever(String id) {
+        String sqlTK = "DELETE FROM TaiKhoan WHERE idNV = ?";
+        String sqlNV = "DELETE FROM NhanVien WHERE idNV = ?";
 
         try (
             Connection con = DBConnection.getConnection();
-            PreparedStatement stmt = con.prepareStatement(sql);
+            PreparedStatement stmtTK = con.prepareStatement(sqlTK);
+            PreparedStatement stmtNV = con.prepareStatement(sqlNV);
         ) {
-            stmt.setString(1, id);
-            return stmt.executeUpdate() > 0;
+            con.setAutoCommit(false);
+
+            stmtTK.setString(1, id);
+            stmtTK.executeUpdate();
+
+            stmtNV.setString(1, id);
+            int rows = stmtNV.executeUpdate();
+
+            con.commit();
+            return rows > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
