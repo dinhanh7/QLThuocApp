@@ -22,7 +22,7 @@ public class HoaDonDAO {
      */
     public List<HoaDon> getAllHoaDon() {
         List<HoaDon> list = new ArrayList<>();
-        String sql = "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang FROM HoaDon";
+        String sql = "SELECT idHD, thoiGian, idNV, idKH, tongTien, phuongThucThanhToan, trangThaiDonHang FROM HoaDon WHERE isDeleted IS NULL OR isDeleted = 0";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -126,7 +126,7 @@ public class HoaDonDAO {
      * Báo lỗi nếu còn chi tiết hóa đơn hoặc phản hồi liên quan.
      */
     public boolean deleteHoaDon(String idHD) {
-        String sql = "DELETE FROM HoaDon WHERE idHD = ?";
+        String sql = "UPDATE HoaDon SET isDeleted = 1 WHERE idHD = ?";
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -136,11 +136,8 @@ public class HoaDonDAO {
             int rows = stmt.executeUpdate();
             return rows > 0;
         } catch (SQLException e) {
-            if (e.getErrorCode() == 547) { // FK constraint failed
-                throw new RuntimeException("Không thể xóa hóa đơn này vì đã có chi tiết hóa đơn hoặc phản hồi liên quan!");
-            }
             e.printStackTrace();
-            throw new RuntimeException("Lỗi SQL khi xóa hóa đơn: " + e.getMessage());
+            return false;
         } finally {
             DBCloseHelper.closeAll(stmt, conn);
         }
