@@ -63,23 +63,27 @@ public class NhanVienPanel extends JPanel {
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
-        btnAdd = new JButton("Thêm");
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd = new JButton("  Thêm");
+        btnAdd.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/Add.png")));
+        btnAdd.setBounds(10, 10, 106, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
-        btnEdit = new JButton("Sửa");
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit = new JButton("   Sửa");
+        btnEdit.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/chungEdit.png")));
+        btnEdit.setBounds(150, 10, 106, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
-        btnDelete = new JButton("Xóa");
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete = new JButton("  Xóa");
+        btnDelete.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/chungDelete.png")));
+        btnDelete.setBounds(280, 10, 106, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
-        btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh = new JButton("  Làm mới");
+        btnRefresh.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/chungRefresh.png")));
+        btnRefresh.setBounds(415, 10, 114, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -167,7 +171,7 @@ public class NhanVienPanel extends JPanel {
         lblSdt.setBounds(480, 10, 40, 25);
         inputPanel.add(lblSdt);
         txtSdt = new JTextField();
-        txtSdt.setBounds(568, 10, 120, 25);
+        txtSdt.setBounds(528, 10, 120, 25);
         inputPanel.add(txtSdt);
 
         // Giới tính
@@ -183,7 +187,7 @@ public class NhanVienPanel extends JPanel {
         lblNamSinh.setBounds(623, 70, 65, 25);
         inputPanel.add(lblNamSinh);
         txtNamSinh = new JTextField();
-        txtNamSinh.setBounds(691, 70, 80, 25);
+        txtNamSinh.setBounds(691, 70, 65, 25);
         inputPanel.add(txtNamSinh);
 
         // Ngày vào làm
@@ -204,10 +208,10 @@ public class NhanVienPanel extends JPanel {
 
         // Trạng thái
         JLabel lblTrangThai = new JLabel("Trạng thái:");
-        lblTrangThai.setBounds(480, 45, 70, 25);
+        lblTrangThai.setBounds(424, 40, 70, 25);
         inputPanel.add(lblTrangThai);
         txtTrangThai = new JTextField();
-        txtTrangThai.setBounds(568, 40, 130, 25);
+        txtTrangThai.setBounds(502, 40, 130, 25);
         inputPanel.add(txtTrangThai);
 
         // Tài khoản
@@ -227,14 +231,16 @@ public class NhanVienPanel extends JPanel {
         inputPanel.add(txtPassword);
 
         // Nút Lưu
-        btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave = new JButton("  Lưu");
+        btnSave.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(762, 7, 90, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
-        btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel = new JButton("  Hủy");
+        btnCancel.setIcon(new ImageIcon(NhanVienPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(764, 45, 96, 35);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
