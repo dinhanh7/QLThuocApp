@@ -260,4 +260,57 @@ public class KhachHangDAO {
         }
         return null;
     }
+	//setup trash
+    public List<KhachHang> getDeleted() {
+        List<KhachHang> list = new ArrayList<>();
+        String sql = "SELECT * FROM KhachHang WHERE isDeleted = 1";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                KhachHang kh = new KhachHang();
+                kh.setIdKH(rs.getString("idKH"));
+                kh.setHoTen(rs.getString("hoTen"));
+                kh.setSdt(rs.getString("sdt"));
+                kh.setGioiTinh(rs.getString("gioiTinh"));
+                kh.setNgayThamGia(rs.getDate("ngayThamGia"));
+                list.add(kh);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean restore(String idKH) {
+        String sql = "UPDATE KhachHang SET isDeleted = 0 WHERE idKH = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idKH);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteForever(String idKH) {
+        String sql = "DELETE FROM KhachHang WHERE idKH = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idKH);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
