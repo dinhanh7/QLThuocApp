@@ -98,6 +98,7 @@ public class MainFrame extends JFrame {
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
             tabbedPane.addTab("Phản hồi", phanHoiPanel);
             tabbedPane.addTab("Hợp đồng", hopDongPanel);
+            tabbedPane.addTab("Thùng rác", trashPanel);
         }
         // Nếu roleId = "VT02" => Nhân viên, hiển thị 6 tab
         else if ("VT02".equalsIgnoreCase(roleId)) {
