@@ -83,7 +83,7 @@ public class MainFrame extends JFrame {
         phieuNhapPanel    = new PhieuNhapPanel();
         phanHoiPanel      = new PhanHoiPanel();
         hopDongPanel      = new HopDongPanel();
-
+        trashPanel 		  = new TrashPanel();
         if (roleId != null) {
             roleId = roleId.trim(); // bỏ dấu cách thừa
         }
