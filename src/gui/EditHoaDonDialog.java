@@ -26,6 +26,7 @@ public class EditHoaDonDialog extends JDialog {
     private HoaDon hoaDon;
     private List<ChiTietHoaDon> chiTietList;
     private List<Thuoc> allThuocList = new ArrayList<>();
+    private JPanel panel;
 
     public EditHoaDonDialog(Frame parent, HoaDon hoaDon, List<ChiTietHoaDon> chiTietList) {
         super(parent, "Sửa hóa đơn", true);
@@ -34,7 +35,7 @@ public class EditHoaDonDialog extends JDialog {
         setPreferredSize(new Dimension(900, 600));
         setSize(900, 600);
         setLocationRelativeTo(parent);
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         allThuocList = new ThuocController().getAllThuoc();
         initComponents();
@@ -67,6 +68,9 @@ public class EditHoaDonDialog extends JDialog {
         pnlInfo.add(txtIdKH);
         pnlInfo.add(new JLabel("Tổng tiền:"));
         pnlInfo.add(txtTongTien);
+        
+        panel = new JPanel();
+        pnlInfo.add(panel);
         pnlInfo.add(new JLabel("Phương thức TT:"));
         pnlInfo.add(txtPhuongThucThanhToan);
         pnlInfo.add(new JLabel("Trạng thái:"));
@@ -110,11 +114,13 @@ public class EditHoaDonDialog extends JDialog {
         // ====== Nút thêm/xóa thuốc ======
         JPanel pnlBtnThuoc = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnAddThuoc = new JButton("Thêm thuốc");
-        btnDeleteThuoc = new JButton("Xóa dòng");
+        btnAddThuoc.setIcon(new ImageIcon(EditHoaDonDialog.class.getResource("/icon/add.png")));
         pnlBtnThuoc.add(btnAddThuoc);
+        
+                btnAddThuoc.addActionListener(e -> modelThuoc.addRow(new Object[]{"", 1, 0.0, 0.0}));
+        btnDeleteThuoc = new JButton("Xóa dòng");
+        btnDeleteThuoc.setIcon(new ImageIcon(EditHoaDonDialog.class.getResource("/icon/chungDelete.png")));
         pnlBtnThuoc.add(btnDeleteThuoc);
-
-        btnAddThuoc.addActionListener(e -> modelThuoc.addRow(new Object[]{"", 1, 0.0, 0.0}));
         btnDeleteThuoc.addActionListener(e -> {
             int row = tblThuoc.getSelectedRow();
             if (row >= 0) modelThuoc.removeRow(row);
@@ -123,17 +129,19 @@ public class EditHoaDonDialog extends JDialog {
         // ====== Nút lưu/hủy ======
         JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnSave = new JButton("Lưu");
+        btnSave.setIcon(new ImageIcon(EditHoaDonDialog.class.getResource("/icon/chungSave.png")));
         btnCancel = new JButton("Hủy");
+        btnCancel.setIcon(new ImageIcon(EditHoaDonDialog.class.getResource("/icon/chungCancel.png")));
         pnlBtns.add(btnSave);
         pnlBtns.add(btnCancel);
 
         btnSave.addActionListener(this::onSave);
         btnCancel.addActionListener(e -> dispose());
 
-        add(pnlInfo, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(pnlBtnThuoc, BorderLayout.WEST);
-        add(pnlBtns, BorderLayout.SOUTH);
+        getContentPane().add(pnlInfo, BorderLayout.NORTH);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(pnlBtnThuoc, BorderLayout.WEST);
+        getContentPane().add(pnlBtns, BorderLayout.SOUTH);
     }
 
     private void fillData() {
