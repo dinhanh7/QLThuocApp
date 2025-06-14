@@ -16,7 +16,7 @@ public class ViewHoaDonDetailDialog extends JDialog {
         super(parent, "Chi tiết hóa đơn " + hoaDon.getIdHD(), ModalityType.APPLICATION_MODAL);
         setSize(700, 500);
         setLocationRelativeTo(parent);
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         // Panel thông tin chung hóa đơn
         JPanel infoPanel = new JPanel(new GridLayout(3, 2, 8, 8));
@@ -30,19 +30,22 @@ public class ViewHoaDonDetailDialog extends JDialog {
         infoPanel.add(new JLabel(hoaDon.getIdKH()));
         infoPanel.add(new JLabel("Tổng tiền:"));
         infoPanel.add(new JLabel(String.format("%.1f", hoaDon.getTongTien())));
+        
+        JPanel panel = new JPanel();
+        infoPanel.add(panel);
         infoPanel.add(new JLabel("PT Thanh toán:"));
         infoPanel.add(new JLabel(hoaDon.getPhuongThucThanhToan() != null ? hoaDon.getPhuongThucThanhToan() : ""));
         infoPanel.add(new JLabel("Trạng thái:"));
         infoPanel.add(new JLabel(hoaDon.getTrangThaiDonHang()));
 
-        add(infoPanel, BorderLayout.NORTH);
+        getContentPane().add(infoPanel, BorderLayout.NORTH);
 
         // Bảng chi tiết thuốc
         String[] colNames = {"ID thuốc", "Tên thuốc", "Số lượng", "Đơn giá", "Thành tiền"};
         DefaultTableModel model = new DefaultTableModel(colNames, 0);
         JTable tbl = new JTable(model);
         JScrollPane scroll = new JScrollPane(tbl);
-        add(scroll, BorderLayout.CENTER);
+        getContentPane().add(scroll, BorderLayout.CENTER);
 
         // Lấy danh sách chi tiết thuốc
         ChiTietHoaDonDAO ctdao = new ChiTietHoaDonDAO();
@@ -61,6 +64,6 @@ public class ViewHoaDonDetailDialog extends JDialog {
         btnClose.addActionListener(e -> dispose());
         JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         pnlBtn.add(btnClose);
-        add(pnlBtn, BorderLayout.SOUTH);
+        getContentPane().add(pnlBtn, BorderLayout.SOUTH);
     }
 }
