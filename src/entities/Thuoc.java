@@ -30,6 +30,9 @@ public class Thuoc {
     private double giaNhap;
     private double donGia;
     private Date hanSuDung;
+    //them isdelete
+    private Boolean isDeleted;
+
 
     public Thuoc() {
     }
@@ -121,4 +124,13 @@ public class Thuoc {
     public void setHanSuDung(Date hanSuDung) {
         this.hanSuDung = hanSuDung;
     }
+    //DA them 2 ham nay
+    public Boolean getIsDeleted() {
+    return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+    this.isDeleted = isDeleted;
+}
+
 }
