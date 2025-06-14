@@ -67,6 +67,31 @@ public class HoaDonPanel extends JPanel {
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
+	btnTinhDoanhThu = new JButton("Tính doanh thu");
+        btnTinhDoanhThu.setBounds(520, 10, 130, 30);
+        add(btnTinhDoanhThu);
+        btnTinhDoanhThu.addActionListener(e -> {
+            JTextField fromField = new JTextField();
+            JTextField toField = new JTextField();
+            JPanel panel = new JPanel(new GridLayout(2, 2));
+            panel.add(new JLabel("Từ ngày (yyyy-MM-dd):"));
+            panel.add(fromField);
+            panel.add(new JLabel("Đến ngày (yyyy-MM-dd):"));
+            panel.add(toField);
+
+            int result = JOptionPane.showConfirmDialog(null, panel, "Chọn khoảng ngày", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                String fromDate = fromField.getText();
+                String toDate = toField.getText();
+
+                Map<String, Integer> data = HoaDonController.tinhDoanhThuTheoNgay(fromDate, toDate);
+                JFrame chartFrame = new JFrame("Biểu đồ Doanh thu");
+                chartFrame.setSize(600, 400);
+                chartFrame.add(new LineChartPanel(data));
+                chartFrame.setVisible(true);
+            }
+        });
+
         tblModel = new DefaultTableModel();
         tblModel.setColumnIdentifiers(new String[]{
                 "IDHD", "Thời gian", "IDNV", "IDKH", "Tổng tiền", "PT Thanh toán", "Trạng thái"
