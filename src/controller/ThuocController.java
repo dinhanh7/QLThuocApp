@@ -41,7 +41,10 @@ public class ThuocController {
             return false;
         }
     }
-
+    public boolean giamSoLuongThuoc(String idThuoc, int soLuong) {
+        // Trả về true nếu cập nhật thành công, false nếu không
+        return new ThuocDAO().giamSoLuong(idThuoc, soLuong);
+    }
     /**
      * Tìm kiếm Thuốc theo idThuoc hoặc tenThuoc.
      */
