@@ -14,7 +14,7 @@ public class TrashPanel extends JPanel {
         TrashPhanHoiPanel phanHoiPanel = new TrashPhanHoiPanel(trashTabs, 0);
         TrashHopDongPanel hopDongPanel = new TrashHopDongPanel(trashTabs, 1);
         TrashHoaDonPanel hoaDonPanel = new TrashHoaDonPanel(trashTabs, 2);
-        TrashNhanVienPanel nhanVienPanel = new TrashNhanVienPanel(trashTabs, 4);
+        TrashNhanVienPanel nhanVienPanel = new TrashNhanVienPanel(trashTabs, 3);
         
         trashTabs.addTab("Phản hồi", phanHoiPanel);
 	trashTabs.addTab("Hợp đồng", hopDongPanel);
