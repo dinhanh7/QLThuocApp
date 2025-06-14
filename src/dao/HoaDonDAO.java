@@ -342,4 +342,79 @@ public class HoaDonDAO {
         }
         return false;
     }
+        public HoaDon getById(String idHD) {
+        HoaDon result = null;
+        String sql = "SELECT * FROM HoaDon WHERE idHD = ?";
+        try (
+        		Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setString(1, idHD);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    result = new HoaDon();
+                    result.setIdHD(rs.getString("idHD"));
+                    result.setThoiGian(rs.getTimestamp("thoiGian"));
+                    result.setIdNV(rs.getString("idNV"));
+                    result.setIdKH(rs.getString("idKH"));
+                    result.setTongTien(rs.getDouble("tongTien"));
+                    result.setPhuongThucThanhToan(rs.getString("phuongThucThanhToan"));
+                    result.setTrangThaiDonHang(rs.getString("trangThaiDonHang"));
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+        public boolean updateWithDetails(HoaDon hd, List<ChiTietHoaDon> chiTietList) {
+        Connection conn = null;
+        boolean ok = false;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            // Cập nhật hóa đơn
+            String sqlUpdateHD = "UPDATE HoaDon SET thoiGian=?, idNV=?, idKH=?, tongTien=?, phuongThucThanhToan=?, trangThaiDonHang=? WHERE idHD=?";
+            try (PreparedStatement ps = conn.prepareStatement(sqlUpdateHD)) {
+                ps.setTimestamp(1, new java.sql.Timestamp(hd.getThoiGian().getTime()));
+                ps.setString(2, hd.getIdNV());
+                ps.setString(3, hd.getIdKH());
+                ps.setDouble(4, hd.getTongTien());
+                ps.setString(5, hd.getPhuongThucThanhToan());
+                ps.setString(6, hd.getTrangThaiDonHang());
+                ps.setString(7, hd.getIdHD());
+                ps.executeUpdate();
+            }
+
+            // Xóa chi tiết hóa đơn cũ
+            String sqlDeleteCT = "DELETE FROM ChiTietHoaDon WHERE idHD=?";
+            try (PreparedStatement ps = conn.prepareStatement(sqlDeleteCT)) {
+                ps.setString(1, hd.getIdHD());
+                ps.executeUpdate();
+            }
+
+            // Thêm mới chi tiết hóa đơn
+            String sqlInsertCT = "INSERT INTO ChiTietHoaDon (idHD, idThuoc, soLuong, donGia) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sqlInsertCT)) {
+                for (ChiTietHoaDon ct : chiTietList) {
+                    ps.setString(1, ct.getIdHD());
+                    ps.setString(2, ct.getIdThuoc());
+                    ps.setInt(3, ct.getSoLuong());
+                    ps.setDouble(4, ct.getDonGia());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+
+            conn.commit();
+            ok = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (Exception e) {}
+        } finally {
+            if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (Exception e) {}
+        }
+        return ok;
+    }
 }
