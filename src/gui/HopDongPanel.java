@@ -60,23 +60,27 @@ public class HopDongPanel extends JPanel {
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
-        btnAdd = new JButton("Thêm");
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd = new JButton("   Thêm");
+        btnAdd.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/add.png")));
+        btnAdd.setBounds(10, 10, 120, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
-        btnEdit = new JButton("Sửa");
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit = new JButton("   Sửa");
+        btnEdit.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungEdit.png")));
+        btnEdit.setBounds(168, 10, 120, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
-        btnDelete = new JButton("Xóa");
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete = new JButton("   Xóa");
+        btnDelete.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungDelete.png")));
+        btnDelete.setBounds(313, 10, 120, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
-        btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh = new JButton("   Làm mới");
+        btnRefresh.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungRefresh.png")));
+        btnRefresh.setBounds(472, 10, 120, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -135,7 +139,8 @@ public class HopDongPanel extends JPanel {
         searchPanel.add(txtSearchIdNCC);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(630, 3, 100, 25);
+        btnSearch.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungSearch.png")));
+        btnSearch.setBounds(630, 3, 120, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -208,13 +213,15 @@ public class HopDongPanel extends JPanel {
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(770, 10, 90, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(770, 50, 90, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
