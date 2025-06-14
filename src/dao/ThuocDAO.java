@@ -215,5 +215,66 @@ public class ThuocDAO {
         }
         return null;
     }
+    // setup for trash
+    public List<Thuoc> getDeleted() {
+        List<Thuoc> list = new ArrayList<>();
+        String sql = "SELECT * FROM Thuoc WHERE isDeleted = 1";
 
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                Thuoc t = new Thuoc();
+                t.setIdThuoc(rs.getString("idThuoc"));
+                t.setTenThuoc(rs.getString("tenThuoc"));
+                t.setHinhAnh(rs.getBytes("hinhAnh"));
+                t.setThanhPhan(rs.getString("thanhPhan"));
+                t.setDonViTinh(rs.getString("donViTinh"));
+                t.setDanhMuc(rs.getString("danhMuc"));
+                t.setXuatXu(rs.getString("xuatXu"));
+                t.setSoLuongTon(rs.getInt("soLuongTon"));
+                t.setGiaNhap(rs.getDouble("giaNhap"));
+                t.setDonGia(rs.getDouble("donGia"));
+                t.setHanSuDung(rs.getDate("hanSuDung"));
+                list.add(t);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean restore(String id) {
+        String sql = "UPDATE Thuoc SET isDeleted = 0 WHERE idThuoc = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    public boolean deleteForever(String id) {
+        String sql = "DELETE FROM PhieuNhap WHERE idThuoc = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
