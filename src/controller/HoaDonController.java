@@ -137,5 +137,19 @@ public class HoaDonController {
             DBCloseHelper.closeAll(stmtHD, conn);
         }
     }
-
+    public String getNextHoaDonId() {
+        // Lấy tất cả hóa đơn hiện tại
+        List<HoaDon> ds = getAllHoaDon();
+        int max = 0;
+        for (HoaDon hd : ds) {
+            String id = hd.getIdHD();
+            if (id.startsWith("HD")) {
+                try {
+                    int num = Integer.parseInt(id.substring(2));
+                    if (num > max) max = num;
+                } catch (Exception ignored) {}
+            }
+        }
+        return String.format("HD%03d", max + 1); // HD001, HD002,...
+    }
 }
