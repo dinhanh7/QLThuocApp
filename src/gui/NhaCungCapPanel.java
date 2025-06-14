@@ -52,29 +52,34 @@ public class NhaCungCapPanel extends JPanel {
      */
     private void initComponents() {
         setLayout(null);
-        //setPreferredSize(new Dimension(1600, 800));
+        
+        setPreferredSize(new Dimension(1600, 800));
 
         // --- Nút Thêm ---
         btnAdd = new JButton("Thêm");
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/add.png")));
+        btnAdd.setBounds(10, 10, 100, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
         // --- Nút Sửa ---
         btnEdit = new JButton("Sửa");
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungEdit.png")));
+        btnEdit.setBounds(131, 10, 100, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
         // --- Nút Xóa ---
         btnDelete = new JButton("Xóa");
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungDelete.png")));
+        btnDelete.setBounds(257, 10, 100, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         // --- Nút Làm Mới ---
         btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungRefresh.png")));
+        btnRefresh.setBounds(386, 10, 119, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -124,7 +129,8 @@ public class NhaCungCapPanel extends JPanel {
         searchPanel.add(txtSearchTenNCC);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(450, 3, 100, 25);
+        btnSearch.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungSearch.png")));
+        btnSearch.setBounds(450, 3, 120, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -172,13 +178,15 @@ public class NhaCungCapPanel extends JPanel {
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(750, 10, 110, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel.setIcon(new ImageIcon(NhaCungCapPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(750, 50, 110, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
