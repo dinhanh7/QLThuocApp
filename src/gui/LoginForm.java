@@ -54,7 +54,13 @@ public class LoginForm extends JFrame {
         txtPassword = new JPasswordField();
         txtPassword.setBounds(140, 100, 200, 25);
         contentPane.add(txtPassword);
-
+        // Thêm sự kiện Enter để login
+        txtPassword.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                performLogin();
+            }
+        });
         btnLogin = new JButton("Login");
         btnLogin.setBounds(140, 150, 100, 30);
         contentPane.add(btnLogin);
