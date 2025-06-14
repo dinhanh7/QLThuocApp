@@ -267,4 +267,65 @@ public class NhanVienDAO {
             DBCloseHelper.closeAll(stmt, conn);
         }
     }
+// setup for trash
+    public List<NhanVien> getDeleted() {
+        List<NhanVien> list = new ArrayList<>();
+        String sql = "SELECT * FROM NhanVien WHERE isDeleted = 1";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                NhanVien nv = new NhanVien();
+                nv.setIdNV(rs.getString("idNV"));
+                nv.setHoTen(rs.getString("hoTen"));
+                nv.setSdt(rs.getString("sdt"));
+                nv.setGioiTinh(rs.getString("gioiTinh"));
+                nv.setNamSinh(rs.getInt("namSinh"));
+                nv.setNgayVaoLam(rs.getDate("ngayVaoLam"));
+                nv.setLuong(rs.getString("luong"));
+                nv.setTrangThai(rs.getString("trangThai"));
+                nv.setIsDeleted(true);  // đã bị xóa mềm
+                list.add(nv);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean restore(String id) {
+        String sql = "UPDATE NhanVien SET isDeleted = 0 WHERE idNV = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean deleteForever(String id) {
+        String sql = "DELETE FROM NhanVien WHERE idNV = ?";
+
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
