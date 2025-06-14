@@ -79,6 +79,7 @@ public class AddHoaDonDialog extends JDialog {
         cbKhachHang = new JComboBox<>();
         cbKhachHang.setEditable(true);
         danhSachKhach = new ArrayList<>();
+        cbKhachHang.addItem("");
         for (KhachHang kh : allKhachList) {
             String s = kh.getIdKH() + " - " + kh.getHoTen() + " - " + kh.getSdt();
             danhSachKhach.add(s);
@@ -313,7 +314,10 @@ public class AddHoaDonDialog extends JDialog {
         }
         hd.setIdNV(txtIdNV.getText().trim());
         String selected = (String) cbKhachHang.getSelectedItem();
-        String idKH = selected != null ? selected.split(" - ")[0].trim() : "";
+        String idKH = "";
+        if (selected != null && !selected.trim().isEmpty()) {
+            idKH = selected.split(" - ")[0].trim();
+        }
         hd.setIdKH(idKH);
         hd.setTongTien(this.thanhTienSauGiam); // dùng tiền thực trả
         hd.setPhuongThucThanhToan(txtPhuongThuc.getText().trim());
