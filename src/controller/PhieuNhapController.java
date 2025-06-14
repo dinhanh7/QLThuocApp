@@ -31,9 +31,9 @@ public class PhieuNhapController {
         return phieuNhapDAO.update(pn);
     }
 
-    public boolean deletePhieuNhap(String idPN) {
-        return phieuNhapDAO.delete(idPN);
-    }
+//    public boolean deletePhieuNhap(String idPN) {
+//        return phieuNhapDAO.delete(idPN);
+//    }
 
     /**
      * Tìm kiếm Phiếu Nhập theo idPN hoặc idNV hoặc idNCC.
@@ -42,4 +42,8 @@ public class PhieuNhapController {
     public List<PhieuNhap> searchPhieuNhap(String idPN, String idNV, String idNCC) {
         return phieuNhapDAO.search(idPN, idNV, idNCC);
     }
+    public boolean deletePhieuNhap(String idPN) {
+        return phieuNhapDAO.deletePhieuNhap(idPN);
+    }
+
 }
