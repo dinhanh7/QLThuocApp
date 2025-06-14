@@ -275,4 +275,71 @@ public class HoaDonDAO {
         }
         return false;
     }
+    //setup trash
+    public List<HoaDon> getDeleted() {
+        List<HoaDon> list = new ArrayList<>();
+        String sql = "SELECT * FROM HoaDon WHERE isDeleted = 1";
+
+        try (
+        	Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setIdHD(rs.getString("idHD"));
+                hd.setThoiGian(rs.getTimestamp("thoiGian"));
+                hd.setIdNV(rs.getString("idNV"));
+                hd.setIdKH(rs.getString("idKH"));
+                hd.setTongTien(rs.getDouble("tongTien"));
+                hd.setPhuongThucThanhToan(rs.getString("phuongThucThanhToan"));
+                hd.setTrangThaiDonHang(rs.getString("trangThaiDonHang"));
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list; // ⬅️ ĐÂY LÀ DÒNG QUAN TRỌNG KHÔNG ĐƯỢC THIẾU
+    }
+
+    public boolean restore(String idHD) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            con = DBConnection.getConnection();
+            String sql = "UPDATE HoaDon SET isDeleted = 0 WHERE idHD = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, idHD);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0; // trả về true nếu có dòng bị ảnh hưởng
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // nếu có lỗi hoặc không cập nhật gì thì trả false
+    }
+    public boolean deleteForever(String idHD) {
+        String sql = "DELETE FROM HoaDon WHERE idHD = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idHD);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
