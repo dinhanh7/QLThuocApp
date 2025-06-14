@@ -149,4 +149,70 @@ public class PhanHoiDAO {
         }
         return list;
     }
+    //setup trash
+    public List<PhanHoi> getDeleted() {
+        List<PhanHoi> list = new ArrayList<>();
+        String sql = "SELECT * FROM PhanHoi WHERE isDeleted = 1";
+
+        try (
+        	Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                PhanHoi p = new PhanHoi();
+                p.setIdPH(rs.getString("idPH"));
+                p.setIdKH(rs.getString("idKH"));
+                p.setIdHD(rs.getString("idHD"));
+                p.setNoiDung(rs.getString("noiDung"));
+                p.setThoiGian(rs.getTimestamp("thoiGian"));
+                p.setDanhGia(rs.getInt("danhGia"));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list; // ⬅️ ĐÂY LÀ DÒNG QUAN TRỌNG KHÔNG ĐƯỢC THIẾU
+    }
+
+    public boolean restore(String idPH) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            con = DBConnection.getConnection();
+            String sql = "UPDATE PhanHoi SET isDeleted = 0 WHERE idPH = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, idPH);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0; // trả về true nếu có dòng bị ảnh hưởng
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // nếu có lỗi hoặc không cập nhật gì thì trả false
+    }
+    public boolean deleteForever(String idPH) {
+        String sql = "DELETE FROM PhanHoi WHERE idPH = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idPH);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
