@@ -22,6 +22,7 @@ public class AddHoaDonDialog extends JDialog {
 	private HoaDonController hoaDonController = new HoaDonController();
 	private JTextField txtDiemSuDung;
 	private JLabel lblDiemHienTai;
+	private JLabel lblTongTienGocTrai;
 	private JLabel lblThanhTienSauGiam;
 	private int diemHienTai = 0;  // tích điểm hiện tại của khách
     private JTextField txtIdHD, txtThoiGian, txtIdNV, txtPhuongThuc, txtTrangThai, txtTongTien;
@@ -71,6 +72,14 @@ public class AddHoaDonDialog extends JDialog {
         txtTrangThai = new JTextField();
         txtTongTien = new JTextField("0");
         txtTongTien.setEditable(false);
+     // ====== Dòng tổng tiền dưới cùng góc trái ======
+        lblTongTienGocTrai = new JLabel("Tổng tiền hóa đơn: 0");
+        // Căn trái cho label
+        lblTongTienGocTrai.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel pnlBottom = new JPanel(new BorderLayout());
+        pnlBottom.add(lblTongTienGocTrai, BorderLayout.WEST);  // Góc trái
+        pnlBottom.add(lblThanhTienSauGiam, BorderLayout.EAST); // Góc phải (nếu muốn)
 
         // Thời gian thực (hiện tại) không cho nhập tay
         txtThoiGian.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
@@ -231,8 +240,12 @@ public class AddHoaDonDialog extends JDialog {
         add(pnlTop, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(pnlBtnThuoc, BorderLayout.WEST);
-        add(pnlTongTien, BorderLayout.SOUTH);
-        add(pnlBtns, BorderLayout.PAGE_END);
+     // Tạo panel bao ngoài
+        JPanel pnlSouth = new JPanel(new BorderLayout());
+        pnlSouth.add(pnlBottom, BorderLayout.CENTER);
+        pnlSouth.add(pnlBtns, BorderLayout.SOUTH);
+        add(pnlSouth, BorderLayout.SOUTH);
+
     }
 
     // ====== Các hàm xử lý tính toán và lấy dữ liệu ======
@@ -269,6 +282,9 @@ public class AddHoaDonDialog extends JDialog {
             tongTien += thanhTien;
         }
         txtTongTien.setText(String.format("%.0f", tongTien));
+        isUpdatingTable = false;
+        txtTongTien.setText(String.format("%.0f", tongTien));
+        lblTongTienGocTrai.setText("Tổng tiền hóa đơn: " + String.format("%.0f", tongTien));
         isUpdatingTable = false;
     }
 
