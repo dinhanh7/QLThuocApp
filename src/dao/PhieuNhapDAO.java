@@ -21,7 +21,7 @@ public class PhieuNhapDAO {
      */
     public List<PhieuNhap> getAll() {
         List<PhieuNhap> list = new ArrayList<>();
-        String sql = "SELECT idPN, thoiGian, idNV, idNCC, tongTien FROM PhieuNhap";
+        String sql = "SELECT idPN, thoiGian, idNV, idNCC, tongTien FROM PhieuNhap WHERE (isDeleted IS NULL OR isDeleted = 0)";
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -170,7 +170,28 @@ public class PhieuNhapDAO {
         }
         return list;
     }
-    // setup for trash
+    
+    //them ham xoa mem
+    public boolean deletePhieuNhap(String idPN) {
+        String sql = "UPDATE PhieuNhap SET isDeleted = 1 WHERE idPN = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnection.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, idPN);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DBCloseHelper.closeAll(stmt, conn);
+        }
+    }
+    
+    //ham Tung
+ // setup for trash
     public List<PhieuNhap> getDeleted() {
         List<PhieuNhap> list = new ArrayList<>();
         String sql = "SELECT * FROM PhieuNhap WHERE isDeleted = 1";
@@ -195,7 +216,6 @@ public class PhieuNhapDAO {
 
         return list;
     }
-
     public boolean restore(String id) {
         String sql = "UPDATE PhieuNhap SET isDeleted = 0 WHERE idPN = ?";
 
