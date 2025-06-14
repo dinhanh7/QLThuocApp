@@ -51,5 +51,10 @@ public class PhieuNhap {
     public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
     }
+    //them
+    private Boolean isDeleted;
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+
 }
 // PhieuNhap.java 
