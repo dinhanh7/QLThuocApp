@@ -39,27 +39,27 @@ public class AddPhieuNhapDialog extends JDialog {
         super(parent, "Thêm phiếu nhập mới", true);
         setSize(900, 600);
         setLocationRelativeTo(parent);
-        setLayout(null);
+        getContentPane().setLayout(null);
 
         // Panel phiếu nhập
         JPanel pnPN = new JPanel(null);
         pnPN.setBounds(10, 10, 870, 90);
-        add(pnPN);
+        getContentPane().add(pnPN);
 
         JLabel lblIDPN = new JLabel("IDPN:");
         lblIDPN.setBounds(10, 10, 50, 25); pnPN.add(lblIDPN);
         txtIDPN = new JTextField();
-        txtIDPN.setBounds(60, 10, 80, 25); pnPN.add(txtIDPN);
+        txtIDPN.setBounds(110, 10, 80, 25); pnPN.add(txtIDPN);
 
         JLabel lblThoiGian = new JLabel("Thời gian:");
-        lblThoiGian.setBounds(180, 10, 70, 25); pnPN.add(lblThoiGian);
+        lblThoiGian.setBounds(221, 10, 70, 25); pnPN.add(lblThoiGian);
         txtThoiGian = new JTextField();
-        txtThoiGian.setBounds(250, 10, 150, 25); pnPN.add(txtThoiGian);
+        txtThoiGian.setBounds(299, 10, 150, 25); pnPN.add(txtThoiGian);
 
         JLabel lblIDNV = new JLabel("IDNV:");
-        lblIDNV.setBounds(430, 10, 50, 25); pnPN.add(lblIDNV);
+        lblIDNV.setBounds(480, 10, 50, 25); pnPN.add(lblIDNV);
         txtIDNV = new JTextField();
-        txtIDNV.setBounds(480, 10, 80, 25); pnPN.add(txtIDNV);
+        txtIDNV.setBounds(538, 10, 80, 25); pnPN.add(txtIDNV);
 
         JLabel lblNCC = new JLabel("Nhà cung cấp:");
         lblNCC.setBounds(10, 45, 100, 25); pnPN.add(lblNCC);
@@ -67,11 +67,12 @@ public class AddPhieuNhapDialog extends JDialog {
         txtNCC.setBounds(110, 45, 200, 25); pnPN.add(txtNCC);
 
         comboNCC = new JComboBox<>();
-        comboNCC.setBounds(320, 45, 300, 25); pnPN.add(comboNCC);
+        comboNCC.setBounds(320, 45, 240, 25); pnPN.add(comboNCC);
         comboNCC.setEditable(false);
 
-        btnThemNCC = new JButton("Thêm nhà cung cấp");
-        btnThemNCC.setBounds(630, 45, 160, 25);
+        btnThemNCC = new JButton("   Thêm nhà cung cấp");
+        btnThemNCC.setIcon(new ImageIcon(AddPhieuNhapDialog.class.getResource("/icon/add.png")));
+        btnThemNCC.setBounds(603, 45, 200, 25);
         pnPN.add(btnThemNCC);
         btnThemNCC.setVisible(false);
 
@@ -79,7 +80,7 @@ public class AddPhieuNhapDialog extends JDialog {
         JPanel pnThuoc = new JPanel(null);
         pnThuoc.setBorder(BorderFactory.createTitledBorder("Thông tin thuốc"));
         pnThuoc.setBounds(10, 110, 860, 130);
-        add(pnThuoc);
+        getContentPane().add(pnThuoc);
 
         JLabel lblTenThuoc = new JLabel("Tên thuốc:");
         lblTenThuoc.setBounds(10, 20, 70, 25); pnThuoc.add(lblTenThuoc);
@@ -87,15 +88,15 @@ public class AddPhieuNhapDialog extends JDialog {
 
         JLabel lblThanhPhan = new JLabel("Thành phần:");
         lblThanhPhan.setBounds(210, 20, 80, 25); pnThuoc.add(lblThanhPhan);
-        txtThanhPhan = new JTextField(); txtThanhPhan.setBounds(290, 20, 100, 25); pnThuoc.add(txtThanhPhan);
+        txtThanhPhan = new JTextField(); txtThanhPhan.setBounds(290, 20, 80, 25); pnThuoc.add(txtThanhPhan);
 
         JLabel lblDonVi = new JLabel("Đơn vị tính:");
-        lblDonVi.setBounds(400, 20, 70, 25); pnThuoc.add(lblDonVi);
-        txtDonViTinh = new JTextField(); txtDonViTinh.setBounds(470, 20, 80, 25); pnThuoc.add(txtDonViTinh);
+        lblDonVi.setBounds(378, 20, 70, 25); pnThuoc.add(lblDonVi);
+        txtDonViTinh = new JTextField(); txtDonViTinh.setBounds(444, 20, 80, 25); pnThuoc.add(txtDonViTinh);
 
         JLabel lblDanhMuc = new JLabel("Danh mục:");
-        lblDanhMuc.setBounds(560, 20, 70, 25); pnThuoc.add(lblDanhMuc);
-        txtDanhMuc = new JTextField(); txtDanhMuc.setBounds(630, 20, 90, 25); pnThuoc.add(txtDanhMuc);
+        lblDanhMuc.setBounds(542, 20, 70, 25); pnThuoc.add(lblDanhMuc);
+        txtDanhMuc = new JTextField(); txtDanhMuc.setBounds(603, 20, 90, 25); pnThuoc.add(txtDanhMuc);
 
         JLabel lblXuatXu = new JLabel("Xuất xứ:");
         lblXuatXu.setBounds(10, 55, 70, 25); pnThuoc.add(lblXuatXu);
@@ -117,26 +118,29 @@ public class AddPhieuNhapDialog extends JDialog {
         lblHanSD.setBounds(660, 55, 50, 25); pnThuoc.add(lblHanSD);
         txtHanSuDung = new JTextField(); txtHanSuDung.setBounds(710, 55, 80, 25); pnThuoc.add(txtHanSuDung);
 
-        btnThemThuoc = new JButton("Thêm thuốc");
-        btnThemThuoc.setBounds(730, 20, 110, 25); pnThuoc.add(btnThemThuoc);
+        btnThemThuoc = new JButton("  Thêm thuốc");
+        btnThemThuoc.setIcon(new ImageIcon(AddPhieuNhapDialog.class.getResource("/icon/add.png")));
+        btnThemThuoc.setBounds(707, 20, 145, 25); pnThuoc.add(btnThemThuoc);
 
         // Bảng hiển thị các thuốc đã thêm tạm
         tblModelThuoc = new DefaultTableModel(new String[]{"ID", "Tên", "SL", "Giá nhập", "Đơn giá", "Hạn SD"}, 0);
         tblThuoc = new JTable(tblModelThuoc);
         JScrollPane scroll = new JScrollPane(tblThuoc);
         scroll.setBounds(10, 250, 860, 130);
-        add(scroll);
+        getContentPane().add(scroll);
 
         // Tổng tiền
         lblTongTien = new JLabel("Tổng tiền: 0");
         lblTongTien.setBounds(700, 390, 160, 25);
-        add(lblTongTien);
+        getContentPane().add(lblTongTien);
 
         // Nút Lưu, Hủy
-        btnLuu = new JButton("Lưu");
-        btnLuu.setBounds(650, 440, 100, 35); add(btnLuu);
-        btnHuy = new JButton("Hủy");
-        btnHuy.setBounds(770, 440, 100, 35); add(btnHuy);
+        btnLuu = new JButton("    Lưu");
+        btnLuu.setIcon(new ImageIcon(AddPhieuNhapDialog.class.getResource("/icon/chungSave.png")));
+        btnLuu.setBounds(650, 440, 100, 35); getContentPane().add(btnLuu);
+        btnHuy = new JButton("    Hủy");
+        btnHuy.setIcon(new ImageIcon(AddPhieuNhapDialog.class.getResource("/icon/chungCancel.png")));
+        btnHuy.setBounds(770, 440, 100, 35); getContentPane().add(btnHuy);
 
         // --- Xử lý dữ liệu mặc định ---
         txtIDPN.setEditable(false);
@@ -171,9 +175,10 @@ public class AddPhieuNhapDialog extends JDialog {
         btnThemThuoc.addActionListener(e -> themThuocVaoTam());
         
         //xoa thuoc
-        btnXoaThuoc = new JButton("Xóa dòng thuốc");
+        btnXoaThuoc = new JButton("   Xóa thuốc");
+        btnXoaThuoc.setIcon(new ImageIcon(AddPhieuNhapDialog.class.getResource("/icon/chungDelete.png")));
         btnXoaThuoc.setBounds(10, 390, 150, 30); // Điều chỉnh vị trí phù hợp layout của bạn
-        add(btnXoaThuoc);
+        getContentPane().add(btnXoaThuoc);
         btnXoaThuoc.addActionListener(e -> {
             int row = tblThuoc.getSelectedRow();
             if (row < 0) {
