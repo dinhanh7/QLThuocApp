@@ -11,13 +11,12 @@ public class TrashPanel extends JPanel {
         setLayout(new BorderLayout());
         trashTabs = new JTabbedPane();
 
-//        // Thêm các panel con cho từng bảng đã xóa mềm
-        trashTabs.addTab("Phản hồi", new TrashPhanHoiPanel());
-//        trashTabs.addTab("Khách hàng", new TrashKhachHangPanel());
-//        trashTabs.addTab("Nhà cung cấp", new TrashNhaCungCapPanel());
-//        trashTabs.addTab("Hóa đơn", new TrashHoaDonPanel());
-//        trashTabs.addTab("Hợp đồng", new TrashHopDongPanel());
+        TrashPhanHoiPanel phanHoiPanel = new TrashPhanHoiPanel(trashTabs, 0);
+        trashTabs.addTab("Phản hồi", phanHoiPanel);
+        phanHoiPanel.loadData();  // gọi loadData sau khi đã addTab
+
         add(trashTabs, BorderLayout.CENTER);
     }
+
 }
 
