@@ -61,23 +61,27 @@ public class KhachHangPanel extends JPanel {
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
-        btnAdd = new JButton("Thêm");
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd = new JButton("  Thêm");
+        btnAdd.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/Add.png")));
+        btnAdd.setBounds(10, 10, 100, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
-        btnEdit = new JButton("Sửa");
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit = new JButton("  Sửa");
+        btnEdit.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungEdit.png")));
+        btnEdit.setBounds(144, 10, 100, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
-        btnDelete = new JButton("Xóa");
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete = new JButton("  Xóa");
+        btnDelete.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungDelete.png")));
+        btnDelete.setBounds(282, 10, 105, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
-        btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh = new JButton("  Làm mới");
+        btnRefresh.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungRefresh.png")));
+        btnRefresh.setBounds(427, 10, 120, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -127,8 +131,9 @@ public class KhachHangPanel extends JPanel {
         txtSearchSDT.setBounds(275, 3, 120, 25);
         searchPanel.add(txtSearchSDT);
 
-        btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(440, 3, 100, 25);
+        btnSearch = new JButton("  Tìm kiếm");
+        btnSearch.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungSearch.png")));
+        btnSearch.setBounds(440, 3, 120, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -183,14 +188,16 @@ public class KhachHangPanel extends JPanel {
         inputPanel.add(txtNgayThamGia);
 
         // Nút Lưu
-        btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave = new JButton("  Lưu");
+        btnSave.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(760, 10, 100, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
-        btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel = new JButton("  Hủy");
+        btnCancel.setIcon(new ImageIcon(KhachHangPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(760, 50, 100, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
