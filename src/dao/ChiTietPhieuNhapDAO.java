@@ -106,4 +106,18 @@ public class ChiTietPhieuNhapDAO {
             DBCloseHelper.closeAll(stmt, conn);
         }
     }
+    
+    //them
+    public void deleteByPhieuNhapAndThuoc(String idPN, String idThuoc) {
+        String sql = "DELETE FROM ChiTietPhieuNhap WHERE idPN=? AND idThuoc=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idPN);
+            ps.setString(2, idThuoc);
+            ps.executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
