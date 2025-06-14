@@ -282,10 +282,16 @@ public class HoaDonPanel extends JPanel {
             return;
         }
         String idHD = (String) tblModel.getValueAt(row, 0);
-        // Mở dialog chi tiết hóa đơn (bạn cần có ViewChiTietHDDialog, không nằm trong code này)
-        // ViewChiTietHDDialog dialog = new ViewChiTietHDDialog(SwingUtilities.getWindowAncestor(this), idHD);
-        // dialog.setVisible(true);
-        MessageDialog.showInfo(this, "Chức năng xem chi tiết hóa đơn đang được phát triển!", "Thông báo");
+        // Lấy đối tượng HoaDon từ controller (hoặc lấy từ model nếu đã lưu trong biến)
+        List<HoaDon> all = controller.getAllHoaDon();
+        HoaDon hd = null;
+        for (HoaDon h : all) if (h.getIdHD().equals(idHD)) { hd = h; break; }
+        if (hd == null) {
+            MessageDialog.showError(this, "Không tìm thấy hóa đơn!", "Lỗi");
+            return;
+        }
+        ViewHoaDonDetailDialog dialog = new ViewHoaDonDetailDialog(SwingUtilities.getWindowAncestor(this), hd);
+        dialog.setVisible(true);
     }
 
     private void onRefresh() {
