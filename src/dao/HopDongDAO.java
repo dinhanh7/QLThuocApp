@@ -187,4 +187,71 @@ public class HopDongDAO {
             DBCloseHelper.closeAll(stmt, conn);
         }
     }
+    //setup trash
+    public List<HopDong> getDeleted() {
+        List<HopDong> list = new ArrayList<>();
+        String sql = "SELECT * FROM HopDong WHERE isDeleted = 1";
+
+        try (
+        	Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+        ) {
+            while (rs.next()) {
+                HopDong hd = new HopDong();
+                hd.setIdHDong(rs.getString("idHDong"));
+                hd.setNgayBatDau(rs.getDate("ngayBatDau"));
+                hd.setNgayKetThuc(rs.getDate("ngayKetThuc"));
+                hd.setNoiDung(rs.getString("noiDung"));
+                hd.setIdNV(rs.getString("idNV"));
+                hd.setIdNCC(rs.getString("idNCC"));
+                hd.setTrangThai(rs.getString("trangThai"));
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list; // ⬅️ ĐÂY LÀ DÒNG QUAN TRỌNG KHÔNG ĐƯỢC THIẾU
+    }
+
+    public boolean restore(String idHDong) {
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            con = DBConnection.getConnection();
+            String sql = "UPDATE HopDong SET isDeleted = 0 WHERE idHDong = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, idHDong);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0; // trả về true nếu có dòng bị ảnh hưởng
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false; // nếu có lỗi hoặc không cập nhật gì thì trả false
+    }
+    public boolean deleteForever(String idHDong) {
+        String sql = "DELETE FROM HopDong WHERE idHDong = ?";
+        try (
+            Connection con = DBConnection.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+        ) {
+            stmt.setString(1, idHDong);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
