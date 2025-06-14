@@ -228,21 +228,31 @@ public class HoaDonPanel extends JPanel {
 
 
     private void onEdit() {
-        int row = tblHoaDon.getSelectedRow();
-        if (row < 0) {
+        int selectedRow = tblHoaDon.getSelectedRow();
+        if (selectedRow < 0) {
             MessageDialog.showWarning(this, "Vui lòng chọn hóa đơn cần sửa!", "Cảnh báo");
             return;
         }
-        btnAdd.setEnabled(false);
-        btnEdit.setEnabled(false);
-        btnDelete.setEnabled(false);
-        btnViewDetail.setEnabled(false);
-        btnRefresh.setEnabled(false);
-        tblHoaDon.setEnabled(false);
-        btnSearch.setEnabled(false);
-        txtSearchIdHD.setEnabled(false);
-        txtSearchIdNV.setEnabled(false);
-        txtSearchIdKH.setEnabled(false);
+        // Lấy ID hóa đơn từ bảng
+        String idHD = tblModel.getValueAt(selectedRow, 0).toString();
+
+        // Lấy thông tin hóa đơn (cần có hàm getHoaDonById)
+        HoaDon hoaDon = controller.getHoaDonById(idHD);
+        // Lấy danh sách chi tiết hóa đơn (cần có DAO hoặc Controller lấy danh sách này)
+        List<ChiTietHoaDon> chiTietList = new dao.ChiTietHoaDonDAO().getByIdHD(idHD);
+
+        // Tạo dialog sửa
+        EditHoaDonDialog dialog = new EditHoaDonDialog(
+            (JFrame) SwingUtilities.getWindowAncestor(this), 
+            hoaDon, 
+            chiTietList
+        );
+        dialog.setVisible(true);
+
+        // Nếu cập nhật thành công thì reload lại bảng
+        if (dialog.isUpdated()) {
+            loadDataToTable(); // Hoặc reloadHoaDonTable() nếu có
+        }
     }
 
     private void onDelete() {
