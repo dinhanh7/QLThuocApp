@@ -376,7 +376,8 @@ public class EditPhieuNhapDialog extends JDialog {
         txtDanhMuc.setBounds(545, 25, 70, 25);
         panelNhapThuoc.add(txtDanhMuc);
 
-        btnThemThuoc = new JButton("Thêm thuốc");
+        btnThemThuoc = new JButton("  Thêm thuốc");
+        btnThemThuoc.setIcon(new ImageIcon(EditPhieuNhapDialog.class.getResource("/icon/Add.png")));
         btnThemThuoc.setBounds(726, 25, 136, 25);
         panelNhapThuoc.add(btnThemThuoc);
 
