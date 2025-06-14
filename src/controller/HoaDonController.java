@@ -152,7 +152,7 @@ public class HoaDonController {
         }
         return String.format("HD%03d", max + 1); // HD001, HD002,...
     }
-        public static Map<String, Integer> tinhDoanhThuTheoNgay(String fromDate, String toDate) {
+    public static Map<String, Integer> tinhDoanhThuTheoNgay(String fromDate, String toDate) {
         Map<String, Integer> doanhThuMap = new LinkedHashMap<>();
         String query = "SELECT CONVERT(date, thoiGian) AS ngay, SUM(tongTien) AS doanhThu " +
                 "FROM HoaDon " +
