@@ -317,6 +317,15 @@ public class AddHoaDonDialog extends JDialog {
         }
         saved = true;
         dispose(); // Đóng dialog
+     // Giảm số lượng thuốc trong kho
+        ThuocController thuocController = new ThuocController();
+        for (ChiTietHoaDon cthd : getChiTietHoaDonList()) {
+            boolean ok = thuocController.giamSoLuongThuoc(cthd.getIdThuoc(), cthd.getSoLuong());
+            if (!ok) {
+                JOptionPane.showMessageDialog(this, "Không thể cập nhật tồn kho cho " + cthd.getTenThuoc());
+            }
+        }
+
     }
 
     // ====== Getter để panel lấy dữ liệu ======
