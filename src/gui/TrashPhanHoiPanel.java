@@ -15,8 +15,12 @@ public class TrashPhanHoiPanel extends JPanel {
     private JTable table;
     private DefaultTableModel model;
     private PhanHoiDAO dao = new PhanHoiDAO();
+    private JTabbedPane parentTabbedPane;
+    private int tabIndex;
 
-    public TrashPhanHoiPanel() {
+    public TrashPhanHoiPanel(JTabbedPane tabbedPane, int index) {
+        this.parentTabbedPane = tabbedPane;
+        this.tabIndex = index;
         setLayout(new BorderLayout());
 
         // Tạo thanh tìm kiếm
@@ -128,7 +132,7 @@ public class TrashPhanHoiPanel extends JPanel {
         loadData();
     }
 
-    private void loadData() {
+    void loadData() {
         model.setRowCount(0);
         List<PhanHoi> list = dao.getDeleted();
         for (PhanHoi ph : list) {
@@ -143,6 +147,9 @@ public class TrashPhanHoiPanel extends JPanel {
             });
         }
         table.clearSelection();
+        if (parentTabbedPane != null && tabIndex < parentTabbedPane.getTabCount()) {
+            parentTabbedPane.setTitleAt(tabIndex, "Phản hồi (" + getDeletedCount() + ")");
+        }
     }
 
     private List<String> getSelectedIds() {
@@ -180,5 +187,9 @@ public class TrashPhanHoiPanel extends JPanel {
             loadData();
         }
     }
+    public int getDeletedCount() {
+        return dao.getDeleted().size();
+    }
+
 }
 
