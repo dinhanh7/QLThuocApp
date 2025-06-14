@@ -45,33 +45,39 @@ public class HoaDonPanel extends JPanel {
     	setPreferredSize(new Dimension(1600,1200));
         setLayout(null);
 
-        btnAdd = new JButton("Thêm");
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd = new JButton("     Thêm");
+        btnAdd.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/hoaDonAdd.png")));
+        btnAdd.setBounds(10, 10, 142, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
-        btnEdit = new JButton("Sửa");
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit = new JButton("     Sửa");
+        btnEdit.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungEdit.png")));
+        btnEdit.setBounds(186, 10, 147, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
-        btnDelete = new JButton("Xóa");
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete = new JButton("     Xóa");
+        btnDelete.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungDelete.png")));
+        btnDelete.setBounds(373, 10, 153, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
-        btnViewDetail = new JButton("Xem chi tiết");
-        btnViewDetail.setBounds(280, 10, 110, 30);
+        btnViewDetail = new JButton("  Xem chi tiết");
+        btnViewDetail.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungDetail.png")));
+        btnViewDetail.setBounds(10, 50, 142, 30);
         add(btnViewDetail);
         btnViewDetail.addActionListener(e -> onViewDetail());
 
-        btnRefresh = new JButton("Làm mới");
-        btnRefresh.setBounds(400, 10, 100, 30);
+        btnRefresh = new JButton("   Làm mới");
+        btnRefresh.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungRefresh.png")));
+        btnRefresh.setBounds(196, 50, 130, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
-	btnTinhDoanhThu = new JButton("Tính doanh thu");
-        btnTinhDoanhThu.setBounds(520, 10, 130, 30);
+	btnTinhDoanhThu = new JButton("   Tính doanh thu");
+	btnTinhDoanhThu.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chart-671.png")));
+        btnTinhDoanhThu.setBounds(373, 50, 153, 30);
         add(btnTinhDoanhThu);
         btnTinhDoanhThu.addActionListener(e -> {
             JTextField fromField = new JTextField();
@@ -90,7 +96,7 @@ public class HoaDonPanel extends JPanel {
                 Map<String, Integer> data = HoaDonController.tinhDoanhThuTheoNgay(fromDate, toDate);
                 JFrame chartFrame = new JFrame("Biểu đồ Doanh thu");
                 chartFrame.setSize(600, 400);
-                chartFrame.add(new LineChartPanel(data));
+                chartFrame.getContentPane().add(new LineChartPanel(data));
                 chartFrame.setVisible(true);
             }
         });
@@ -115,7 +121,7 @@ public class HoaDonPanel extends JPanel {
     
     private void initSearchPanel() {
         JPanel searchPanel = new JPanel(null);
-        searchPanel.setBounds(10, 50, 860, 30);
+        searchPanel.setBounds(10, 112, 860, 30);
         add(searchPanel);
 
         JLabel lblSearchIdHD = new JLabel("IDHD:");
@@ -143,7 +149,8 @@ public class HoaDonPanel extends JPanel {
         searchPanel.add(txtSearchIdKH);
 
         btnSearch = new JButton("Tìm kiếm");
-        btnSearch.setBounds(550, 3, 100, 25);
+        btnSearch.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungSearch.png")));
+        btnSearch.setBounds(550, 3, 130, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
