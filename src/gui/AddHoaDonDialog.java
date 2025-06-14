@@ -45,7 +45,7 @@ public class AddHoaDonDialog extends JDialog {
         setPreferredSize(new Dimension(1600, 800));
         setSize(750, 550);
         setLocationRelativeTo(parent);
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         allThuocList = thuocController.getAllThuoc();
 
@@ -213,7 +213,9 @@ public class AddHoaDonDialog extends JDialog {
         // Nút thêm/xóa thuốc
         JPanel pnlBtnThuoc = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnAddThuoc = new JButton("Thêm thuốc");
+        btnAddThuoc.setIcon(new ImageIcon(AddHoaDonDialog.class.getResource("/icon/add.png")));
         btnDeleteThuoc = new JButton("Xóa dòng");
+        btnDeleteThuoc.setIcon(new ImageIcon(AddHoaDonDialog.class.getResource("/icon/chungDelete.png")));
         pnlBtnThuoc.add(btnAddThuoc);
         pnlBtnThuoc.add(btnDeleteThuoc);
 
@@ -226,7 +228,9 @@ public class AddHoaDonDialog extends JDialog {
         // ====== Panel nút lưu/hủy ======
         JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnSave = new JButton("Lưu hóa đơn");
+        btnSave.setIcon(new ImageIcon(AddHoaDonDialog.class.getResource("/icon/chungSave.png")));
         btnCancel = new JButton("Hủy");
+        btnCancel.setIcon(new ImageIcon(AddHoaDonDialog.class.getResource("/icon/chungCancel.png")));
         pnlBtns.add(btnSave);
         pnlBtns.add(btnCancel);
 
@@ -237,14 +241,14 @@ public class AddHoaDonDialog extends JDialog {
         JPanel pnlTop = new JPanel(new BorderLayout());
         pnlTop.add(pnlInfo, BorderLayout.CENTER);
 
-        add(pnlTop, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(pnlBtnThuoc, BorderLayout.WEST);
+        getContentPane().add(pnlTop, BorderLayout.NORTH);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(pnlBtnThuoc, BorderLayout.WEST);
      // Tạo panel bao ngoài
         JPanel pnlSouth = new JPanel(new BorderLayout());
         pnlSouth.add(pnlBottom, BorderLayout.CENTER);
         pnlSouth.add(pnlBtns, BorderLayout.SOUTH);
-        add(pnlSouth, BorderLayout.SOUTH);
+        getContentPane().add(pnlSouth, BorderLayout.SOUTH);
 
     }
 
