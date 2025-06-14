@@ -277,4 +277,20 @@ public class ThuocDAO {
 
         return false;
     }
+        public boolean giamSoLuong(String idThuoc, int soLuongGiam) {
+        String sql = "UPDATE Thuoc SET SoLuongTon = SoLuongTon - ? WHERE idThuoc = ? AND SoLuongTon >= ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, soLuongGiam);
+            ps.setString(2, idThuoc);
+            ps.setInt(3, soLuongGiam);
+            int affected = ps.executeUpdate();
+            System.out.println("SQL: " + sql);
+            System.out.println("idThuoc: " + idThuoc + ", soLuongGiam: " + soLuongGiam + ", affected: " + affected);
+            return affected > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }
