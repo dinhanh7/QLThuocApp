@@ -34,21 +34,24 @@ public class LoginForm extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        JLabel lblTitle = new JLabel("ĐĂNG NHẬP");
+        JLabel lblTitle = new JLabel("  ĐĂNG NHẬP");
+        lblTitle.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/pharmacy.png")));
         lblTitle.setFont(new Font("Tahoma", Font.BOLD, 18));
-        lblTitle.setBounds(140, 10, 120, 30);
+        lblTitle.setBounds(103, 10, 200, 30);
         contentPane.add(lblTitle);
 
-        JLabel lblUser = new JLabel("Username:");
-        lblUser.setBounds(50, 60, 80, 25);
+        JLabel lblUser = new JLabel("  Username:");
+        lblUser.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/username.png")));
+        lblUser.setBounds(35, 60, 97, 25);
         contentPane.add(lblUser);
 
         txtUsername = new JTextField();
         txtUsername.setBounds(140, 60, 200, 25);
         contentPane.add(txtUsername);
 
-        JLabel lblPass = new JLabel("Password:");
-        lblPass.setBounds(50, 100, 80, 25);
+        JLabel lblPass = new JLabel("   Password:");
+        lblPass.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/password.png")));
+        lblPass.setBounds(35, 100, 80, 25);
         contentPane.add(lblPass);
 
         txtPassword = new JPasswordField();
@@ -61,8 +64,9 @@ public class LoginForm extends JFrame {
                 performLogin();
             }
         });
-        btnLogin = new JButton("Login");
-        btnLogin.setBounds(140, 150, 100, 30);
+        btnLogin = new JButton("  Login");
+        btnLogin.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/login.png")));
+        btnLogin.setBounds(243, 145, 97, 30);
         contentPane.add(btnLogin);
         btnLogin.addActionListener(new ActionListener() {
             @Override
@@ -72,8 +76,9 @@ public class LoginForm extends JFrame {
         });
 
         // Nút "Chế độ khách" ở góc dưới bên phải
-        btnGuest = new JButton("Chế độ khách");
-        btnGuest.setBounds(260, 200, 120, 25);
+        btnGuest = new JButton("  Chế độ khách");
+        btnGuest.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/chungGuest.png")));
+        btnGuest.setBounds(8, 145, 173, 30);
         contentPane.add(btnGuest);
         btnGuest.addActionListener(new ActionListener() {
             @Override
