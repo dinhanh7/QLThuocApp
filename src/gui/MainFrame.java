@@ -50,6 +50,7 @@ public class MainFrame extends JFrame {
 
         // Nút Đăng xuất
         JButton btnLogout = new JButton("Đăng xuất");
+        btnLogout.setIcon(new ImageIcon(MainFrame.class.getResource("/icon/chungLogout.png")));
         btnLogout.setFocusPainted(false);
         btnLogout.setMargin(new Insets(5, 10, 5, 10));
         btnLogout.addActionListener(e -> {
