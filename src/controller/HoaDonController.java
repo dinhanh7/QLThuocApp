@@ -176,4 +176,11 @@ public class HoaDonController {
 
         return doanhThuMap;
     }
+        public HoaDon getHoaDonById(String idHD) {
+        return hoaDonDAO.getById(idHD); // Viết thêm hàm này nếu chưa có
+    }
+    public boolean updateHoaDonWithDetails(HoaDon hd, List<ChiTietHoaDon> chiTietList) {
+        return hoaDonDAO.updateWithDetails(hd, chiTietList);
+    }
+
 }
