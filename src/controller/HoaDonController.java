@@ -152,4 +152,28 @@ public class HoaDonController {
         }
         return String.format("HD%03d", max + 1); // HD001, HD002,...
     }
+        public static Map<String, Integer> tinhDoanhThuTheoNgay(String fromDate, String toDate) {
+        Map<String, Integer> doanhThuMap = new LinkedHashMap<>();
+        String query = "SELECT CONVERT(date, thoiGian) AS ngay, SUM(tongTien) AS doanhThu " +
+                "FROM HoaDon " +
+                "WHERE thoiGian >= ? AND thoiGian < DATEADD(DAY, 1, ?) " +
+                "GROUP BY CONVERT(date, thoiGian) " +
+                "ORDER BY ngay";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, fromDate);
+            stmt.setString(2, toDate);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String ngay = rs.getString("ngay");
+                int doanhThu = rs.getInt("doanhThu");
+                doanhThuMap.put(ngay, doanhThu);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return doanhThuMap;
+    }
 }
