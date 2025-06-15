@@ -62,28 +62,28 @@ public class ThuocPanel extends JPanel {
         // --- Nút Thêm ---
         btnAdd = new JButton("Thêm");
         btnAdd.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/Add.png")));
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd.setBounds(10, 10, 118, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
         // --- Nút Sửa ---
         btnEdit = new JButton("Sửa");
         btnEdit.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungEdit.png")));
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit.setBounds(138, 10, 110, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
         // --- Nút Xóa ---
         btnDelete = new JButton("Xóa");
         btnDelete.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungDelete.png")));
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete.setBounds(258, 10, 110, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         // --- Nút Làm mới ---
         btnRefresh = new JButton("Làm mới");
         btnRefresh.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungRefresh.png")));
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh.setBounds(378, 10, 147, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -96,7 +96,7 @@ public class ThuocPanel extends JPanel {
         });
         tblThuoc = new JTable(tblModel);
         JScrollPane scrollPane = new JScrollPane(tblThuoc);
-        scrollPane.setBounds(10, 200, 860, 310);
+        scrollPane.setBounds(10, 209, 860, 310);
         add(scrollPane);
 
         tblThuoc.addMouseListener(new MouseAdapter() {
@@ -137,7 +137,7 @@ public class ThuocPanel extends JPanel {
 
         btnSearch = new JButton("Tìm kiếm");
         btnSearch.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungSearch.png")));
-        btnSearch.setBounds(450, 3, 100, 25);
+        btnSearch.setBounds(450, 3, 127, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -237,14 +237,14 @@ public class ThuocPanel extends JPanel {
         // Nút Lưu
         btnSave = new JButton("Lưu");
         btnSave.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungSave.png")));
-        btnSave.setBounds(780, 10, 80, 30);
+        btnSave.setBounds(753, 10, 107, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
         btnCancel.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungCancel.png")));
-        btnCancel.setBounds(780, 50, 80, 30);
+        btnCancel.setBounds(753, 50, 107, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 

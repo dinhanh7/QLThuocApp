@@ -140,7 +140,7 @@ public class HopDongPanel extends JPanel {
 
         btnSearch = new JButton("Tìm kiếm");
         btnSearch.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungSearch.png")));
-        btnSearch.setBounds(630, 3, 120, 25);
+        btnSearch.setBounds(630, 3, 143, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -214,14 +214,14 @@ public class HopDongPanel extends JPanel {
         // Nút Lưu
         btnSave = new JButton("Lưu");
         btnSave.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungSave.png")));
-        btnSave.setBounds(770, 10, 90, 30);
+        btnSave.setBounds(755, 10, 105, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
         btnCancel.setIcon(new ImageIcon(HopDongPanel.class.getResource("/icon/chungCancel.png")));
-        btnCancel.setBounds(770, 50, 90, 30);
+        btnCancel.setBounds(755, 50, 105, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 

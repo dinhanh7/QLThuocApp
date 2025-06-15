@@ -47,7 +47,7 @@ public class HoaDonPanel extends JPanel {
 
         btnAdd = new JButton("     Thêm");
         btnAdd.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/hoaDonAdd.png")));
-        btnAdd.setBounds(10, 10, 142, 30);
+        btnAdd.setBounds(10, 10, 155, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
@@ -59,26 +59,26 @@ public class HoaDonPanel extends JPanel {
 
         btnDelete = new JButton("     Xóa");
         btnDelete.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungDelete.png")));
-        btnDelete.setBounds(373, 10, 153, 30);
+        btnDelete.setBounds(355, 10, 185, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         btnViewDetail = new JButton("  Xem chi tiết");
         btnViewDetail.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungDetail.png")));
-        btnViewDetail.setBounds(10, 50, 142, 30);
+        btnViewDetail.setBounds(10, 50, 155, 30);
         add(btnViewDetail);
         btnViewDetail.addActionListener(e -> onViewDetail());
 
         btnRefresh = new JButton("   Làm mới");
         btnRefresh.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungRefresh.png")));
-        btnRefresh.setBounds(196, 50, 130, 30);
+        btnRefresh.setBounds(186, 50, 147, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
 	// Tinh doanh thu theo ngay
 	btnTinhDoanhThu = new JButton("   Doanh thu ngày");
 	btnTinhDoanhThu.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chart-671.png")));
-        btnTinhDoanhThu.setBounds(373, 50, 153, 30);
+        btnTinhDoanhThu.setBounds(355, 50, 185, 30);
         add(btnTinhDoanhThu);
         btnTinhDoanhThu.addActionListener(e -> {
             JTextField fromField = new JTextField();
@@ -184,7 +184,7 @@ public class HoaDonPanel extends JPanel {
 
         btnSearch = new JButton("Tìm kiếm");
         btnSearch.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chungSearch.png")));
-        btnSearch.setBounds(550, 3, 130, 25);
+        btnSearch.setBounds(556, 3, 130, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }

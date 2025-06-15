@@ -56,31 +56,31 @@ public class PhanHoiPanel extends JPanel {
      *  - JTable (y = 200, cao = 310)
      */
     private void initComponents() {
-    	//setPreferredSize(new Dimension(1600, 800));
+    	setPreferredSize(new Dimension(1600, 800));
         setLayout(null);
 
         // --- Nút chức năng (y = 10) --- //
         btnAdd = new JButton("Thêm");
         btnAdd.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/Add.png")));
-        btnAdd.setBounds(10, 10, 80, 30);
+        btnAdd.setBounds(10, 10, 118, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
         btnEdit = new JButton("Sửa");
         btnEdit.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungEdit.png")));
-        btnEdit.setBounds(100, 10, 80, 30);
+        btnEdit.setBounds(138, 10, 126, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
         btnDelete = new JButton("Xóa");
         btnDelete.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungDelete.png")));
-        btnDelete.setBounds(190, 10, 80, 30);
+        btnDelete.setBounds(274, 10, 126, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         btnRefresh = new JButton("Làm mới");
         btnRefresh.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungRefresh.png")));
-        btnRefresh.setBounds(280, 10, 100, 30);
+        btnRefresh.setBounds(410, 10, 158, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
@@ -91,7 +91,7 @@ public class PhanHoiPanel extends JPanel {
         });
         tblPhanHoi = new JTable(tblModel);
         JScrollPane scrollPane = new JScrollPane(tblPhanHoi);
-        scrollPane.setBounds(10, 200, 860, 310);
+        scrollPane.setBounds(10, 206, 860, 310);
         add(scrollPane);
 
         tblPhanHoi.addMouseListener(new MouseAdapter() {
@@ -132,7 +132,7 @@ public class PhanHoiPanel extends JPanel {
 
         btnSearch = new JButton("Tìm kiếm");
         btnSearch.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungSearch.png")));
-        btnSearch.setBounds(400, 3, 100, 25);
+        btnSearch.setBounds(400, 3, 134, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
     }
@@ -196,13 +196,15 @@ public class PhanHoiPanel extends JPanel {
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(770, 10, 90, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel.setIcon(new ImageIcon(PhanHoiPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(770, 50, 90, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
