@@ -124,37 +124,7 @@ public class HoaDonController {
                 stmtCT.setString(1, hd.getIdHD());
                 stmtCT.setString(2, ct.getIdThuoc());
                 stmtCT.setInt(3, ct.getSoLuong());
-                stmtCT.setDouble(4, ct.getDonGia());
-                stmtCT.addBatch();
-            }
-            stmtCT.executeBatch();
-
-            conn.commit();
-            return true;
-        } catch (Exception ex) {
-            if (conn != null) try { conn.rollback(); } catch (Exception ignore) {}
-            ex.printStackTrace();
-            throw new RuntimeException("Lỗi khi thêm hóa đơn và chi tiết hóa đơn: " + ex.getMessage());
-        } finally {
-            DBCloseHelper.closeAll(stmtCT, null);
-            DBCloseHelper.closeAll(stmtHD, conn);
-        }
-    }
-    public String getNextHoaDonId() {
-        // Lấy tất cả hóa đơn hiện tại
-        List<HoaDon> ds = getAllHoaDon();
-        int max = 0;
-        for (HoaDon hd : ds) {
-            String id = hd.getIdHD();
-            if (id.startsWith("HD")) {
-                try {
-                    int num = Integer.parseInt(id.substring(2));
-                    if (num > max) max = num;
-                } catch (Exception ignored) {}
-            }
-        }
-        return String.format("HD%03d", max + 1); // HD001, HD002,...
-    }
+               ngay
     public static Map<String, Integer> tinhDoanhThuTheoNgay(String fromDate, String toDate) {
         Map<String, Integer> doanhThuMap = new LinkedHashMap<>();
         String query = "SELECT CONVERT(date, thoiGian) AS ngay, SUM(tongTien) AS doanhThu " +
@@ -178,6 +148,40 @@ public class HoaDonController {
         }
 
         return doanhThuMap;
+    }
+     // Ham tinh doanh thu theo thang
+    public static Map<String, Integer> tinhDoanhThuTheoThang(int year) {
+        Map<String, Integer> map = new LinkedHashMap<>();
+
+        // Khởi tạo trước 12 tháng với giá trị 0
+        for (int i = 1; i <= 12; i++) {
+            map.put("Tháng " + i, 0);
+        }
+
+        String query = 
+            "SELECT MONTH(thoiGian) AS thang, SUM(tongTien) AS doanhThu " +
+            "FROM HoaDon " +
+            "WHERE YEAR(thoiGian) = ? " +
+            "GROUP BY MONTH(thoiGian) " +
+            "ORDER BY MONTH(thoiGian)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, year);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int thang = rs.getInt("thang");
+                int doanhThu = rs.getInt("doanhThu");
+                map.put("Tháng " + thang, doanhThu);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return map;
     }
         public HoaDon getHoaDonById(String idHD) {
         return hoaDonDAO.getById(idHD); // Viết thêm hàm này nếu chưa có
