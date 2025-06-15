@@ -26,6 +26,7 @@ public class TrashPhanHoiPanel extends JPanel {
         // Tạo thanh tìm kiếm
         JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
         JLabel searchLabel = new JLabel("Tìm kiếm: ");
+        searchLabel.setIcon(new ImageIcon(TrashPhanHoiPanel.class.getResource("/icon/chungSearch.png")));
         JTextField searchField = new JTextField();
         searchPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         searchPanel.add(searchLabel, BorderLayout.WEST);
@@ -93,8 +94,11 @@ public class TrashPhanHoiPanel extends JPanel {
         // Nút chức năng
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnRefresh = new JButton("Làm mới");
+        btnRefresh.setIcon(new ImageIcon(TrashPhanHoiPanel.class.getResource("/icon/chungRefresh.png")));
         JButton btnRestore = new JButton("Khôi phục");
+        btnRestore.setIcon(new ImageIcon(TrashPhanHoiPanel.class.getResource("/icon/ChungUndo.png")));
         JButton btnDeleteForever = new JButton("Xóa vĩnh viễn");
+        btnDeleteForever.setIcon(new ImageIcon(TrashPhanHoiPanel.class.getResource("/icon/chungTrash.png")));
 
         buttonPanel.add(btnRefresh);
         buttonPanel.add(btnRestore);
