@@ -51,7 +51,7 @@ public class LoginForm extends JFrame {
 
         JLabel lblPass = new JLabel("   Password:");
         lblPass.setIcon(new ImageIcon(LoginForm.class.getResource("/icon/password.png")));
-        lblPass.setBounds(35, 100, 80, 25);
+        lblPass.setBounds(35, 100, 97, 25);
         contentPane.add(lblPass);
 
         txtPassword = new JPasswordField();
