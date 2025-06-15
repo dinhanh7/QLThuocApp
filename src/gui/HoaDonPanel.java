@@ -31,7 +31,7 @@ public class HoaDonPanel extends JPanel {
     private DefaultTableModel tblModel;
     private JTextField txtSearchIdHD, txtSearchIdNV, txtSearchIdKH;
     private JButton btnSearch;
-    private JButton btnTinhDoanhThu;
+    private JButton btnTinhDoanhThu, btnDoanhThuTheoThang;
     private JButton btnAdd, btnEdit, btnDelete, btnViewDetail, btnRefresh;
 
     public HoaDonPanel() {
@@ -75,7 +75,8 @@ public class HoaDonPanel extends JPanel {
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
 
-	btnTinhDoanhThu = new JButton("   Tính doanh thu");
+	// Tinh doanh thu theo ngay
+	btnTinhDoanhThu = new JButton("   Doanh thu ngày");
 	btnTinhDoanhThu.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chart-671.png")));
         btnTinhDoanhThu.setBounds(373, 50, 153, 30);
         add(btnTinhDoanhThu);
@@ -100,7 +101,40 @@ public class HoaDonPanel extends JPanel {
                 chartFrame.setVisible(true);
             }
         });
+     // Tinh doanh thu theo thang
+        btnDoanhThuTheoThang = new JButton("   Doanh thu tháng");
+        btnDoanhThuTheoThang.setIcon(new ImageIcon(HoaDonPanel.class.getResource("/icon/chart-671.png")));
+        btnDoanhThuTheoThang.setBounds(559, 50, 200, 30);  // Tuỳ chỉnh vị trí và kích thước
+        add(btnDoanhThuTheoThang);
 
+        btnDoanhThuTheoThang.addActionListener(e -> {
+            String yearStr = JOptionPane.showInputDialog(this, "Nhập năm (VD: 2024):", "Chọn năm", JOptionPane.PLAIN_MESSAGE);
+            if (yearStr == null || yearStr.trim().isEmpty()) return;
+
+            try {
+                int year = Integer.parseInt(yearStr.trim());
+                Map<String, Integer> doanhThuTheoThang = HoaDonController.tinhDoanhThuTheoThang(year);
+
+                int tong = doanhThuTheoThang.values().stream().mapToInt(Integer::intValue).sum();
+                int trungBinh = doanhThuTheoThang.isEmpty() ? 0 : tong / doanhThuTheoThang.size();
+
+                String title = "Biểu đồ doanh thu theo tháng - " + year;
+                String tongText = "Tổng doanh thu: " + String.format("%,d", tong) + " VNĐ";
+                String tbText = "Trung bình: " + String.format("%,d", trungBinh) + " VNĐ/tháng";
+
+                LineChartPanel2 chartPanel = new LineChartPanel2(doanhThuTheoThang, title, tongText, tbText);
+                JFrame frame = new JFrame(title);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.getContentPane().add(chartPanel);
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            } catch (NumberFormatException e11) {
+                JOptionPane.showMessageDialog(this, "Năm không hợp lệ!");
+            }
+        });
+
+	
         tblModel = new DefaultTableModel();
         tblModel.setColumnIdentifiers(new String[]{
                 "IDHD", "Thời gian", "IDNV", "IDKH", "Tổng tiền", "PT Thanh toán", "Trạng thái"
