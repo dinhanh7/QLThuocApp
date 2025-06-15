@@ -95,8 +95,8 @@ public class GuestFeedbackForm extends JFrame {
 
         // Nút Gửi
         btnSubmit = new JButton("Gửi");
-        btnSubmit.setIcon(new ImageIcon(GuestFeedbackForm.class.getResource("/icon/send.jpg")));
-        btnSubmit.setBounds(100, 230, 100, 30);
+        btnSubmit.setIcon(new ImageIcon(GuestFeedbackForm.class.getResource("/icon/sent.png")));
+        btnSubmit.setBounds(100, 230, 80, 30);
         contentPane.add(btnSubmit);
         btnSubmit.addActionListener(new ActionListener() {
             @Override
@@ -106,10 +106,9 @@ public class GuestFeedbackForm extends JFrame {
         });
 
         // Nút Hủy
-        btnCancel = new JButton("  Hủy");
-        btnCancel.setHorizontalAlignment(SwingConstants.LEFT);
+        btnCancel = new JButton("Hủy");
         btnCancel.setIcon(new ImageIcon(GuestFeedbackForm.class.getResource("/icon/chungCancel.png")));
-        btnCancel.setBounds(220, 230, 100, 30);
+        btnCancel.setBounds(220, 230, 80, 30);
         contentPane.add(btnCancel);
         btnCancel.addActionListener(e -> {
             // Trở về LoginForm
