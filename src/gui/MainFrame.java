@@ -105,11 +105,13 @@ public class MainFrame extends JFrame {
         else if ("VT02".equalsIgnoreCase(roleId)) {
             tabbedPane.addTab("Thuốc", thuocPanel);
             tabbedPane.addTab("Khách hàng", khachHangPanel);
+            tabbedPane.addTab("Nhà cung cấp", nhaCungCapPanel);
             tabbedPane.addTab("Hóa đơn", hoaDonPanel);
             tabbedPane.addTab("Phiếu nhập", phieuNhapPanel);
             tabbedPane.addTab("Phản hồi", phanHoiPanel);
             // Nhân viên cũng được truy cập "Hợp đồng"?
             tabbedPane.addTab("Hợp đồng", hopDongPanel);
+            tabbedPane.addTab("Thùng rác", trashPanel);
         }
         // Nếu roleId khác (hoặc null/empty), ít nhất cho hiển thị tab "Thuốc" để không bị trắng
         else {
