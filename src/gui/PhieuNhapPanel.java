@@ -58,6 +58,7 @@ public class PhieuNhapPanel extends JPanel {
 
         // --- Nút chức năng (y = 10) --- //
         btnAdd = new JButton("Thêm");
+        btnAdd.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/Add.png")));
         btnAdd.setBounds(10, 10, 80, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> {
@@ -67,22 +68,26 @@ public class PhieuNhapPanel extends JPanel {
         });
 
         btnEdit = new JButton("Sửa");
+        btnEdit.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungEdit.png")));
         btnEdit.setBounds(100, 10, 80, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
         btnDelete = new JButton("Xóa");
+        btnDelete.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungDelete.png")));
         btnDelete.setBounds(190, 10, 80, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         // **Nút "Xem chi tiết" (mới)**
         btnViewDetail = new JButton("Xem chi tiết");
+        btnViewDetail.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungDetail.png")));
         btnViewDetail.setBounds(280, 10, 110, 30);
         add(btnViewDetail);
         btnViewDetail.addActionListener(e -> onViewDetail());
 
         btnRefresh = new JButton("Làm mới");
+        btnRefresh.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungRefresh.png")));
         btnRefresh.setBounds(400, 10, 100, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
@@ -142,6 +147,7 @@ public class PhieuNhapPanel extends JPanel {
         searchPanel.add(txtSearchIdNCC);
 
         btnSearch = new JButton("Tìm kiếm");
+        btnSearch.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungSearch.png")));
         btnSearch.setBounds(600, 3, 100, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
@@ -199,13 +205,15 @@ public class PhieuNhapPanel extends JPanel {
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(774, 10, 86, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel.setIcon(new ImageIcon(PhieuNhapPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(774, 50, 86, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 

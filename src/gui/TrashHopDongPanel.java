@@ -88,8 +88,11 @@ public class TrashHopDongPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnRefresh = new JButton("Làm mới");
+        btnRefresh.setIcon(new ImageIcon(TrashHopDongPanel.class.getResource("/icon/chungRefresh.png")));
         JButton btnRestore = new JButton("Khôi phục");
+        btnRestore.setIcon(new ImageIcon(TrashHopDongPanel.class.getResource("/icon/ChungUndo.png")));
         JButton btnDeleteForever = new JButton("Xóa vĩnh viễn");
+        btnDeleteForever.setIcon(new ImageIcon(TrashHopDongPanel.class.getResource("/icon/chungTrash.png")));
 
         buttonPanel.add(btnRefresh);
         buttonPanel.add(btnRestore);

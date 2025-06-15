@@ -61,24 +61,28 @@ public class ThuocPanel extends JPanel {
 
         // --- Nút Thêm ---
         btnAdd = new JButton("Thêm");
+        btnAdd.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/Add.png")));
         btnAdd.setBounds(10, 10, 80, 30);
         add(btnAdd);
         btnAdd.addActionListener(e -> onAdd());
 
         // --- Nút Sửa ---
         btnEdit = new JButton("Sửa");
+        btnEdit.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungEdit.png")));
         btnEdit.setBounds(100, 10, 80, 30);
         add(btnEdit);
         btnEdit.addActionListener(e -> onEdit());
 
         // --- Nút Xóa ---
         btnDelete = new JButton("Xóa");
+        btnDelete.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungDelete.png")));
         btnDelete.setBounds(190, 10, 80, 30);
         add(btnDelete);
         btnDelete.addActionListener(e -> onDelete());
 
         // --- Nút Làm mới ---
         btnRefresh = new JButton("Làm mới");
+        btnRefresh.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungRefresh.png")));
         btnRefresh.setBounds(280, 10, 100, 30);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> onRefresh());
@@ -132,6 +136,7 @@ public class ThuocPanel extends JPanel {
         searchPanel.add(txtSearchTenThuoc);
 
         btnSearch = new JButton("Tìm kiếm");
+        btnSearch.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungSearch.png")));
         btnSearch.setBounds(450, 3, 100, 25);
         searchPanel.add(btnSearch);
         btnSearch.addActionListener(e -> onSearch());
@@ -231,13 +236,15 @@ public class ThuocPanel extends JPanel {
 
         // Nút Lưu
         btnSave = new JButton("Lưu");
-        btnSave.setBounds(800, 10, 60, 30);
+        btnSave.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungSave.png")));
+        btnSave.setBounds(780, 10, 80, 30);
         inputPanel.add(btnSave);
         btnSave.addActionListener(e -> onSave());
 
         // Nút Hủy
         btnCancel = new JButton("Hủy");
-        btnCancel.setBounds(800, 50, 60, 30);
+        btnCancel.setIcon(new ImageIcon(ThuocPanel.class.getResource("/icon/chungCancel.png")));
+        btnCancel.setBounds(780, 50, 80, 30);
         inputPanel.add(btnCancel);
         btnCancel.addActionListener(e -> onCancel());
 
